@@ -70,7 +70,11 @@
   function parsePointsHistory(rows) {
     const at=rows.findIndex(r=>r.some(c=>key(c)==='suma')&&r.some(c=>/\d{1,2}\/(mar|abr|may|jun|jul|ago)/i.test(clean(c)))); if(at<0)return[];
     const h=rows[at], playerIx=Math.max(0,headerIndex(h,['suma'])-1); const dates=h.map((v,i)=>({label:clean(v),i})).filter(x=>/\d{1,2}\/[a-z]{3}/i.test(x.label));
-    return rows.slice(at+1).map(r=>({player:clean(r[playerIx]),values:dates.map(d=>({date:d.label,value:number(r[d.i])})).filter(x=>x.value!==0)})).filter(x=>x.player);
+    return rows.slice(at+1).map(r=>{
+      let accumulated=0;
+      const values=dates.map(d=>{accumulated+=number(r[d.i]);return{date:d.label,value:accumulated}});
+      return {player:clean(r[playerIx]),values};
+    }).filter(x=>x.player&&x.values.some(v=>v.value!==0));
   }
   async function fetchText(source) {
     const live=window.CHIQUI_CONFIG.sheetBase+source.gid+'&_='+Date.now();
