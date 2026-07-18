@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=12">
+  <link rel="stylesheet" href="css/styles.css?v=14">
 </head>
 <body>
   <div class="app-shell">
@@ -83,7 +83,7 @@
 
       <section id="historia" class="page-section content-section">
         <header class="section-header"><div><span class="eyebrow">FECHA A FECHA</span><h2>Evolución histórica</h2></div><select id="historyPlayer" aria-label="Elegir jugador"></select></header>
-        <article class="card history-card"><canvas id="historyChart" width="1000" height="390" aria-label="Gráfico de evolución de puntos"></canvas><p id="historyEmpty" class="empty-state" hidden>No hay datos históricos publicados todavía.</p></article>
+        <article class="card history-card"><div id="historyOverview" class="history-overview" hidden></div><canvas id="historyChart" width="1000" height="390" aria-label="Gráfico de evolución de puntos"></canvas><p id="historyEmpty" class="empty-state" hidden>No hay datos históricos publicados todavía.</p></article>
       </section>
 
       <section id="playoffs" class="page-section content-section">
@@ -112,6 +112,6 @@
   <script src="js/config.js?v=12"></script>
   <script src="js/sheets.js?v=12"></script>
   <script src="js/goals.js?v=12"></script>
-  <script src="js/app.js?v=12"></script>
+  <script src="js/app.js?v=14"></script>
 </body>
 </html>
