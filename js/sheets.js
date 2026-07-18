@@ -85,8 +85,21 @@
   }
   async function fetchText(source) {
     const live=window.CHIQUI_CONFIG.sheetBase+source.gid+'&_='+Date.now();
-    try { const response=await fetch(live,{cache:'no-store'}); if(!response.ok)throw new Error('HTTP '+response.status); return {text:await response.text(),live:true}; }
-    catch(error){ const response=await fetch(source.fallback,{cache:'no-store'}); if(!response.ok)throw error; return {text:await response.text(),live:false}; }
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),7000);
+    try {
+      const response=await fetch(live,{cache:'no-store',signal:controller.signal});
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      return {text:await response.text(),live:true};
+    } catch(error) {
+      try {
+        const response=await fetch(source.fallback,{cache:'no-store'});
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        return {text:await response.text(),live:false};
+      } catch(fallbackError) {
+        console.warn('Fuente no disponible',source.gid,error,fallbackError);
+        return {text:'',live:false};
+      }
+    } finally { clearTimeout(timer); }
   }
   async function loadAll() {
     const loaded=await Promise.all(window.CHIQUI_CONFIG.sources.map(async source=>{const result=await fetchText(source); const rows=parseCSV(result.text); return {gid:source.gid,type:source.gid==='1228132818'?'results':identify(rows),rows,live:result.live};}));
