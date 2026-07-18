@@ -1,6 +1,6 @@
 window.CHIQUI_CONFIG = {
   regularSeasonRounds: 18,
-  adminPin: '2026',
+  adminPin: 'agustin02052013',
   // Pegá aquí la URL de una Web App de Google Apps Script para compartir
   // solicitudes y aprobaciones entre distintos celulares.
   goalsApiUrl: 'https://script.google.com/macros/s/AKfycbyMsl49gADfu7oxnJXbAtI47LjjMSfVx0ffSrooWmbawqtSRMHRoBkOIDrhfyOgp55WIQ/exec',
