@@ -33,6 +33,7 @@
     if (sample.includes('fecha') && sample.includes('suma')) return 'pointsHistory';
     if (sample.includes('jugador') && /\d{1,2}\/\d{1,2}\/\d{4}/.test(sample)) return 'history';
     if (sample.includes('domador') && sample.includes('diferencia')) return 'derived';
+    if (sample.includes('matchnumber') && sample.includes('whitegoals') && sample.includes('blackgoals')) return 'results';
     return 'unknown';
   }
   function findHeader(rows, required) {
@@ -76,6 +77,11 @@
       return {player:clean(r[playerIx]),values};
     }).filter(x=>x.player&&x.values.some(v=>v.value!==0));
   }
+  function parseResults(rows) {
+    const at=rows.findIndex(r=>r.some(c=>key(c)==='matchnumber')&&r.some(c=>key(c)==='whitegoals')&&r.some(c=>key(c)==='blackgoals'));if(at<0)return[];
+    const h=rows[at],col=a=>headerIndex(h,a),ix={match:col(['matchnumber']),white:col(['whitegoals']),black:col(['blackgoals']),winner:col(['winner']),played:col(['played']),updated:col(['updatedat'])};
+    return rows.slice(at+1).map(r=>({matchNumber:number(r[ix.match]),whiteGoals:number(r[ix.white]),blackGoals:number(r[ix.black]),winner:clean(r[ix.winner]),played:['true','si','sí','1'].includes(key(r[ix.played])),updatedAt:clean(r[ix.updated])})).filter(x=>x.matchNumber>0);
+  }
   async function fetchText(source) {
     const live=window.CHIQUI_CONFIG.sheetBase+source.gid+'&_='+Date.now();
     try { const response=await fetch(live,{cache:'no-store'}); if(!response.ok)throw new Error('HTTP '+response.status); return {text:await response.text(),live:true}; }
@@ -84,7 +90,7 @@
   async function loadAll() {
     const loaded=await Promise.all(window.CHIQUI_CONFIG.sources.map(async source=>{const result=await fetchText(source); const rows=parseCSV(result.text); return {gid:source.gid,type:identify(rows),rows,live:result.live};}));
     const byType=Object.fromEntries(loaded.map(x=>[x.type,x.rows]));
-    return { standings:parseStandings(byType.standings||[]), matches:parseMatches(byType.matches||[]), players:parsePlayers(byType.players||[]), stats:parseStats(byType.stats||[]), history:parseHistory(byType.history||[]), pointsHistory:parsePointsHistory(byType.pointsHistory||[]), mappings:loaded.map(x=>({gid:x.gid,type:x.type,live:x.live})), allLive:loaded.every(x=>x.live) };
+    return { standings:parseStandings(byType.standings||[]), matches:parseMatches(byType.matches||[]), players:parsePlayers(byType.players||[]), stats:parseStats(byType.stats||[]), history:parseHistory(byType.history||[]), pointsHistory:parsePointsHistory(byType.pointsHistory||[]), results:parseResults(byType.results||[]), mappings:loaded.map(x=>({gid:x.gid,type:x.type,live:x.live})), allLive:loaded.every(x=>x.live) };
   }
   window.ChiquiSheets={loadAll,key,clean,number};
 })();

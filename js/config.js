@@ -11,7 +11,8 @@ window.CHIQUI_CONFIG = {
     { gid: '432034466', fallback: 'data/432034466.csv' },
     { gid: '376531473', fallback: 'data/376531473.csv' },
     { gid: '990740373', fallback: 'data/990740373.csv' },
-    { gid: '1519685756', fallback: 'data/1519685756.csv' }
+    { gid: '1519685756', fallback: 'data/1519685756.csv' },
+    { gid: '1228132818', fallback: 'data/1228132818.csv' }
   ],
   sheetBase: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLr8HYdpSgizF-UkjdCAGQE7mhaZm4uax03QHVycBJ0pld5xd4Hir6Q8T-2sbZsw_6iI2emuwY-sMM/pub?single=true&output=csv&gid='
 };
