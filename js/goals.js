@@ -2,7 +2,7 @@
   'use strict';
   const STORAGE_KEY='chiquimafia_goal_submissions_v1';
   const MVP_KEY='chiquimafia_official_mvp_v1';
-  const LINEUP_KEY='chiquimafia_lineups_v1', SANCTION_KEY='chiquimafia_sanctions_v1', PLAYOFF_KEY='chiquimafia_playoffs_v1', DELETED_DATES_KEY='chiquimafia_deleted_dates_v1';
+  const LINEUP_KEY='chiquimafia_lineups_v1', SANCTION_KEY='chiquimafia_sanctions_v1', PLAYOFF_KEY='chiquimafia_playoffs_v1', DELETED_DATES_KEY='chiquimafia_deleted_dates_v1', PLAYERS_KEY='chiquimafia_web_players_v1';
   const API=()=>String(window.CHIQUI_CONFIG.goalsApiUrl||'').trim();
   const localRead=()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}};
   const localWrite=items=>localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
@@ -39,8 +39,10 @@
   async function clearGoals(id,pin){const remote=await request('clearGoals',{id,pin});if(remote)return;const items=localRead(),item=items.find(x=>x.id===id);if(item)item.goals=0;localWrite(items)}
   async function deletedDates(){const remote=await request('listDeletedDates').catch(()=>null);return remote?.items||localList(DELETED_DATES_KEY)}
   async function deleteDate(matchNumber,pin){const remote=await request('deleteDate',{matchNumber,pin});if(remote)return;localWrite(localRead().filter(x=>String(x.matchNumber)!==String(matchNumber)));localStorage.setItem(MVP_KEY,JSON.stringify((await mvpAwards()).filter(x=>String(x.matchNumber)!==String(matchNumber))));localStorage.setItem(LINEUP_KEY,JSON.stringify(localList(LINEUP_KEY).filter(x=>String(x.matchNumber)!==String(matchNumber))));const deleted=localList(DELETED_DATES_KEY);if(!deleted.some(x=>String(x.matchNumber)===String(matchNumber)))deleted.push({matchNumber,deletedAt:new Date().toISOString()});localStorage.setItem(DELETED_DATES_KEY,JSON.stringify(deleted))}
+  async function webPlayers(){const remote=await request('listWebPlayers').catch(()=>null);return remote?.items||localList(PLAYERS_KEY)}
+  async function setWebPlayer(name,status,pin){const action=status==='active'?'addPlayer':'deletePlayer',remote=await request(action,{name,pin});if(remote)return remote.item;const items=localList(PLAYERS_KEY),normalized=String(name).trim().toUpperCase(),index=items.findIndex(x=>x.name===normalized),saved={name:normalized,status,updatedAt:new Date().toISOString()};index>=0?items[index]=saved:items.push(saved);localStorage.setItem(PLAYERS_KEY,JSON.stringify(items));return saved}
   async function playoffResults(){const remote=await request('listPlayoffs').catch(()=>null);return remote?.items||localList(PLAYOFF_KEY)}
   async function savePlayoff(item,pin){const remote=await request('savePlayoff',{item,pin});if(remote)return remote.item;const items=localList(PLAYOFF_KEY),key=item.round+'-'+item.slot,index=items.findIndex(x=>x.key===key),saved={...item,key};index>=0?items[index]=saved:items.push(saved);localStorage.setItem(PLAYOFF_KEY,JSON.stringify(items));return saved}
-  async function resetSeason(seasonName,pin){const remote=await request('resetSeason',{seasonName,pin});if(remote)return;[STORAGE_KEY,MVP_KEY,LINEUP_KEY,SANCTION_KEY,PLAYOFF_KEY,DELETED_DATES_KEY].forEach(key=>localStorage.removeItem(key))}
-  window.ChiquiGoals={list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,playoffResults,savePlayoff,resetSeason,isShared:()=>Boolean(API())};
+  async function resetSeason(seasonName,pin){const remote=await request('resetSeason',{seasonName,pin});if(remote)return;[STORAGE_KEY,MVP_KEY,LINEUP_KEY,SANCTION_KEY,PLAYOFF_KEY,DELETED_DATES_KEY,PLAYERS_KEY].forEach(key=>localStorage.removeItem(key))}
+  window.ChiquiGoals={list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,isShared:()=>Boolean(API())};
 })();
