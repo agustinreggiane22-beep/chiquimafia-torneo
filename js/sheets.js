@@ -52,8 +52,8 @@
   }
   function parseMatches(rows) {
     const at = findHeader(rows, ['jugador 1', 'jugador 16', 'g/p/e']); if (at < 0) return [];
-    const h = rows[at]; const resultIx = headerIndex(h,['g/p/e']); const mvpIx=headerIndex(h,['mvp']); const dateIx=headerIndex(h,['fecha']); const matchIx=headerIndex(h,['partido']);
-    return rows.slice(at + 1).map((r,i) => ({ date:clean(r[dateIx]), number:number(r[matchIx])||i+1, white:r.slice(1,9).map(clean).filter(Boolean), black:r.slice(9,17).map(clean).filter(Boolean), result:clean(r[resultIx]), mvp:clean(r[mvpIx]) })).filter(m=>m.date && (m.white.length || m.black.length));
+    const h = rows[at]; const resultIx = headerIndex(h,['g/p/e']); const mvpIx=headerIndex(h,['mvp']); const dateIx=headerIndex(h,['fecha']); const matchIx=headerIndex(h,['partido']),whiteGoalsIx=headerIndex(h,['goles claro web']),blackGoalsIx=headerIndex(h,['goles oscuro web']);
+    return rows.slice(at + 1).map((r,i) => ({ date:clean(r[dateIx]), number:number(r[matchIx])||i+1, white:r.slice(1,9).map(clean).filter(Boolean), black:r.slice(9,17).map(clean).filter(Boolean), result:clean(r[resultIx]), mvp:clean(r[mvpIx]),whiteGoals:whiteGoalsIx>=0?number(r[whiteGoalsIx]):undefined,blackGoals:blackGoalsIx>=0?number(r[blackGoalsIx]):undefined })).filter(m=>m.date && (m.white.length || m.black.length));
   }
   function parsePlayers(rows) {
     const at=findHeader(rows,['jugadores']); if(at<0)return[]; const ix=headerIndex(rows[at],['jugadores']); return [...new Set(rows.slice(at+1).map(r=>clean(r[ix])).filter(Boolean))];
