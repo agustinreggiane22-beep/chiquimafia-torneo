@@ -2,7 +2,7 @@
   'use strict';
   const STORAGE_KEY='chiquimafia_goal_submissions_v1';
   const MVP_KEY='chiquimafia_official_mvp_v1';
-  const LINEUP_KEY='chiquimafia_lineups_v1', SANCTION_KEY='chiquimafia_sanctions_v1';
+  const LINEUP_KEY='chiquimafia_lineups_v1', SANCTION_KEY='chiquimafia_sanctions_v1', PLAYOFF_KEY='chiquimafia_playoffs_v1';
   const API=()=>String(window.CHIQUI_CONFIG.goalsApiUrl||'').trim();
   const localRead=()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}};
   const localWrite=items=>localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
@@ -35,5 +35,9 @@
   async function sanctions(){const remote=await request('listSanctions').catch(()=>null);return remote?.items||localList(SANCTION_KEY)}
   async function addSanction(item,pin){const remote=await request('addSanction',{item,pin});if(remote)return remote.item;const saved={id:crypto.randomUUID?.()||String(Date.now()),...item,points:-Math.abs(Number(item.points)),createdAt:new Date().toISOString()},items=localList(SANCTION_KEY);items.push(saved);localStorage.setItem(SANCTION_KEY,JSON.stringify(items));return saved}
   async function deleteSanction(id,pin){const remote=await request('deleteSanction',{id,pin});if(remote)return;localStorage.setItem(SANCTION_KEY,JSON.stringify(localList(SANCTION_KEY).filter(x=>x.id!==id)))}
-  window.ChiquiGoals={list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,sanctions,addSanction,deleteSanction,isShared:()=>Boolean(API())};
+  async function deleteSubmission(id,pin){const remote=await request('deleteSubmission',{id,pin});if(remote)return;localWrite(localRead().filter(x=>x.id!==id))}
+  async function playoffResults(){const remote=await request('listPlayoffs').catch(()=>null);return remote?.items||localList(PLAYOFF_KEY)}
+  async function savePlayoff(item,pin){const remote=await request('savePlayoff',{item,pin});if(remote)return remote.item;const items=localList(PLAYOFF_KEY),key=item.round+'-'+item.slot,index=items.findIndex(x=>x.key===key),saved={...item,key};index>=0?items[index]=saved:items.push(saved);localStorage.setItem(PLAYOFF_KEY,JSON.stringify(items));return saved}
+  async function resetSeason(seasonName,pin){const remote=await request('resetSeason',{seasonName,pin});if(remote)return;[STORAGE_KEY,MVP_KEY,LINEUP_KEY,SANCTION_KEY,PLAYOFF_KEY].forEach(key=>localStorage.removeItem(key))}
+  window.ChiquiGoals={list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,sanctions,addSanction,deleteSanction,deleteSubmission,playoffResults,savePlayoff,resetSeason,isShared:()=>Boolean(API())};
 })();
