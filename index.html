@@ -41,11 +41,6 @@
           <div class="season-progress-meta"><span id="roundLabel">Actualizando…</span><span id="progressLabel">0%</span></div>
           <div class="progress-track"><span id="progressBar"></span></div>
         </article>
-        <article class="season-card fund-card">
-          <div><span>Fondo acumulado del torneo</span><strong id="fundAmount">$0</strong></div>
-          <div class="season-progress-meta"><span id="fundLabel">Meta del torneo</span><span id="fundPercent">0%</span></div>
-          <div class="progress-track fund-track"><span id="fundProgressBar"></span></div>
-        </article>
       </section>
 
       <section id="clasificacion" class="page-section content-section">
@@ -111,7 +106,6 @@
             <article class="card admin-tool"><span class="eyebrow">DISCIPLINA</span><h3>Cargar sanción</h3><form id="sanctionForm"><label>Jugador<select id="sanctionPlayer" required></select></label><label>Puntos a descontar<input id="sanctionPoints" type="number" min="0.5" step="0.5" value="1" required></label><label>Motivo<input id="sanctionReason" maxlength="100" required placeholder="Ej.: llegada tarde"></label><button type="submit">Aplicar sanción</button><p id="sanctionMessage" class="form-message"></p></form><div id="sanctionsList"></div></article>
             <article class="card admin-tool"><span class="eyebrow">FASE FINAL</span><h3>Cargar resultado de playoffs</h3><form id="playoffForm"><label>Ronda<select id="playoffRound"><option value="quarter">Cuartos de final</option><option value="semi">Semifinal</option><option value="final">Final</option></select></label><label>Cruce<select id="playoffSlot"></select></label><div class="compact-fields"><label>Jugador 1<select id="playoffPlayer1"></select></label><label>Jugador 2<select id="playoffPlayer2"></select></label><label>Goles 1<input id="playoffScore1" type="number" min="0" required></label><label>Goles 2<input id="playoffScore2" type="number" min="0" required></label></div><label>Quién pasó de ronda<select id="playoffWinner" required></select></label><button type="submit">Guardar resultado</button><p id="playoffMessage" class="form-message"></p></form></article>
             <article class="card admin-tool"><span class="eyebrow">PLANTEL DEL TORNEO</span><h3>Administrar jugadores</h3><form id="playerAdminForm"><label>Nombre del jugador nuevo<input id="newPlayerName" maxlength="50" required placeholder="Nombre o apodo"></label><button type="submit">Agregar jugador al torneo</button><p id="playerAdminMessage" class="form-message"></p></form><div id="webPlayersList"></div><p class="admin-help">Los invitados ocasionales se escriben directamente al armar los equipos y no se agregan acá.</p></article>
-            <article class="card admin-tool"><span class="eyebrow">FONDO DEL TORNEO</span><h3>Actualizar dinero acumulado</h3><p>Indicá cuánto juntaron hasta ahora y cuál es la meta para repartir al finalizar.</p><form id="fundForm"><div class="compact-fields"><label>Dinero acumulado<input id="fundCurrentInput" type="number" min="0" step="100" required></label><label>Meta del torneo<input id="fundGoalInput" type="number" min="1" step="100" required></label></div><button type="submit">Guardar fondo</button><p id="fundMessage" class="form-message"></p></form></article>
             <div hidden aria-hidden="true"><form id="historicalChampionForm"><input id="historicalSeason"><input id="historicalChampion"><input id="historicalPoints" value="0"><input id="historicalGoals" value="0"><input id="historicalAttendance" value="0"><input id="historicalMvps" value="0"><p id="historicalChampionMessage"></p></form></div>
             <article class="card admin-tool danger-tool"><span class="eyebrow">FINALIZAR TEMPORADA</span><h3>Coronar campeón y guardar torneo</h3><p>Calcula al campeón, guarda las estadísticas históricas e inicia una temporada nueva conservando los jugadores.</p><form id="resetSeasonForm"><label>Nombre de la temporada que termina<input id="seasonArchiveName" required placeholder="Ej.: Apertura 2026"></label><label>Escribí FINALIZAR para confirmar<input id="resetConfirmation" required autocomplete="off"></label><button type="submit">🏆 Finalizar y coronar campeón</button><p id="resetMessage" class="form-message"></p></form></article>
           </div>
@@ -123,8 +117,8 @@
     <footer><strong>CHIQUIMAFIA TORNEO</strong><span>Datos sincronizados desde Google Sheets</span></footer>
   </div>
   <script src="js/config.js?v=2026071815"></script>
-  <script src="js/sheets.js?v=2026071819"></script>
-  <script src="js/goals.js?v=2026071816"></script>
-  <script src="js/app.js?v=2026071824"></script>
+  <script src="js/sheets.js?v=2026071820"></script>
+  <script src="js/goals.js?v=2026071817"></script>
+  <script src="js/app.js?v=2026071825"></script>
 </body>
 </html>
