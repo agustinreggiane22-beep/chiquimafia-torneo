@@ -65,7 +65,7 @@
               <label>Jugador<select id="goalPlayer" required></select></label>
               <label>Equipo<select id="goalTeam" required><option value="white">Equipo Blanco</option><option value="black">Equipo Negro</option></select></label>
               <label>Goles<input id="goalCount" type="number" min="0" max="30" inputmode="numeric" required></label>
-              <label class="full-field">Tu voto para MVP<select id="mvpVote" required></select><small class="field-help">Podés votar a cualquier jugador del partido excepto a vos mismo.</small></label>
+              <label class="full-field">Tu voto para MVP<select id="mvpVote" required></select><small id="mvpVoteHelp" class="field-help">Podés votar a cualquier jugador de los dos equipos, excepto a vos mismo.</small></label>
               <label class="full-field">Comentario opcional<input id="goalNote" maxlength="100" placeholder="Ej.: hice el segundo y el cuarto gol"></label>
               <button class="primary-button form-submit" type="submit">Enviar para aprobación</button>
             </form>
@@ -120,6 +120,6 @@
   <script src="js/config.js?v=2026071815"></script>
   <script src="js/sheets.js?v=2026071820"></script>
   <script src="js/goals.js?v=2026071903"></script>
-  <script src="js/app.js?v=2026071903"></script>
+  <script src="js/app.js?v=2026071907"></script>
 </body>
 </html>
