@@ -106,3 +106,22 @@
 @keyframes real-flames{0%,100%{transform:translateY(3px) scale(.96);opacity:.58}50%{transform:translateY(-8px) scale(1.06);opacity:1}}
 @media(max-width:520px){.match-mood .mood-particles:after{font-size:18px;word-spacing:13px;letter-spacing:3px;bottom:-5px}}
 @media(prefers-reduced-motion:reduce){.match-mood .mood-particles:after{animation:none!important;transform:none}}
+
+/* Playoffs: recuperar el cuadro horizontal original */
+.playoff-duel.completed,.playoff-duel.completed.mood-fire,.playoff-duel.completed.mood-ice,.playoff-duel.completed.mood-storm{background:#fff;border:1px solid var(--line);box-shadow:0 10px 25px rgba(5,36,67,.08)}
+.playoff-duel.completed:before,.playoff-duel.completed:after{display:none!important;content:none!important}
+.playoff-duel .duel-mood{display:grid!important;position:absolute!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:38px;height:38px;place-items:center;background:rgba(255,255,255,.76)!important;box-shadow:0 3px 10px rgba(7,30,62,.1)!important;border:0!important;border-radius:50%!important;font-size:22px;opacity:.78;z-index:3;pointer-events:none;animation:sticker-center 2.2s ease-in-out infinite}
+.playoff-duel>div{position:relative;z-index:1;background:rgba(255,255,255,.88)}
+.playoff-duel .advanced{background:linear-gradient(90deg,rgba(225,249,234,.94),rgba(255,255,255,.94));box-shadow:inset 4px 0 0 #2daa66}
+@keyframes sticker-center{0%,100%{transform:translate(-50%,-50%) rotate(-5deg) scale(.95)}50%{transform:translate(-50%,-50%) rotate(5deg) scale(1.12)}}
+@media(max-width:1000px){
+  .bracket{display:grid!important;grid-template-columns:repeat(4,220px)!important;gap:20px!important;align-items:center!important;overflow-x:auto!important;padding:8px 3px 30px!important;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+  .bracket-column{display:grid!important;min-width:220px!important;width:220px!important;gap:18px!important;scroll-snap-align:start}
+  .bracket-column.semis{gap:80px!important}.bracket-column.final{gap:0!important}
+  .bracket-column:not(:last-child):after{display:none!important;content:none!important}
+  .champion{margin:auto}
+}
+@media(prefers-reduced-motion:reduce){.playoff-duel .duel-mood{animation:none!important}}
+
+/* Portada limpia sin escudo grande */
+.hero{grid-template-columns:minmax(0,1fr)!important}.hero-copy{grid-column:1!important;max-width:720px;margin:0 auto;text-align:center}.hero-copy p{margin-left:auto;margin-right:auto}.hero-copy .primary-button{margin-inline:auto}.season-card,.featured-match,.home-info-grid,.home-champion-banner{grid-column:1!important}
