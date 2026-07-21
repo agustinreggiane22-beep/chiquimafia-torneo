@@ -83,28 +83,18 @@
     const h=rows[at],col=a=>headerIndex(h,a),ix={match:col(['matchnumber']),white:col(['whitegoals']),black:col(['blackgoals']),winner:col(['winner']),played:col(['played']),updated:col(['updatedat'])};
     return rows.slice(at+1).map(r=>({matchNumber:number(r[ix.match]),whiteGoals:number(r[ix.white]),blackGoals:number(r[ix.black]),winner:clean(r[ix.winner]),played:['true','si','sí','1'].includes(key(r[ix.played])),updatedAt:clean(r[ix.updated])})).filter(x=>x.matchNumber>0);
   }
-  async function fetchText(source) {
-    const live=window.CHIQUI_CONFIG.sheetBase+source.gid+'&_='+Date.now();
-    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),7000);
-    try {
-      const response=await fetch(live,{cache:'no-store',signal:controller.signal});
-      if(!response.ok)throw new Error('HTTP '+response.status);
-      return {text:await response.text(),live:true};
-    } catch(error) {
-      try {
-        const response=await fetch(source.fallback,{cache:'no-store'});
-        if(!response.ok)throw new Error('HTTP '+response.status);
-        return {text:await response.text(),live:false};
-      } catch(fallbackError) {
-        console.warn('Fuente no disponible',source.gid,error,fallbackError);
-        return {text:'',live:false};
-      }
-    } finally { clearTimeout(timer); }
+  function readState(){return new Promise((resolve,reject)=>{const api=String(window.CHIQUI_CONFIG.goalsApiUrl||'').trim();if(!api){reject(new Error('Falta configurar Google Apps Script'));return}const callback='__chiquiState'+Date.now()+Math.random().toString(36).slice(2),script=document.createElement('script'),finish=value=>{clearTimeout(timer);delete window[callback];script.remove();resolve(value)};window[callback]=payload=>finish(payload);script.src=api+'?mode=state&callback='+encodeURIComponent(callback)+'&t='+Date.now();script.onerror=()=>{clearTimeout(timer);delete window[callback];script.remove();reject(new Error('No se pudo leer el torneo'))};const timer=setTimeout(()=>{delete window[callback];script.remove();reject(new Error('La conexión con el torneo demoró demasiado'))},15000);document.head.appendChild(script)})}
+  const array=value=>{if(Array.isArray(value))return value;if(typeof value==='string'){try{return JSON.parse(value)}catch{return[]}}return[]};
+  function buildTournament(state){
+    const scoring=window.CHIQUI_CONFIG.points||{attendance:1,win:2,draw:1,loss:0,mvp:1};
+    const deleted=new Set((state.deletedDates||[]).map(x=>String(x.matchNumber))),active=(state.players||[]).filter(x=>x.status!=='deleted').map(x=>clean(x.name)),results=(state.results||[]).filter(x=>!deleted.has(String(x.matchNumber))),resultMap=new Map(results.map(x=>[String(x.matchNumber),x]));
+    const matches=(state.lineups||[]).filter(x=>!deleted.has(String(x.matchNumber))).map(x=>{const result=resultMap.get(String(x.matchNumber));return{number:number(x.matchNumber),date:clean(x.date),white:array(x.white).map(clean).filter(Boolean),black:array(x.black).map(clean).filter(Boolean),result:result?result.winner==='draw'?'Empate':result.winner==='white'?'Gana E1':'Gana E2':'',winner:result?.winner||'',played:Boolean(result&&String(result.played)!=='false'),whiteGoals:result?number(result.whiteGoals):undefined,blackGoals:result?number(result.blackGoals):undefined,mvp:''}}).sort((a,b)=>a.number-b.number);
+    const names=[...new Set([...active,...matches.flatMap(match=>[...match.white,...match.black])])],rows=new Map(names.map(player=>[key(player),{rank:0,player,points:0,played:0,wins:0,draws:0,losses:0,mvp:0}])),mvpByMatch=new Map((state.mvps||[]).map(x=>[String(x.matchNumber),clean(x.player)])),mvpBonuses=new Map(names.map(player=>[key(player),0])),historyMap=new Map(names.map(player=>[key(player),[]]));
+    matches.filter(match=>match.played).forEach(match=>{const whiteOutcome=match.winner==='draw'?'draw':match.winner==='white'?'win':'loss',blackOutcome=match.winner==='draw'?'draw':match.winner==='black'?'win':'loss';[[match.white,whiteOutcome],[match.black,blackOutcome]].forEach(([players,outcome])=>[...new Set(players.map(clean))].forEach(player=>{const row=rows.get(key(player));if(!row)return;row.played+=1;row.points+=Number(scoring.attendance||0);if(outcome==='win'){row.wins+=1;row.points+=Number(scoring.win||0)}else if(outcome==='draw'){row.draws+=1;row.points+=Number(scoring.draw||0)}else{row.losses+=1;row.points+=Number(scoring.loss||0)}}));const mvp=mvpByMatch.get(String(match.number));if(mvp){match.mvp=mvp;mvpBonuses.set(key(mvp),(mvpBonuses.get(key(mvp))||0)+Number(scoring.mvp||0))}names.forEach(player=>{const row=rows.get(key(player));historyMap.get(key(player)).push({date:'Fecha '+match.number,value:row.points+(mvpBonuses.get(key(player))||0)})})});
+    const standings=[...rows.values()].sort((a,b)=>(b.points+(mvpBonuses.get(key(b.player))||0))-(a.points+(mvpBonuses.get(key(a.player))||0))||b.wins-a.wins||a.player.localeCompare(b.player));standings.forEach((row,index)=>row.rank=index+1);
+    const history=names.map(player=>({player,values:historyMap.get(key(player))||[]}));
+    return{standings,matches,players:names,stats:standings.map(x=>({...x})),history,pointsHistory:history,historicalStats:state.history||[],fund:state.fund||{amount:0},results:[],mappings:[{type:'Google Apps Script',live:true}],allLive:true};
   }
-  async function loadAll() {
-    const loaded=await Promise.all(window.CHIQUI_CONFIG.sources.map(async source=>{const result=await fetchText(source); const rows=parseCSV(result.text); return {gid:source.gid,type:source.gid==='1228132818'?'results':identify(rows),rows,live:result.live};}));
-    const byType=Object.fromEntries(loaded.map(x=>[x.type,x.rows]));
-    return { standings:parseStandings(byType.standings||[]), matches:parseMatches(byType.matches||[]), players:parsePlayers(byType.players||[]), stats:parseStats(byType.stats||[]), history:parseHistory(byType.history||[]), pointsHistory:parsePointsHistory(byType.pointsHistory||[]), results:parseResults(byType.results||[]), mappings:loaded.map(x=>({gid:x.gid,type:x.type,live:x.live})), allLive:loaded.every(x=>x.live) };
-  }
+  async function loadAll(){const state=await readState();if(!state||state.ok===false)throw new Error(state?.error||'No se pudo cargar el torneo');return buildTournament(state)}
   window.ChiquiSheets={loadAll,key,clean,number};
 })();
