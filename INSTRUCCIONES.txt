@@ -1,7 +1,11 @@
-CHIQUIMAFIA SIN ESCUDO GRANDE EN PORTADA
+RECUPERACIÓN CHIQUIMAFIA TORNEO
 
-Subí a GitHub el index.html y las carpetas css y js completas.
-No modifiques Google Apps Script.
+1. Antes de tocar GitHub, abrí Google Apps Script.
+2. Reemplazá todo Código.gs con el archivo entregado aparte:
+   Code-recuperado-domingo-con-mejoras.gs
+3. Guardá y creá una nueva versión de la implementación web.
+4. En GitHub, subí index.html y las carpetas css y js de esta carpeta,
+   respetando exactamente sus ubicaciones.
+5. Esperá dos minutos y recargá la web.
 
-Se mantiene el diseño del Inicio y el cuadro horizontal de playoffs.
-Solamente se eliminó el escudo grande de la portada.
+No reinicies la temporada ni borres las hojas de Google Sheets.
