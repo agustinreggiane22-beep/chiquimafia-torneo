@@ -24,6 +24,8 @@ Copiar el PNG transparente oficial como `assets/escudo.png`. Mientras ese archiv
 
 La cantidad de fechas de fase regular se modifica en `js/config.js`.
 
+La fase regular está configurada en 18 fechas. Administración permite anular cargas aprobadas, archivar y reiniciar datos web de una temporada y registrar resultados de cuartos, semifinales y final. El reinicio conserva un respaldo en la pestaña `Archivo Web`; la clasificación principal original continúa administrándose desde las hojas históricas del torneo.
+
 ## Declaración y aprobación de goles
 
 La web incluye el flujo completo:
