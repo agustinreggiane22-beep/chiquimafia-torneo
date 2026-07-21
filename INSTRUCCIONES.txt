@@ -1,11 +1,9 @@
-RECUPERACIÓN CHIQUIMAFIA TORNEO
+MEJORA VISUAL CHIQUIMAFIA TORNEO
 
-1. Antes de tocar GitHub, abrí Google Apps Script.
-2. Reemplazá todo Código.gs con el archivo entregado aparte:
-   Code-recuperado-domingo-con-mejoras.gs
-3. Guardá y creá una nueva versión de la implementación web.
-4. En GitHub, subí index.html y las carpetas css y js de esta carpeta,
-   respetando exactamente sus ubicaciones.
-5. Esperá dos minutos y recargá la web.
+Subí a GitHub todos los archivos de esta carpeta respetando su ubicación:
+- index.html
+- carpeta css
+- carpeta js
 
-No reinicies la temporada ni borres las hojas de Google Sheets.
+No hace falta modificar Google Apps Script ni Google Sheets.
+Después de subirlos, esperá dos minutos y actualizá la web con Ctrl + F5.

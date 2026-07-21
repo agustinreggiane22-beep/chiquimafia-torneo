@@ -1,0 +1,25 @@
+/* Partido destacado compacto */
+.featured-match{padding:18px 24px 20px}
+.featured-compact{position:relative;display:grid;grid-template-columns:auto minmax(300px,1fr) minmax(190px,auto) auto;align-items:center;gap:24px;text-align:left}
+.featured-compact h2{font-size:34px;margin:3px 0 0}
+.compact-result{display:flex;align-items:center;justify-content:center;gap:17px}
+.compact-result>strong{font:900 39px/1 'Barlow Condensed',sans-serif;color:var(--navy);white-space:nowrap}
+.compact-team{display:flex;align-items:center;gap:7px;color:var(--navy);font:900 15px 'Barlow Condensed',sans-serif;text-transform:uppercase}
+.compact-team.dark{flex-direction:row-reverse}
+.compact-team .team-disc{width:27px;height:27px;flex-basis:27px}
+.compact-awards{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
+.compact-awards>b{color:var(--blue);font-size:14px}
+.featured-compact .featured-button{min-width:125px;padding:12px 17px;text-align:center}
+@media(max-width:900px){.featured-compact{grid-template-columns:1fr auto}.compact-result{grid-column:1/-1;grid-row:2}.compact-awards{grid-column:1}.featured-compact .featured-button{grid-column:2}}
+@media(max-width:520px){.featured-match{padding:16px}.featured-compact{grid-template-columns:1fr;text-align:center;gap:13px}.featured-compact h2{font-size:31px}.compact-result{grid-column:1;grid-row:auto;gap:9px}.compact-result>strong{font-size:34px}.compact-team{font-size:12px;flex-direction:column}.compact-team.dark{flex-direction:column-reverse}.compact-awards{grid-column:1;align-items:center}.featured-compact .featured-button{grid-column:1;width:100%}}
+
+/* Clasificacion compacta */
+#clasificacion .table-card{border-radius:18px}
+#clasificacion th{padding:10px 9px;font-size:10px;position:sticky;top:0;z-index:2}
+#clasificacion td{padding:8px 9px;font-size:12px}
+#clasificacion .player-cell{gap:7px}
+#clasificacion .player-initial{width:27px;height:27px;font-size:10px}
+#clasificacion tbody tr{height:43px}
+#clasificacion tbody tr:nth-child(odd){background:#fbfdfe}
+#clasificacion tbody tr:hover{background:#eaf7fc}
+@media(max-width:800px){#clasificacion table{min-width:660px}#clasificacion th{padding:9px 7px}#clasificacion td{padding:7px;font-size:11px}#clasificacion tbody tr{height:39px}#clasificacion .player-initial{width:24px;height:24px}}
