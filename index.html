@@ -1,54 +1,124 @@
-(function(){
-  'use strict';
-  const STORAGE_KEY='chiquimafia_goal_submissions_v1';
-  const MVP_KEY='chiquimafia_official_mvp_v1';
-  const LINEUP_KEY='chiquimafia_lineups_v1', SANCTION_KEY='chiquimafia_sanctions_v1', PLAYOFF_KEY='chiquimafia_playoffs_v1', DELETED_DATES_KEY='chiquimafia_deleted_dates_v1', PLAYERS_KEY='chiquimafia_web_players_v1', RESULTS_KEY='chiquimafia_results_v1';
-  const API=()=>String(window.CHIQUI_CONFIG.goalsApiUrl||'').trim();
-  const localRead=()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}};
-  const localWrite=items=>localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
-  async function request(action,payload={}){
-    if(!API())return null;
-    const response=await fetch(API(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
-    if(!response.ok)throw new Error('No se pudo conectar con el registro de goles');
-    const result=await response.json();if(result.ok===false)throw new Error(result.error||'Operación rechazada');return result;
-  }
-  async function list(){const remote=await request('list').catch(()=>null);return remote?.items||localRead()}
-  async function submit(input){
-    const item={id:(crypto.randomUUID?.()||Date.now()+'-'+Math.random()),createdAt:new Date().toISOString(),status:'pending',...input};
-    const remote=await request('submit',{item});if(remote)return remote.item||item;
-    const items=localRead();const duplicate=items.some(x=>x.matchNumber===item.matchNumber&&x.player===item.player&&x.status!=='rejected');
-    if(duplicate)throw new Error('Ya existe una declaración para ese jugador en esta fecha.');items.push(item);localWrite(items);return item;
-  }
-  async function authenticate(pin){const remote=await request('auth',{pin});return remote?Boolean(remote.authenticated):pin===window.CHIQUI_CONFIG.adminPin}
-  async function decide(id,status,pin){
-    const remote=await request('decide',{id,status,pin});if(remote)return remote.item;
-    const items=localRead(),item=items.find(x=>x.id===id);if(!item)throw new Error('No se encontró la solicitud');item.status=status;item.reviewedAt=new Date().toISOString();localWrite(items);return item;
-  }
-  async function approvedTotals(){return (await list()).filter(x=>x.status==='approved').reduce((acc,x)=>{acc[x.player]=(acc[x.player]||0)+Number(x.goals||0);return acc},{})}
-  async function mvpAwards(){const remote=await request('listMvp').catch(()=>null);if(remote)return remote.items||[];try{return JSON.parse(localStorage.getItem(MVP_KEY)||'[]')}catch{return[]}}
-  async function confirmMvp(matchNumber,player,pin){const remote=await request('confirmMvp',{matchNumber,player,pin});if(remote)return remote.item;const items=await mvpAwards(),existing=items.find(x=>String(x.matchNumber)===String(matchNumber));if(existing)existing.player=player;else items.push({matchNumber,player,confirmedAt:new Date().toISOString()});localStorage.setItem(MVP_KEY,JSON.stringify(items));return items.find(x=>String(x.matchNumber)===String(matchNumber))}
-  async function mvpTotals(){return (await mvpAwards()).reduce((acc,x)=>(acc[x.player]=(acc[x.player]||0)+1,acc),{})}
-  async function deleteMvp(matchNumber,pin){const remote=await request('deleteMvp',{matchNumber,pin});if(remote)return;localStorage.setItem(MVP_KEY,JSON.stringify((await mvpAwards()).filter(x=>String(x.matchNumber)!==String(matchNumber))))}
-  const localList=key=>{try{return JSON.parse(localStorage.getItem(key)||'[]')}catch{return[]}};
-  async function lineups(){const remote=await request('listLineups').catch(()=>null);return remote?.items||localList(LINEUP_KEY)}
-  async function saveLineup(item,pin){const remote=await request('saveLineup',{item,pin}),saved={...(remote?.item||item),updatedAt:remote?.item?.updatedAt||new Date().toISOString()},items=localList(LINEUP_KEY),index=items.findIndex(x=>String(x.matchNumber)===String(saved.matchNumber));index>=0?items[index]=saved:items.push(saved);localStorage.setItem(LINEUP_KEY,JSON.stringify(items));localStorage.setItem(DELETED_DATES_KEY,JSON.stringify(localList(DELETED_DATES_KEY).filter(x=>String(x.matchNumber)!==String(saved.matchNumber))));window.dispatchEvent(new CustomEvent('chiqui:lineup-saved',{detail:saved}));return saved}
-  function jsonpResults(){return new Promise((resolve,reject)=>{if(!API()){resolve(null);return}const name='__chiquiResults'+Date.now()+Math.random().toString(36).slice(2),script=document.createElement('script'),finish=value=>{clearTimeout(timer);delete window[name];script.remove();resolve(value)};window[name]=payload=>finish(payload);script.src=API()+'?callback='+encodeURIComponent(name)+'&t='+Date.now();script.onerror=()=>{clearTimeout(timer);delete window[name];script.remove();reject(new Error('No se pudieron leer los resultados'))};const timer=setTimeout(()=>{delete window[name];script.remove();reject(new Error('Tiempo agotado'))},12000);document.head.appendChild(script)})}
-  async function results(){const remote=await request('listResults').catch(()=>null);if(Array.isArray(remote?.items))return remote.items;const jsonp=await jsonpResults().catch(()=>null);if(Array.isArray(jsonp?.results))return jsonp.results;return localList(RESULTS_KEY)}
-  async function saveResult(item,pin){const remote=await request('saveResult',{item,pin});if(remote)return remote.item;const items=localList(RESULTS_KEY),index=items.findIndex(x=>String(x.matchNumber)===String(item.matchNumber)),whiteGoals=Number(item.whiteGoals),blackGoals=Number(item.blackGoals),saved={...item,whiteGoals,blackGoals,winner:whiteGoals===blackGoals?'draw':whiteGoals>blackGoals?'white':'black',played:true};index>=0?items[index]=saved:items.push(saved);localStorage.setItem(RESULTS_KEY,JSON.stringify(items));return saved}
-  async function sanctions(){const remote=await request('listSanctions').catch(()=>null);return remote?.items||localList(SANCTION_KEY)}
-  async function addSanction(item,pin){const remote=await request('addSanction',{item,pin});if(remote)return remote.item;const saved={id:crypto.randomUUID?.()||String(Date.now()),...item,points:-Math.abs(Number(item.points)),createdAt:new Date().toISOString()},items=localList(SANCTION_KEY);items.push(saved);localStorage.setItem(SANCTION_KEY,JSON.stringify(items));return saved}
-  async function deleteSanction(id,pin){const remote=await request('deleteSanction',{id,pin});if(remote)return;localStorage.setItem(SANCTION_KEY,JSON.stringify(localList(SANCTION_KEY).filter(x=>x.id!==id)))}
-  async function deleteSubmission(id,pin){const remote=await request('deleteSubmission',{id,pin});if(remote)return;localWrite(localRead().filter(x=>x.id!==id))}
-  async function clearGoals(id,pin){const remote=await request('clearGoals',{id,pin});if(remote)return;const items=localRead(),item=items.find(x=>x.id===id);if(item)item.goals=0;localWrite(items)}
-  async function deletedDates(){const remote=await request('listDeletedDates').catch(()=>null);return remote?.items||localList(DELETED_DATES_KEY)}
-  async function deleteDate(matchNumber,pin){const remote=await request('deleteDate',{matchNumber,pin});if(remote)return;localWrite(localRead().filter(x=>String(x.matchNumber)!==String(matchNumber)));localStorage.setItem(MVP_KEY,JSON.stringify((await mvpAwards()).filter(x=>String(x.matchNumber)!==String(matchNumber))));localStorage.setItem(LINEUP_KEY,JSON.stringify(localList(LINEUP_KEY).filter(x=>String(x.matchNumber)!==String(matchNumber))));const deleted=localList(DELETED_DATES_KEY);if(!deleted.some(x=>String(x.matchNumber)===String(matchNumber)))deleted.push({matchNumber,deletedAt:new Date().toISOString()});localStorage.setItem(DELETED_DATES_KEY,JSON.stringify(deleted))}
-  async function webPlayers(){const remote=await request('listWebPlayers').catch(()=>null);return remote?.items||localList(PLAYERS_KEY)}
-  async function setWebPlayer(name,status,pin){const action=status==='active'?'addPlayer':'deletePlayer',remote=await request(action,{name,pin});if(remote)return remote.item;const items=localList(PLAYERS_KEY),normalized=String(name).trim().toUpperCase(),index=items.findIndex(x=>x.name===normalized),saved={name:normalized,status,updatedAt:new Date().toISOString()};index>=0?items[index]=saved:items.push(saved);localStorage.setItem(PLAYERS_KEY,JSON.stringify(items));return saved}
-  async function playoffResults(){const remote=await request('listPlayoffs').catch(()=>null);return remote?.items||localList(PLAYOFF_KEY)}
-  async function savePlayoff(item,pin){const remote=await request('savePlayoff',{item,pin});if(remote)return remote.item;const items=localList(PLAYOFF_KEY),key=item.round+'-'+item.slot,index=items.findIndex(x=>x.key===key),saved={...item,key};index>=0?items[index]=saved:items.push(saved);localStorage.setItem(PLAYOFF_KEY,JSON.stringify(items));return saved}
-  async function resetSeason(seasonName,pin){const remote=await request('resetSeason',{seasonName,pin});if(remote)return;[STORAGE_KEY,MVP_KEY,LINEUP_KEY,SANCTION_KEY,PLAYOFF_KEY,DELETED_DATES_KEY,PLAYERS_KEY].forEach(key=>localStorage.removeItem(key))}
-  async function addHistoricalChampion(item,pin){const remote=await request('addHistoricalChampion',{item,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.');return remote.item}
-  async function deleteHistoricalChampion(season,player,pin){const remote=await request('deleteHistoricalChampion',{season,player,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.')}
-  async function saveFund(amount,pin){const remote=await request('saveFund',{amount,pin});if(!remote)throw new Error('No se pudo guardar la caja.');return remote.item}
-  window.ChiquiGoals={list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,results,saveResult,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,addHistoricalChampion,deleteHistoricalChampion,saveFund,isShared:()=>Boolean(API())};
-})();
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#74c9ec">
+  <meta name="description" content="Sitio oficial de CHIQUIMAFIA TORNEO: clasificación, fechas, estadísticas, historia y playoffs.">
+  <title>CHIQUIMAFIA TORNEO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=2026072111">
+  <link rel="stylesheet" href="css/enhancements.css?v=2026072111">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Ir al inicio">
+        <span class="brand-mark">★ ★ ★</span>
+        <span>CHIQUIMAFIA TORNEO</span>
+      </a>
+      <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="mainNav">Menú</button>
+      <nav id="mainNav" class="main-nav" aria-label="Navegación principal">
+        <a class="active" href="#inicio">Inicio</a><a href="#clasificacion">Clasificación</a><a href="#fechas">Fechas</a><a href="#cargar-goles">Cargar goles y MVP</a><a href="#estadisticas">Estadísticas</a><a href="#historia">Salón de la Fama</a><a href="#playoffs">Playoffs</a><a href="#administracion">Admin</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="inicio" class="hero page-section active-section">
+        <div class="hero-copy">
+          <span class="eyebrow">TEMPORADA 2026</span>
+          <h1>CHIQUIMAFIA<br><span>TORNEO</span></h1>
+          <p>La tabla, las fechas y toda la historia del torneo en un solo lugar.</p>
+          <a class="primary-button" href="#clasificacion">Ver clasificación</a>
+        </div>
+        <div class="crest-wrap" aria-label="Escudo de CHIQUIMAFIA TORNEO">
+          <div class="stars">★ ★ ★</div>
+          <div id="crestFallback" class="crest-fallback"><strong>CHIQUI<br>MAFIA</strong><small>TORNEO</small></div>
+        </div>
+        <article class="season-card">
+          <div><span>Estado de la temporada</span><strong id="phaseLabel">Fase regular</strong></div>
+          <div class="season-progress-meta"><span id="roundLabel">Actualizando…</span><span id="progressLabel">0%</span></div>
+          <div class="progress-track"><span id="progressBar"></span></div>
+        </article>
+        <article id="featuredMatch" class="featured-match" aria-live="polite"></article>
+        <div class="home-info-grid"><article class="next-match-card"><span>⏱ PRÓXIMO PARTIDO</span><strong id="nextMatchDate">Calculando…</strong><small id="nextMatchCountdown">Se juega cada 7 días</small></article><article class="fund-card"><span>🐷 CAJA DEL TORNEO</span><strong id="fundAmount">$0</strong><small>Disponible para los próximos partidos</small></article></div>
+        <article id="homeChampionBanner" class="home-champion-banner" hidden></article>
+      </section>
+
+      <section id="clasificacion" class="page-section content-section">
+        <header class="section-header"><div><span class="eyebrow">TEMPORADA ACTUAL</span><h2>Clasificación</h2></div><span class="live-badge" id="syncStatus">Conectando</span></header>
+        <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"></tbody></table></div></div>
+      </section>
+
+      <section id="playoffs" class="page-section content-section playoffs-section">
+        <header class="section-header"><div><span class="eyebrow">LOS OCHO MEJORES</span><h2>Playoffs</h2></div></header>
+        <div class="bracket" id="bracket"></div><div class="final-podium" id="finalPodium" hidden></div>
+      </section>
+
+      <section id="fechas" class="page-section content-section">
+        <header class="section-header"><div><span class="eyebrow">BLANCO VS NEGRO</span><h2>Fechas</h2></div><select id="matchFilter" aria-label="Filtrar fechas"><option value="upcoming">Partidos a disputar</option><option value="played">Fechas jugadas</option><option value="all">Todas</option></select></header>
+        <div id="matchesGrid" class="matches-grid"></div>
+      </section>
+
+      <section id="cargar-goles" class="page-section content-section">
+        <header class="section-header"><div><span class="eyebrow">DECLARACIÓN DEL JUGADOR</span><h2>Cargar goles y MVP</h2></div></header>
+        <div class="submission-layout">
+          <article class="card form-card">
+            <h3>¿Cuántos goles hiciste?</h3>
+            <p>Elegí la fecha y tu nombre. La carga quedará pendiente hasta que un administrador la confirme.</p>
+            <form id="goalForm">
+              <label>Fecha<select id="goalMatch" required></select></label>
+              <label>Jugador<select id="goalPlayer" required></select></label>
+              <label>Equipo<select id="goalTeam" required><option value="white">Equipo Blanco</option><option value="black">Equipo Negro</option></select></label>
+              <label>Goles<input id="goalCount" type="number" min="0" max="30" inputmode="numeric" required></label>
+              <label class="full-field">Tu voto para MVP<select id="mvpVote" required></select><small id="mvpVoteHelp" class="field-help">Podés votar a cualquier jugador de los dos equipos, excepto a vos mismo.</small></label>
+              <label class="full-field">Comentario opcional<input id="goalNote" maxlength="100" placeholder="Ej.: hice el segundo y el cuarto gol"></label>
+              <button class="primary-button form-submit" type="submit">Enviar para aprobación</button>
+            </form>
+            <p id="goalMessage" class="form-message" role="status"></p>
+          </article>
+          <article class="card trust-card"><span>🛡️</span><h3>Controlado por el administrador</h3><p>Los goles enviados no se suman directamente. Primero se revisan y únicamente los aprobados aparecen en Estadísticas.</p><ul><li>El jugador debe estar convocado en esa fecha.</li><li>No puede enviar dos veces la misma declaración.</li><li>El total puede compararse con el marcador del equipo.</li></ul></article>
+        </div>
+      </section>
+
+      <section id="estadisticas" class="page-section content-section">
+        <header class="section-header"><div><span class="eyebrow">LOS DESTACADOS</span><h2>Estadísticas</h2></div></header>
+        <div id="statHighlights" class="stat-highlights"></div>
+        <article id="topScorerCard" class="card top-scorer-card"><span>⚽ GOLEADOR DEL TORNEO</span><strong>—</strong><small>Sin goles aprobados todavía</small></article>
+        <div class="ranking-grid"><article class="card ranking-card"><h3>⚽ Goles</h3><div id="goalsRanking"></div></article><article class="card ranking-card"><h3>⭐ MVP</h3><div id="mvpRanking"></div></article><article class="card ranking-card"><h3>🔥 Racha de victorias</h3><div id="streakRanking"></div></article></div>
+      </section>
+
+      <section id="historia" class="page-section content-section">
+        <header class="section-header"><div><span class="eyebrow">CAMPEONES Y PREMIOS DE CADA TORNEO</span><h2>Salón de la Fama</h2></div></header>
+        <div id="hallOfFame" class="hall-of-fame"></div>
+      </section>
+
+      <section id="administracion" class="page-section content-section">
+        <header class="section-header"><div><span class="eyebrow">ACCESO PROTEGIDO</span><h2>Administración</h2></div></header>
+        <article id="adminLogin" class="card admin-login"><h3>Ingresar como administrador</h3><p>Usá el PIN para revisar las declaraciones de goles.</p><form id="adminLoginForm"><input id="adminPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" required><button type="submit">Ingresar</button></form><p id="adminLoginMessage" class="form-message"></p></article>
+        <div id="adminPanel" hidden><datalist id="playerOptions"></datalist><div class="admin-toolbar"><div><strong>Panel del torneo</strong><span id="pendingCount">0 solicitudes</span></div><button id="adminLogout">Cerrar sesión</button></div>
+          <div class="admin-grid">
+            <article class="card admin-tool"><span class="eyebrow">MARCADOR OFICIAL</span><h3>Cargar resultado de la fecha</h3><form id="resultForm"><label>Fecha N.º<input id="resultMatch" type="number" min="1" required></label><div class="compact-fields"><label>Goles Equipo Claro<input id="resultWhite" type="number" min="0" required></label><label>Goles Equipo Oscuro<input id="resultBlack" type="number" min="0" required></label></div><button type="submit">Publicar resultado</button><p class="admin-help">La web determinará automáticamente quién ganó, perdió o si empataron.</p><p id="resultMessage" class="form-message"></p></form></article>
+            <article class="card admin-tool"><span class="eyebrow">PRÓXIMA FECHA</span><h3>Armar o modificar equipos</h3><form id="lineupForm"><div class="compact-fields"><label>Fecha N.º<input id="lineupNumber" type="number" min="1" value="17" required></label><label>Día<input id="lineupDate" type="date" required></label></div><div class="compact-fields"><button id="loadLineup" class="secondary-admin-button" type="button">Cargar equipos guardados</button><button id="deleteDateButton" class="danger-admin-button" type="button">Eliminar fecha completa</button></div><p class="admin-help">Si alguien se baja, cargá la fecha, cambiá solamente ese jugador y guardá nuevamente.</p><div class="lineup-columns"><div><h4>⚪ Equipo Claro</h4><div id="whiteSelectors"></div></div><div><h4>⚫ Equipo Oscuro</h4><div id="blackSelectors"></div></div></div><button type="submit">Guardar cambios</button><p id="lineupMessage" class="form-message"></p></form></article>
+            <article class="card admin-tool"><span class="eyebrow">DISCIPLINA</span><h3>Cargar sanción</h3><form id="sanctionForm"><label>Jugador<select id="sanctionPlayer" required></select></label><label>Puntos a descontar<input id="sanctionPoints" type="number" min="0.5" step="0.5" value="1" required></label><label>Motivo<input id="sanctionReason" maxlength="100" required placeholder="Ej.: llegada tarde"></label><button type="submit">Aplicar sanción</button><p id="sanctionMessage" class="form-message"></p></form><div id="sanctionsList"></div></article>
+            <article class="card admin-tool"><span class="eyebrow">FASE FINAL</span><h3>Cargar resultado de playoffs</h3><form id="playoffForm"><label>Ronda<select id="playoffRound"><option value="quarter">Cuartos de final</option><option value="semi">Semifinal</option><option value="final">Final</option></select></label><label>Cruce<select id="playoffSlot"></select></label><div class="compact-fields"><label>Jugador 1<select id="playoffPlayer1"></select></label><label>Jugador 2<select id="playoffPlayer2"></select></label><label>Goles 1<input id="playoffScore1" type="number" min="0" required></label><label>Goles 2<input id="playoffScore2" type="number" min="0" required></label></div><label>Quién pasó de ronda<select id="playoffWinner" required></select></label><button type="submit">Guardar resultado</button><p id="playoffMessage" class="form-message"></p></form></article>
+            <article class="card admin-tool"><span class="eyebrow">PLANTEL DEL TORNEO</span><h3>Administrar jugadores</h3><form id="playerAdminForm"><label>Nombre del jugador nuevo<input id="newPlayerName" maxlength="50" required placeholder="Nombre o apodo"></label><button type="submit">Agregar jugador al torneo</button><p id="playerAdminMessage" class="form-message"></p></form><div id="webPlayersList"></div><p class="admin-help">Los invitados ocasionales se escriben directamente al armar los equipos y no se agregan acá.</p></article>
+            <div hidden aria-hidden="true"><form id="historicalChampionForm"><input id="historicalSeason"><input id="historicalChampion"><input id="historicalPoints" value="0"><input id="historicalGoals" value="0"><input id="historicalAttendance" value="0"><input id="historicalMvps" value="0"><p id="historicalChampionMessage"></p></form></div>
+            <article class="card admin-tool danger-tool"><span class="eyebrow">FINALIZAR TEMPORADA</span><h3>Coronar campeón y guardar torneo</h3><p>Calcula al campeón, guarda las estadísticas históricas e inicia una temporada nueva conservando los jugadores.</p><form id="resetSeasonForm"><label>Nombre de la temporada que termina<input id="seasonArchiveName" required placeholder="Ej.: Apertura 2026"></label><label>Escribí FINALIZAR para confirmar<input id="resetConfirmation" required autocomplete="off"></label><button type="submit">🏆 Finalizar y coronar campeón</button><p id="resetMessage" class="form-message"></p></form></article>
+            <article class="card admin-tool"><span class="eyebrow">CAJA DEL TORNEO</span><h3>Actualizar dinero disponible</h3><form id="fundForm"><label>Saldo actual<input id="fundInput" type="number" min="0" step="100" required></label><button type="submit">Guardar saldo</button><p id="fundMessage" class="form-message"></p></form></article>
+          </div>
+          <article class="card vote-summary"><div><span class="eyebrow">VOTACIÓN DEL PARTIDO</span><h3>Recuento de MVP</h3></div><select id="voteMatch" aria-label="Elegir fecha para ver la votación"></select><div id="mvpVoteResults" class="vote-results"></div></article><h3 class="admin-subtitle">Declaraciones pendientes</h3><div id="pendingGoals" class="pending-grid"></div><p id="pendingEmpty" class="empty-state" hidden>No hay declaraciones pendientes de aprobación.</p><h3 class="admin-subtitle approved-title">Cargas aprobadas</h3><p class="admin-help">Si aprobaste goles por error, anulalos acá y se descontarán inmediatamente.</p><div id="approvedGoals" class="pending-grid"></div><p id="approvedEmpty" class="empty-state" hidden>No hay cargas aprobadas.</p></div>
+      </section>
+
+      <section id="errorPanel" class="error-panel" hidden><strong>No pudimos actualizar los datos en vivo.</strong><span>Se muestran los últimos datos guardados. Revisá que las hojas sigan publicadas.</span><button id="retryButton">Reintentar</button></section>
+    </main>
+    <footer><strong>CHIQUIMAFIA TORNEO</strong><span>Datos sincronizados desde Google Sheets</span></footer>
+  </div>
+  <script src="js/config.js?v=2026071815"></script>
+  <script src="js/sheets.js?v=2026072104"></script>
+  <script src="js/goals.js?v=2026072104"></script>
+  <script src="js/app.js?v=2026072111"></script>
+</body>
+</html>
