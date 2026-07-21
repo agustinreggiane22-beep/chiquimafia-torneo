@@ -52,6 +52,11 @@
         <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"></tbody></table></div></div>
       </section>
 
+      <section id="playoffs" class="page-section content-section">
+        <header class="section-header"><div><span class="eyebrow">LOS OCHO MEJORES</span><h2>Playoffs</h2></div></header>
+        <div class="bracket" id="bracket"></div><div class="final-podium" id="finalPodium" hidden></div>
+      </section>
+
       <section id="fechas" class="page-section content-section">
         <header class="section-header"><div><span class="eyebrow">BLANCO VS NEGRO</span><h2>Fechas</h2></div><select id="matchFilter" aria-label="Filtrar fechas"><option value="upcoming">Partidos a disputar</option><option value="played">Fechas jugadas</option><option value="all">Todas</option></select></header>
         <div id="matchesGrid" class="matches-grid"></div>
@@ -83,21 +88,11 @@
         <div id="statHighlights" class="stat-highlights"></div>
         <article id="topScorerCard" class="card top-scorer-card"><span>⚽ GOLEADOR DEL TORNEO</span><strong>—</strong><small>Sin goles aprobados todavía</small></article>
         <div class="ranking-grid"><article class="card ranking-card"><h3>⚽ Goles</h3><div id="goalsRanking"></div></article><article class="card ranking-card"><h3>⭐ MVP</h3><div id="mvpRanking"></div></article><article class="card ranking-card"><h3>🔥 Racha de victorias</h3><div id="streakRanking"></div></article></div>
-        <div class="history-metrics-grid current-metrics-grid">
-          <article class="card history-card"><h3>🏆 Top 10 actual por puntos</h3><canvas id="historyPointsChart" width="1000" height="390" aria-label="Top 10 actual por puntos"></canvas></article>
-          <article class="card history-card"><h3>⚽ Top 10 goleadores actuales</h3><canvas id="historyGoalsChart" width="1000" height="390" aria-label="Top 10 goleadores actuales"></canvas></article>
-          <article class="card history-card"><h3>🔥 Top 10 rachas de victorias</h3><canvas id="historyAttendanceChart" width="1000" height="390" aria-label="Top 10 actual por racha de victorias"></canvas></article>
-        </div>
       </section>
 
       <section id="historia" class="page-section content-section">
         <header class="section-header"><div><span class="eyebrow">CAMPEONES Y PREMIOS DE CADA TORNEO</span><h2>Salón de la Fama</h2></div></header>
         <div id="hallOfFame" class="hall-of-fame"></div>
-      </section>
-
-      <section id="playoffs" class="page-section content-section">
-        <header class="section-header"><div><span class="eyebrow">LOS OCHO MEJORES</span><h2>Playoffs</h2></div></header>
-        <div class="bracket" id="bracket"></div><div class="final-podium" id="finalPodium" hidden></div>
       </section>
 
       <section id="administracion" class="page-section content-section">
