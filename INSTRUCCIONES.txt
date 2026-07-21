@@ -1,9 +1,15 @@
-MEJORA VISUAL CHIQUIMAFIA TORNEO
+CHIQUIMAFIA TORNEO - EFECTOS DE PARTIDO Y PLAYOFFS
 
-Subí a GitHub todos los archivos de esta carpeta respetando su ubicación:
+Subí a GitHub:
 - index.html
-- carpeta css
-- carpeta js
+- carpeta css completa
+- carpeta js completa
 
-No hace falta modificar Google Apps Script ni Google Sheets.
-Después de subirlos, esperá dos minutos y actualizá la web con Ctrl + F5.
+No modifiques Google Apps Script ni Google Sheets.
+Esperá dos minutos y actualizá la página con Ctrl + F5.
+
+Efectos automáticos:
+- Diferencia 0 o 1: fuego / partidazo.
+- Diferencia 2 o 3: hielo / victoria controlada.
+- Diferencia 4 o más: rayos / goleada.
+- Los ganadores de playoffs quedan animados y destacados.
