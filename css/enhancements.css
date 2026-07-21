@@ -23,3 +23,45 @@
 #clasificacion tbody tr:nth-child(odd){background:#fbfdfe}
 #clasificacion tbody tr:hover{background:#eaf7fc}
 @media(max-width:800px){#clasificacion table{min-width:660px}#clasificacion th{padding:9px 7px}#clasificacion td{padding:7px;font-size:11px}#clasificacion tbody tr{height:39px}#clasificacion .player-initial{width:24px;height:24px}}
+
+/* La tabla se desplaza dentro de un cuadro mediano */
+#clasificacion .table-card{max-height:560px;overflow:hidden}
+#clasificacion .table-scroll{max-height:560px;overflow:auto;overscroll-behavior:contain;scrollbar-color:var(--blue) #e7f0f5;scrollbar-width:thin}
+#clasificacion .table-scroll::-webkit-scrollbar{width:8px;height:8px}
+#clasificacion .table-scroll::-webkit-scrollbar-track{background:#e7f0f5}
+#clasificacion .table-scroll::-webkit-scrollbar-thumb{background:linear-gradient(var(--sky),var(--blue));border-radius:20px}
+#clasificacion thead{position:sticky;top:0;z-index:3;box-shadow:0 3px 10px rgba(7,30,62,.08)}
+
+/* Inicio mas ordenado y vivo */
+.hero{gap:22px}.season-card{animation:home-card-in .65s ease-out .15s both}.home-info-grid{animation:home-card-in .65s ease-out .4s both}.hero:before{animation:hero-orbit 9s ease-in-out infinite}.hero:after{animation:hero-orbit 7s ease-in-out infinite reverse}
+.next-match-card,.home-info-grid .fund-card{transition:transform .28s ease,box-shadow .28s ease}.next-match-card:hover,.home-info-grid .fund-card:hover{transform:translateY(-4px);box-shadow:0 22px 45px rgba(5,36,67,.2)}
+@keyframes home-card-in{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes hero-orbit{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-18px,14px) scale(1.06)}}
+@media(max-width:800px){
+  .hero{grid-template-columns:minmax(0,1fr) 120px;gap:14px;padding:32px 16px 24px;text-align:left}
+  .hero-copy{grid-column:1}.hero-copy p{font-size:13px;margin:14px 0}.hero h1{font-size:51px}.primary-button{padding:12px 16px}
+  .crest-wrap{grid-column:2;grid-row:1;order:0}.stars{font-size:13px;letter-spacing:5px;margin-left:4px}#officialCrest{max-width:115px;max-height:130px}.crest-fallback{width:100px;height:115px;border-width:6px}.crest-fallback strong{font-size:22px}.crest-fallback small{font-size:10px;margin-top:8px}
+  .season-card,.featured-match,.home-info-grid,.home-champion-banner{grid-column:1/-1}
+  .season-card{padding:14px 16px}.season-progress-meta{margin:10px 0 6px}
+  .home-info-grid{grid-template-columns:1fr 1fr;gap:10px}.next-match-card,.home-info-grid .fund-card{padding:15px 13px;min-height:116px}.next-match-card strong,.home-info-grid .fund-card strong{font-size:21px;line-height:1.05}.next-match-card small,.home-info-grid .fund-card small{font-size:10px}
+  #clasificacion .table-card,#clasificacion .table-scroll{max-height:58vh;min-height:390px}
+}
+@media(max-width:410px){.hero{grid-template-columns:minmax(0,1fr) 96px}.hero h1{font-size:45px}#officialCrest{max-width:92px}.home-info-grid{grid-template-columns:1fr 1fr}.next-match-card strong,.home-info-grid .fund-card strong{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.season-card,.home-info-grid,.hero:before,.hero:after{animation:none}}
+
+/* Resumen destacado corto en Inicio */
+.featured-match{border-top-width:5px;background:linear-gradient(125deg,#fff 0%,#f5fbfe 65%,#fff9df 100%)}
+.featured-compact:after{content:"";position:absolute;right:12%;top:-80px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(217,169,40,.12),transparent 67%);pointer-events:none}
+@media(max-width:520px){
+  .featured-match{padding:13px 14px 14px;border-radius:17px}
+  .featured-compact{display:grid;grid-template-columns:1fr auto;text-align:left;gap:7px 12px;align-items:center}
+  .featured-compact>div:first-child{grid-column:1;grid-row:1}
+  .featured-compact .featured-kicker{font-size:9px;letter-spacing:.12em}
+  .featured-compact h2{font-size:27px;margin:1px 0 0}
+  .compact-result{grid-column:2;grid-row:1;gap:5px;background:var(--navy);color:#fff;border-radius:12px;padding:9px 12px;box-shadow:0 8px 18px rgba(7,30,62,.18)}
+  .compact-result>strong{font-size:31px;color:#fff}
+  .compact-result .compact-team{display:none}
+  .compact-awards{grid-column:1;grid-row:2;align-items:flex-start;font-size:10px;gap:2px;line-height:1.25}
+  .compact-awards>b{font-size:12px}
+  .featured-compact .featured-button{grid-column:2;grid-row:2;width:auto;min-width:94px;padding:9px 11px;border-radius:10px;font-size:11px}
+}
