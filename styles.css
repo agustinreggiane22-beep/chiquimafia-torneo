@@ -1,116 +1,87 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#74c9ec">
-  <meta name="description" content="Sitio oficial de CHIQUIMAFIA TORNEO: clasificación, fechas, estadísticas, historia y playoffs.">
-  <title>CHIQUIMAFIA TORNEO</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=2026071802">
-</head>
-<body>
-  <div class="app-shell">
-    <header class="topbar">
-      <a class="brand" href="#inicio" aria-label="Ir al inicio">
-        <span class="brand-mark">★ ★ ★</span>
-        <span>CHIQUIMAFIA TORNEO</span>
-      </a>
-      <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="mainNav">Menú</button>
-      <nav id="mainNav" class="main-nav" aria-label="Navegación principal">
-        <a class="active" href="#inicio">Inicio</a><a href="#clasificacion">Clasificación</a><a href="#fechas">Fechas</a><a href="#cargar-goles">Cargar goles y MVP</a><a href="#estadisticas">Estadísticas</a><a href="#historia">Historia</a><a href="#playoffs">Playoffs</a><a href="#administracion">Admin</a>
-      </nav>
-    </header>
+/* Partido destacado compacto */
+.featured-match{padding:18px 24px 20px}
+.featured-compact{position:relative;display:grid;grid-template-columns:auto minmax(300px,1fr) minmax(190px,auto) auto;align-items:center;gap:24px;text-align:left}
+.featured-compact h2{font-size:34px;margin:3px 0 0}
+.compact-result{display:flex;align-items:center;justify-content:center;gap:17px}
+.compact-result>strong{font:900 39px/1 'Barlow Condensed',sans-serif;color:var(--navy);white-space:nowrap}
+.compact-team{display:flex;align-items:center;gap:7px;color:var(--navy);font:900 15px 'Barlow Condensed',sans-serif;text-transform:uppercase}
+.compact-team.dark{flex-direction:row-reverse}
+.compact-team .team-disc{width:27px;height:27px;flex-basis:27px}
+.compact-awards{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
+.compact-awards>b{color:var(--blue);font-size:14px}
+.featured-compact .featured-button{min-width:125px;padding:12px 17px;text-align:center}
+@media(max-width:900px){.featured-compact{grid-template-columns:1fr auto}.compact-result{grid-column:1/-1;grid-row:2}.compact-awards{grid-column:1}.featured-compact .featured-button{grid-column:2}}
+@media(max-width:520px){.featured-match{padding:16px}.featured-compact{grid-template-columns:1fr;text-align:center;gap:13px}.featured-compact h2{font-size:31px}.compact-result{grid-column:1;grid-row:auto;gap:9px}.compact-result>strong{font-size:34px}.compact-team{font-size:12px;flex-direction:column}.compact-team.dark{flex-direction:column-reverse}.compact-awards{grid-column:1;align-items:center}.featured-compact .featured-button{grid-column:1;width:100%}}
 
-    <main>
-      <section id="inicio" class="hero page-section active-section">
-        <div class="hero-copy">
-          <span class="eyebrow">TEMPORADA 2026</span>
-          <h1>CHIQUIMAFIA<br><span>TORNEO</span></h1>
-          <p>La tabla, las fechas y toda la historia del torneo en un solo lugar.</p>
-          <a class="primary-button" href="#clasificacion">Ver clasificación</a>
-        </div>
-        <div class="crest-wrap" aria-label="Escudo de CHIQUIMAFIA TORNEO">
-          <div class="stars">★ ★ ★</div>
-          <div id="crestFallback" class="crest-fallback"><strong>CHIQUI<br>MAFIA</strong><small>TORNEO</small></div>
-        </div>
-        <article class="season-card">
-          <div><span>Estado de la temporada</span><strong id="phaseLabel">Fase regular</strong></div>
-          <div class="season-progress-meta"><span id="roundLabel">Actualizando…</span><span id="progressLabel">0%</span></div>
-          <div class="progress-track"><span id="progressBar"></span></div>
-        </article>
-      </section>
+/* Clasificacion compacta */
+#clasificacion .table-card{border-radius:18px}
+#clasificacion th{padding:10px 9px;font-size:10px;position:sticky;top:0;z-index:2}
+#clasificacion td{padding:8px 9px;font-size:12px}
+#clasificacion .player-cell{gap:7px}
+#clasificacion .player-initial{width:27px;height:27px;font-size:10px}
+#clasificacion tbody tr{height:43px}
+#clasificacion tbody tr:nth-child(odd){background:#fbfdfe}
+#clasificacion tbody tr:hover{background:#eaf7fc}
+@media(max-width:800px){#clasificacion table{min-width:660px}#clasificacion th{padding:9px 7px}#clasificacion td{padding:7px;font-size:11px}#clasificacion tbody tr{height:39px}#clasificacion .player-initial{width:24px;height:24px}}
 
-      <section id="clasificacion" class="page-section content-section">
-        <header class="section-header"><div><span class="eyebrow">TEMPORADA ACTUAL</span><h2>Clasificación</h2></div><span class="live-badge" id="syncStatus">Conectando</span></header>
-        <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"></tbody></table></div></div>
-      </section>
+/* Tabla mediana con desplazamiento interior */
+#clasificacion .table-card{max-height:560px;overflow:hidden}
+#clasificacion .table-scroll{max-height:560px;overflow:auto;overscroll-behavior:contain;scrollbar-color:var(--blue) #e7f0f5;scrollbar-width:thin}
+#clasificacion .table-scroll::-webkit-scrollbar{width:8px;height:8px}#clasificacion .table-scroll::-webkit-scrollbar-track{background:#e7f0f5}#clasificacion .table-scroll::-webkit-scrollbar-thumb{background:linear-gradient(var(--sky),var(--blue));border-radius:20px}#clasificacion thead{position:sticky;top:0;z-index:3;box-shadow:0 3px 10px rgba(7,30,62,.08)}
 
-      <section id="fechas" class="page-section content-section">
-        <header class="section-header"><div><span class="eyebrow">BLANCO VS NEGRO</span><h2>Fechas</h2></div><select id="matchFilter" aria-label="Filtrar fechas"><option value="all">Todas</option><option value="latest">Última fecha</option></select></header>
-        <div id="matchesGrid" class="matches-grid"></div>
-      </section>
+/* Inicio ordenado */
+.hero{gap:22px}.season-card{animation:home-card-in .65s ease-out .15s both}.home-info-grid{animation:home-card-in .65s ease-out .4s both}.hero:before{animation:hero-orbit 9s ease-in-out infinite}.hero:after{animation:hero-orbit 7s ease-in-out infinite reverse}@keyframes home-card-in{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}@keyframes hero-orbit{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-18px,14px) scale(1.06)}}
 
-      <section id="cargar-goles" class="page-section content-section">
-        <header class="section-header"><div><span class="eyebrow">DECLARACIÓN DEL JUGADOR</span><h2>Cargar goles y MVP</h2></div></header>
-        <div class="submission-layout">
-          <article class="card form-card">
-            <h3>¿Cuántos goles hiciste?</h3>
-            <p>Elegí la fecha y tu nombre. La carga quedará pendiente hasta que un administrador la confirme.</p>
-            <form id="goalForm">
-              <label>Fecha<select id="goalMatch" required></select></label>
-              <label>Jugador<select id="goalPlayer" required></select></label>
-              <label>Equipo<select id="goalTeam" required><option value="white">Equipo Blanco</option><option value="black">Equipo Negro</option></select></label>
-              <label>Goles<input id="goalCount" type="number" min="0" max="30" inputmode="numeric" required></label>
-              <label class="full-field">Tu voto para MVP<select id="mvpVote" required></select><small class="field-help">Podés votar a cualquier jugador del partido excepto a vos mismo.</small></label>
-              <label class="full-field">Comentario opcional<input id="goalNote" maxlength="100" placeholder="Ej.: hice el segundo y el cuarto gol"></label>
-              <button class="primary-button form-submit" type="submit">Enviar para aprobación</button>
-            </form>
-            <p id="goalMessage" class="form-message" role="status"></p>
-          </article>
-          <article class="card trust-card"><span>🛡️</span><h3>Controlado por el administrador</h3><p>Los goles enviados no se suman directamente. Primero se revisan y únicamente los aprobados aparecen en Estadísticas.</p><ul><li>El jugador debe estar convocado en esa fecha.</li><li>No puede enviar dos veces la misma declaración.</li><li>El total puede compararse con el marcador del equipo.</li></ul></article>
-        </div>
-      </section>
+/* Partido destacado corto */
+.featured-match{padding:14px 18px 15px;border-top-width:5px;background:linear-gradient(125deg,#fff 0%,#f5fbfe 65%,#fff9df 100%)}.featured-compact{grid-template-columns:auto minmax(240px,1fr) minmax(180px,auto) auto;gap:18px}.mood-caption{display:block;color:var(--muted);font-size:10px;font-weight:800;margin-top:2px}.match-mood{isolation:isolate}.match-mood:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.55;z-index:-1}.mood-fire{border-color:#f18a35;box-shadow:0 18px 48px rgba(224,70,24,.2)}.mood-fire:after{background:radial-gradient(circle at 20% 110%,rgba(255,75,20,.28),transparent 33%),radial-gradient(circle at 80% 110%,rgba(255,183,30,.24),transparent 35%)}.mood-ice{border-color:#77d7f2;box-shadow:0 18px 48px rgba(20,137,193,.2)}.mood-ice:after{background:linear-gradient(125deg,rgba(209,247,255,.6),transparent 48%,rgba(104,210,244,.22))}.mood-storm{border-color:#c18e0a;box-shadow:0 18px 48px rgba(115,78,0,.25)}.mood-storm:after{background:linear-gradient(115deg,transparent 32%,rgba(255,214,52,.23) 33%,transparent 35%,transparent 64%,rgba(255,214,52,.2) 65%,transparent 67%)}
+.mood-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}.mood-particles i{position:absolute;bottom:-12px;width:10px;height:10px;border-radius:50%;opacity:0;animation:mood-rise 2.7s ease-in infinite}.mood-particles i:nth-child(1){left:8%;animation-delay:.1s}.mood-particles i:nth-child(2){left:28%;animation-delay:1.1s}.mood-particles i:nth-child(3){left:52%;animation-delay:.5s}.mood-particles i:nth-child(4){left:73%;animation-delay:1.7s}.mood-particles i:nth-child(5){left:91%;animation-delay:.9s}.mood-fire .mood-particles i{background:#ff6b24;box-shadow:0 0 12px #ffb12b}.mood-ice .mood-particles i{background:#bff5ff;border-radius:2px;box-shadow:0 0 10px #5ed2f0}.mood-storm .mood-particles i{background:#ffe35b;clip-path:polygon(45% 0,100% 0,62% 42%,88% 42%,25% 100%,40% 55%,12% 55%)}@keyframes mood-rise{0%{opacity:0;transform:translateY(0) scale(.5)}25%{opacity:.8}100%{opacity:0;transform:translateY(-140px) scale(1.25) rotate(50deg)}}
 
-      <section id="estadisticas" class="page-section content-section">
-        <header class="section-header"><div><span class="eyebrow">LOS DESTACADOS</span><h2>Estadísticas</h2></div></header>
-        <div id="statHighlights" class="stat-highlights"></div>
-        <div class="ranking-grid"><article class="card ranking-card"><h3>⚽ Goles</h3><div id="goalsRanking"></div></article><article class="card ranking-card"><h3>⭐ MVP</h3><div id="mvpRanking"></div></article><article class="card ranking-card"><h3>🔥 Racha de victorias</h3><div id="streakRanking"></div></article></div>
-      </section>
+/* Playoffs vivos */
+.playoffs-section{position:relative}.playoffs-section:before{content:"";position:absolute;inset:30px 10px;border-radius:35px;background:radial-gradient(circle at 50% 30%,rgba(117,203,237,.12),transparent 58%);pointer-events:none}.playoff-duel{position:relative;opacity:0;transform:translateY(16px) scale(.97);transition:opacity .55s ease var(--duel-delay),transform .55s cubic-bezier(.2,.8,.2,1) var(--duel-delay),box-shadow .3s ease}.playoff-duel.duel-visible{opacity:1;transform:none}.playoff-duel.completed{border-width:2px}.playoff-duel.mood-fire{border-color:#f18a35}.playoff-duel.mood-ice{border-color:#65ccea}.playoff-duel.mood-storm{border-color:#e1b327}.duel-mood{position:absolute;right:8px;top:-14px;z-index:3;width:29px;height:29px;display:grid;place-items:center;border-radius:50%;background:#fff;box-shadow:0 5px 14px rgba(7,30,62,.18);animation:duel-badge 2.1s ease-in-out infinite}.playoff-duel .advanced{position:relative;background:linear-gradient(90deg,#eaf9ef,#fff);color:#116d3c}.playoff-duel .advanced:after{content:"CLASIFICADO ✓";font-size:8px;color:#16824a;letter-spacing:.04em;margin-left:auto;margin-right:8px;animation:winner-glow 1.8s ease-in-out infinite}.champion-ready{animation:champion-pop 2.3s ease-in-out infinite}.champion-ready span{display:inline-block;animation:trophy-rock 1.8s ease-in-out infinite}@keyframes duel-badge{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-4px) rotate(6deg)}}@keyframes winner-glow{0%,100%{opacity:.55}50%{opacity:1;text-shadow:0 0 8px #58d894}}@keyframes champion-pop{0%,100%{transform:scale(1);box-shadow:0 15px 35px rgba(176,128,12,.25)}50%{transform:scale(1.035);box-shadow:0 19px 45px rgba(217,169,40,.42)}}@keyframes trophy-rock{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg) scale(1.08)}}
 
-      <section id="historia" class="page-section content-section">
-        <header class="section-header"><div><span class="eyebrow">FECHA A FECHA</span><h2>Evolución histórica</h2></div><select id="historyPlayer" aria-label="Elegir jugador"></select></header>
-        <article class="card history-card"><div id="historyOverview" class="history-overview" hidden></div><canvas id="historyChart" width="1000" height="390" aria-label="Gráfico de evolución de puntos"></canvas><p id="historyEmpty" class="empty-state" hidden>No hay datos históricos publicados todavía.</p></article>
-      </section>
+@media(max-width:800px){.hero{grid-template-columns:minmax(0,1fr) 110px;gap:14px;padding:30px 16px 24px;text-align:left}.hero-copy{grid-column:1}.hero-copy p{font-size:13px;margin:14px 0}.hero h1{font-size:49px}.crest-wrap{grid-column:2;grid-row:1;order:0}#officialCrest{max-width:105px;max-height:125px}.season-card,.featured-match,.home-info-grid,.home-champion-banner{grid-column:1/-1}.home-info-grid{grid-template-columns:1fr 1fr;gap:10px}.next-match-card,.home-info-grid .fund-card{padding:14px 12px;min-height:112px}.next-match-card strong,.home-info-grid .fund-card strong{font-size:20px}.featured-compact{display:grid;grid-template-columns:1fr auto;text-align:left;gap:7px 12px;align-items:center}.featured-compact>div:first-child{grid-column:1;grid-row:1}.featured-compact h2{font-size:25px}.compact-result{grid-column:2;grid-row:1;background:var(--navy);border-radius:12px;padding:9px 11px}.compact-result>strong{font-size:29px;color:#fff}.compact-result .compact-team{display:none}.compact-awards{grid-column:1;grid-row:2;align-items:flex-start;font-size:10px}.featured-compact .featured-button{grid-column:2;grid-row:2;width:auto;min-width:92px;padding:9px;font-size:11px}#clasificacion .table-card,#clasificacion .table-scroll{max-height:58vh;min-height:390px}.playoff-duel .advanced:after{content:"✓";font-size:11px}}
+@media(prefers-reduced-motion:reduce){.season-card,.home-info-grid,.hero:before,.hero:after,.mood-particles i,.playoff-duel,.duel-mood,.playoff-duel .advanced:after,.champion-ready,.champion-ready span{animation:none!important;transition:none!important;opacity:1;transform:none}}
 
-      <section id="playoffs" class="page-section content-section">
-        <header class="section-header"><div><span class="eyebrow">LOS OCHO MEJORES</span><h2>Playoffs</h2></div></header>
-        <div class="bracket" id="bracket"></div>
-      </section>
+/* Particulas reconocibles: llamas, nieve y rayos */
+.mood-particles i,.mood-fire .mood-particles i,.mood-ice .mood-particles i,.mood-storm .mood-particles i{width:26px;height:26px;background:none!important;box-shadow:none!important;clip-path:none!important;border-radius:0!important;font-style:normal;font-size:22px;line-height:1}
+.mood-particles i:before{display:block;filter:drop-shadow(0 3px 5px rgba(7,30,62,.2))}
+.mood-fire .mood-particles i:before{content:"🔥"}.mood-ice .mood-particles i:before{content:"❄️"}.mood-storm .mood-particles i:before{content:"⚡"}.mood-pending .mood-particles{display:none}
+.mood-fire{background:linear-gradient(125deg,#fff8f2,#fff 48%,#fff1df)}.mood-fire .featured-kicker{color:#c94617}.mood-ice{background:linear-gradient(125deg,#edfbff,#fff 48%,#dff6ff)}.mood-ice .featured-kicker{color:#087ca5}.mood-storm{background:linear-gradient(125deg,#fffbea,#fff 48%,#fff0a9)}.mood-storm .featured-kicker{color:#8e6500}
 
-      <section id="administracion" class="page-section content-section">
-        <header class="section-header"><div><span class="eyebrow">ACCESO PROTEGIDO</span><h2>Administración</h2></div></header>
-        <article id="adminLogin" class="card admin-login"><h3>Ingresar como administrador</h3><p>Usá el PIN para revisar las declaraciones de goles.</p><form id="adminLoginForm"><input id="adminPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" required><button type="submit">Ingresar</button></form><p id="adminLoginMessage" class="form-message"></p></article>
-        <div id="adminPanel" hidden><datalist id="playerOptions"></datalist><div class="admin-toolbar"><div><strong>Panel del torneo</strong><span id="pendingCount">0 solicitudes</span></div><button id="adminLogout">Cerrar sesión</button></div>
-          <div class="admin-grid">
-            <article class="card admin-tool"><span class="eyebrow">PRÓXIMA FECHA</span><h3>Armar o modificar equipos</h3><form id="lineupForm"><div class="compact-fields"><label>Fecha N.º<input id="lineupNumber" type="number" min="1" value="17" required></label><label>Día<input id="lineupDate" type="date" required></label></div><div class="compact-fields"><button id="loadLineup" class="secondary-admin-button" type="button">Cargar equipos guardados</button><button id="deleteDateButton" class="danger-admin-button" type="button">Eliminar fecha completa</button></div><p class="admin-help">Si alguien se baja, cargá la fecha, cambiá solamente ese jugador y guardá nuevamente.</p><div class="lineup-columns"><div><h4>⚪ Equipo Claro</h4><div id="whiteSelectors"></div></div><div><h4>⚫ Equipo Oscuro</h4><div id="blackSelectors"></div></div></div><button type="submit">Guardar cambios</button><p id="lineupMessage" class="form-message"></p></form></article>
-            <article class="card admin-tool"><span class="eyebrow">DISCIPLINA</span><h3>Cargar sanción</h3><form id="sanctionForm"><label>Jugador<select id="sanctionPlayer" required></select></label><label>Puntos a descontar<input id="sanctionPoints" type="number" min="0.5" step="0.5" value="1" required></label><label>Motivo<input id="sanctionReason" maxlength="100" required placeholder="Ej.: llegada tarde"></label><button type="submit">Aplicar sanción</button><p id="sanctionMessage" class="form-message"></p></form><div id="sanctionsList"></div></article>
-            <article class="card admin-tool"><span class="eyebrow">FASE FINAL</span><h3>Cargar resultado de playoffs</h3><form id="playoffForm"><label>Ronda<select id="playoffRound"><option value="quarter">Cuartos de final</option><option value="semi">Semifinal</option><option value="final">Final</option></select></label><label>Cruce<select id="playoffSlot"></select></label><div class="compact-fields"><label>Jugador 1<select id="playoffPlayer1"></select></label><label>Jugador 2<select id="playoffPlayer2"></select></label><label>Goles 1<input id="playoffScore1" type="number" min="0" required></label><label>Goles 2<input id="playoffScore2" type="number" min="0" required></label></div><label>Quién pasó de ronda<select id="playoffWinner" required></select></label><button type="submit">Guardar resultado</button><p id="playoffMessage" class="form-message"></p></form></article>
-            <article class="card admin-tool"><span class="eyebrow">PLANTEL DEL TORNEO</span><h3>Administrar jugadores</h3><form id="playerAdminForm"><label>Nombre del jugador nuevo<input id="newPlayerName" maxlength="50" required placeholder="Nombre o apodo"></label><button type="submit">Agregar jugador al torneo</button><p id="playerAdminMessage" class="form-message"></p></form><div id="webPlayersList"></div><p class="admin-help">Los invitados ocasionales se escriben directamente al armar los equipos y no se agregan acá.</p></article>
-            <article class="card admin-tool danger-tool"><span class="eyebrow">NUEVA TEMPORADA</span><h3>Cerrar y reiniciar torneo</h3><p>Guarda un respaldo de goles, MVP, equipos, sanciones y playoffs antes de vaciarlos.</p><form id="resetSeasonForm"><label>Nombre de la temporada que termina<input id="seasonArchiveName" required placeholder="Ej.: Clausura 2026"></label><label>Escribí REINICIAR para confirmar<input id="resetConfirmation" required autocomplete="off"></label><button type="submit">Archivar y comenzar otro torneo</button><p id="resetMessage" class="form-message"></p></form></article>
-          </div>
-          <article class="card vote-summary"><div><span class="eyebrow">VOTACIÓN DEL PARTIDO</span><h3>Recuento de MVP</h3></div><select id="voteMatch" aria-label="Elegir fecha para ver la votación"></select><div id="mvpVoteResults" class="vote-results"></div></article><h3 class="admin-subtitle">Declaraciones pendientes</h3><div id="pendingGoals" class="pending-grid"></div><p id="pendingEmpty" class="empty-state" hidden>No hay declaraciones pendientes de aprobación.</p><h3 class="admin-subtitle approved-title">Cargas aprobadas</h3><p class="admin-help">Si aprobaste goles por error, anulalos acá y se descontarán inmediatamente.</p><div id="approvedGoals" class="pending-grid"></div><p id="approvedEmpty" class="empty-state" hidden>No hay cargas aprobadas.</p></div>
-      </section>
+/* Ganador sin deformar la fila */
+.playoff-duel .advanced:after{position:absolute;right:37px;top:50%;transform:translateY(-50%);margin:0!important}.playoff-duel .advanced{padding-right:82px}.playoff-duel .advanced b{position:absolute;right:13px}
 
-      <section id="errorPanel" class="error-panel" hidden><strong>No pudimos actualizar los datos en vivo.</strong><span>Se muestran los últimos datos guardados. Revisá que las hojas sigan publicadas.</span><button id="retryButton">Reintentar</button></section>
-    </main>
-    <footer><strong>CHIQUIMAFIA TORNEO</strong><span>Datos sincronizados desde Google Sheets</span></footer>
-  </div>
-  <script src="js/config.js?v=2026071802"></script>
-  <script src="js/sheets.js?v=2026071802"></script>
-  <script src="js/goals.js?v=2026071802"></script>
-  <script src="js/app.js?v=2026071803"></script>
-</body>
-</html>
+/* Correcciones para celular */
+@media(max-width:800px){
+  .hero{grid-template-columns:minmax(0,1fr) 96px;overflow:hidden}.crest-wrap{width:96px;max-width:96px;justify-self:end;overflow:visible}.crest-wrap .stars{font-size:12px;letter-spacing:3px;margin-left:0;white-space:nowrap;text-align:center}#officialCrest{display:block;width:92px;max-width:92px;height:auto;margin:auto}.crest-fallback{width:88px;height:100px}
+  .bracket{display:grid;grid-template-columns:1fr;gap:13px;overflow:visible;padding:5px 0 22px}.bracket-column{min-width:0;width:100%;gap:9px}.bracket-column.semis,.bracket-column.final{gap:9px}.bracket-column h3{margin:7px 0 4px}.bracket-column:not(:last-child):after{content:"↓";display:block;text-align:center;color:var(--gold);font-size:24px;font-weight:900;line-height:1}.playoff-duel{width:100%}.champion{margin:5px auto 0}
+  .playoff-duel .advanced{padding-right:46px}.playoff-duel .advanced:after{content:"✓";right:34px}.playoff-duel .advanced b{right:12px}
+}
+@media(max-width:420px){.hero{grid-template-columns:minmax(0,1fr) 80px}.crest-wrap{width:80px;max-width:80px}#officialCrest{width:76px;max-width:76px}.hero h1{font-size:43px}.hero-copy p{font-size:12px}.compact-result{padding:8px}}
+
+/* Nombre y resultado siempre separados en playoffs */
+.playoff-duel>div,.duel.playoff-duel>div{position:relative;display:grid!important;grid-template-columns:minmax(0,1fr) 48px;gap:12px;align-items:center;padding:12px 14px!important}
+.playoff-duel>div>span{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.playoff-duel>div>b{position:static!important;display:block;min-width:38px;text-align:right;font-size:14px;color:var(--navy)}
+.playoff-duel .advanced{padding-right:14px!important;box-shadow:inset 4px 0 0 #2daa66}
+.playoff-duel .advanced:after{display:none!important;content:none!important}
+.playoff-duel .advanced b:after{content:"  ✓";color:#25a45e;font-weight:900}
+@media(max-width:800px){.playoff-duel>div,.duel.playoff-duel>div{grid-template-columns:minmax(0,1fr) 52px;padding:13px 14px!important}.playoff-duel>div>b{font-size:15px}}
+
+/* El cuadro completo refleja cómo se ganó el cruce */
+.playoff-duel.completed{overflow:visible;background:#fff;isolation:isolate}
+.playoff-duel.completed:before{content:"";position:absolute;inset:0;border-radius:14px;z-index:-1;pointer-events:none;opacity:.9}
+.playoff-duel.completed.mood-fire{border-color:#f06a2b;box-shadow:0 12px 30px rgba(226,74,24,.24),0 0 0 3px rgba(255,139,45,.1)}
+.playoff-duel.completed.mood-fire:before{background:radial-gradient(circle at 8% 115%,rgba(255,71,18,.35),transparent 35%),radial-gradient(circle at 92% 115%,rgba(255,177,32,.32),transparent 38%),linear-gradient(120deg,#fff4ea,#fff 48%,#fff0df)}
+.playoff-duel.completed.mood-fire:after{content:"🔥";position:absolute;left:10px;top:-18px;font-size:24px;filter:drop-shadow(0 4px 7px rgba(202,57,12,.32));animation:playoff-flame 1.35s ease-in-out infinite}
+.playoff-duel.completed.mood-ice{border-color:#58c6e7;box-shadow:0 12px 30px rgba(38,155,205,.22),0 0 0 3px rgba(109,216,247,.11)}
+.playoff-duel.completed.mood-ice:before{background:linear-gradient(130deg,#dff8ff,#fff 47%,#d7f4ff),repeating-linear-gradient(45deg,transparent 0 12px,rgba(74,190,228,.08) 13px 14px)}
+.playoff-duel.completed.mood-ice:after{content:"❄️";position:absolute;left:10px;top:-18px;font-size:23px;filter:drop-shadow(0 4px 7px rgba(18,132,180,.28));animation:playoff-snow 2.3s linear infinite}
+.playoff-duel.completed.mood-storm{border-color:#e0ac14;box-shadow:0 12px 30px rgba(154,111,0,.24),0 0 0 3px rgba(255,210,45,.12)}
+.playoff-duel.completed.mood-storm:before{background:linear-gradient(115deg,#fff9dd 0 35%,#fff 36% 62%,#fff1a8 63%)}
+.playoff-duel.completed.mood-storm:after{content:"⚡";position:absolute;left:10px;top:-18px;font-size:24px;filter:drop-shadow(0 4px 7px rgba(141,99,0,.3));animation:playoff-bolt 1.1s ease-in-out infinite}
+.playoff-duel.completed>div{background:transparent}.playoff-duel.completed .advanced{background:rgba(225,249,234,.78)}
+@keyframes playoff-flame{0%,100%{transform:translateY(0) rotate(-6deg) scale(1)}50%{transform:translateY(-4px) rotate(5deg) scale(1.12)}}
+@keyframes playoff-snow{0%{transform:rotate(0deg) scale(1)}50%{transform:translateY(3px) rotate(180deg) scale(1.08)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes playoff-bolt{0%,100%{opacity:.75;transform:scale(.95)}45%{opacity:1;transform:scale(1.18)}55%{opacity:.55;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.playoff-duel.completed:after{animation:none!important}}
