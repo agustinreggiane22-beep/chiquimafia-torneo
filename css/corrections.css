@@ -1,0 +1,3 @@
+.stat-highlights { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 800px) { .stat-highlights { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 430px) { .stat-highlights { grid-template-columns: 1fr; } }

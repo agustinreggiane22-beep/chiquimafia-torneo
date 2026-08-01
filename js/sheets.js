@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   const clean = value => String(value ?? '').replace(/\u00a0/g, ' ').trim();
-  const key = value => clean(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const key = value => {const id=clean(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g,'');return id==='joaco'?'joacoreggi':id};
   const number = value => {
     const raw = clean(value).replace(/\s/g, '');
     if (!raw || /#(error|n\/a|name)/i.test(raw)) return 0;
@@ -87,7 +87,7 @@
   const array=value=>{if(Array.isArray(value))return value;if(typeof value==='string'){try{return JSON.parse(value)}catch{return[]}}return[]};
   function uniqueNames(values){
     const byKey=new Map();
-    values.map(clean).filter(Boolean).forEach(name=>{const id=key(name),current=byKey.get(id);if(!id)return;if(!current||(/\s/.test(name)&&!/\s/.test(current)))byKey.set(id,name)});
+    values.map(clean).filter(Boolean).forEach(name=>{const id=key(name),current=byKey.get(id);if(!id)return;const clearer=!current||name.replace(/\s/g,'').length>current.replace(/\s/g,'').length||(/\s/.test(name)&&!/\s/.test(current));if(clearer)byKey.set(id,name)});
     return [...byKey.values()];
   }
   function buildTournament(state){
