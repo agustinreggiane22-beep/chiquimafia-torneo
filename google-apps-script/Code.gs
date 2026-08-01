@@ -164,13 +164,21 @@ function sheet_() {
 }
 
 function submit_(item) {
-  const sheet = sheet_(), rows = list_();
-  if (!validParticipant_(item.matchNumber, item.player)) throw new Error('Solo pueden votar los jugadores que participaron en esa fecha.');
-  if (!validParticipant_(item.matchNumber, item.mvpVote)) throw new Error('El voto MVP debe ser para un jugador que participó en esa fecha.');
-  if (String(item.player).trim() === String(item.mvpVote).trim()) throw new Error('No podés votarte a vos mismo como MVP.');
-  if (rows.some(x => String(x.matchNumber) === String(item.matchNumber) && x.player === item.player && x.status !== 'rejected')) throw new Error('Ya existe una declaración para ese jugador en esta fecha.');
-  sheet.appendRow([item.id,item.createdAt,item.matchNumber,item.matchDate,item.player,item.team,item.goals,item.mvpVote||'',item.note||'',item.status||'pending','']);
-  return item;
+  const lock = LockService.getScriptLock();
+  lock.waitLock(15000);
+  try {
+    const sheet = sheet_(), rows = list_();
+    if (!validParticipant_(item.matchNumber, item.player)) throw new Error('Solo pueden votar los jugadores que participaron en esa fecha.');
+    if (item.mvpVote && !validParticipant_(item.matchNumber, item.mvpVote)) throw new Error('El voto MVP debe ser para un jugador que participó en esa fecha.');
+    if (item.mvpVote && normalize_(item.player) === normalize_(item.mvpVote)) throw new Error('No podés votarte a vos mismo como MVP.');
+    const duplicate = rows.some(x => String(x.matchNumber) === String(item.matchNumber) && normalize_(x.player) === normalize_(item.player) && String(x.status).toLowerCase() !== 'rejected');
+    if (duplicate) throw new Error('Ya votaste en esta fecha. Cada jugador puede enviar una sola declaración y un solo voto por partido.');
+    sheet.appendRow([item.id,item.createdAt,item.matchNumber,item.matchDate,item.player,item.team,item.goals,item.mvpVote||'',item.note||'',item.status||'pending','']);
+    SpreadsheetApp.flush();
+    return item;
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function validParticipant_(matchNumber, player) {
@@ -245,7 +253,10 @@ function saveLineup_(item) {
   const sheet=genericSheet_(LINEUP_SHEET_NAME,['matchNumber','date','white','black','updatedAt']),values=sheet.getDataRange().getValues();
   const row=[item.matchNumber,item.date||'',JSON.stringify(white),JSON.stringify(black),new Date().toISOString()];
   const index=values.findIndex((r,i)=>i>0&&String(r[0])===String(item.matchNumber));
-  if(index>=0)sheet.getRange(index+1,1,1,row.length).setValues([row]);else sheet.appendRow(row); return item;
+  if(index>=0)sheet.getRange(index+1,1,1,row.length).setValues([row]);else sheet.appendRow(row);
+  const deletedSheet=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(DELETED_DATES_SHEET_NAME);
+  if(deletedSheet){const deletedValues=deletedSheet.getDataRange().getValues();for(let deletedIndex=deletedValues.length-1;deletedIndex>0;deletedIndex--)if(String(deletedValues[deletedIndex][0])===String(item.matchNumber))deletedSheet.deleteRow(deletedIndex+1)}
+  return Object.assign({},item,{updatedAt:row[4]});
 }
 
 function addSanction_(item) {

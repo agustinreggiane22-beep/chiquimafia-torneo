@@ -1,5 +1,12 @@
 window.CHIQUI_CONFIG = {
   regularSeasonRounds: 18,
+  // Clasificados oficiales al cierre de la fecha 18.
+  // Se mantienen fijos durante todos los playoffs.
+  playoffSeeds: ['JOACOREGGI', 'LIHUEL', 'DIEGO', 'AGUSREGGI', 'MATU', 'VALEN', 'AUGUSTO', 'NACHO'],
+  // Este bloqueo corrige únicamente los playoffs que ya habían comenzado.
+  // Tras reiniciar la temporada, los nuevos resultados tendrán otra fecha
+  // y la web volverá a tomar automáticamente el Top 8 de la tabla nueva.
+  playoffSeedLockBefore: '2026-07-28T03:00:00.000Z',
   points: { attendance: 1, win: 2, draw: 1, loss: 0, mvp: 1 },
   adminPin: 'agustin02052013',
   // Pegá aquí la URL de una Web App de Google Apps Script para compartir

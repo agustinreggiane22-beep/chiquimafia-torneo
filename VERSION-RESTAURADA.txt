@@ -1,0 +1,22 @@
+VERSIÓN COMPLETA RESTAURADA
+
+Base recuperada del último commit del domingo 27 de julio de 2026: b28d4c5.
+
+Conserva las mejoras de esa versión, incluyendo:
+- Próximo partido y cuenta regresiva.
+- Caja del torneo.
+- Partido destacado avanzado.
+- Estadísticas, Salón de la Fama y gráficos.
+- Podio y tercer puesto de playoffs.
+- Administración completa.
+- Insignias y mejoras visuales.
+
+Correcciones agregadas:
+- Selectores de jugadores compatibles con celular.
+- Edición manual de los dos jugadores de cada cruce de playoffs.
+- El cuadro muestra los jugadores realmente guardados.
+- Un voto por jugador y fecha, sin duplicados.
+- Recuperación correcta de fechas eliminadas y vueltas a cargar.
+
+Para GitHub: subir todo el contenido de esta carpeta manteniendo css, js y assets.
+Para Apps Script: reemplazar Código.gs con Code-Apps-Script.txt y crear una nueva versión de la implementación.
