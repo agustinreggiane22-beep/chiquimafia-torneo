@@ -23,6 +23,8 @@ Correcciones agregadas:
 - JOACO se unifica específicamente con JOACOREGGI.
 - Se eliminó el cuadro Más victorias y se reparó el cálculo de rachas.
 - Se agregó el cuadro Más goles, unificando los goles de nombres equivalentes.
+- Se eliminó la tarjeta repetida Goleador del torneo.
+- La pelota de goleador en la tabla usa los goles unificados de JOACO/JOACOREGGI.
 - Recuperación correcta de fechas eliminadas y vueltas a cargar.
 
 Para GitHub: subir todo el contenido de esta carpeta manteniendo css, js y assets.

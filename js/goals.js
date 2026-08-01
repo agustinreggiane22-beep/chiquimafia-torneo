@@ -24,10 +24,11 @@
     const remote=await request('decide',{id,status,pin});if(remote)return remote.item;
     const items=localRead(),item=items.find(x=>x.id===id);if(!item)throw new Error('No se encontró la solicitud');item.status=status;item.reviewedAt=new Date().toISOString();localWrite(items);return item;
   }
-  async function approvedTotals(){return (await list()).filter(x=>x.status==='approved').reduce((acc,x)=>{acc[x.player]=(acc[x.player]||0)+Number(x.goals||0);return acc},{})}
+  function canonicalTotals(items,valueOf){const grouped=new Map();items.forEach(item=>{const raw=String(item.player||'').trim(),id=window.ChiquiSheets?.key?ChiquiSheets.key(raw):raw.toLowerCase().replace(/[^a-z0-9]/g,''),current=grouped.get(id),preferred=id==='joacoreggi'?'JOACOREGGI':(!current||(/\s/.test(raw)&&!/\s/.test(current.player))?raw:current.player);grouped.set(id,{player:preferred,value:Number(current?.value||0)+Number(valueOf(item)||0)})});return Object.fromEntries([...grouped.values()].map(x=>[x.player,x.value]))}
+  async function approvedTotals(){return canonicalTotals((await list()).filter(x=>x.status==='approved'),x=>x.goals)}
   async function mvpAwards(){const remote=await request('listMvp').catch(()=>null);if(remote)return remote.items||[];try{return JSON.parse(localStorage.getItem(MVP_KEY)||'[]')}catch{return[]}}
   async function confirmMvp(matchNumber,player,pin){const remote=await request('confirmMvp',{matchNumber,player,pin});if(remote)return remote.item;const items=await mvpAwards(),existing=items.find(x=>String(x.matchNumber)===String(matchNumber));if(existing)existing.player=player;else items.push({matchNumber,player,confirmedAt:new Date().toISOString()});localStorage.setItem(MVP_KEY,JSON.stringify(items));return items.find(x=>String(x.matchNumber)===String(matchNumber))}
-  async function mvpTotals(){return (await mvpAwards()).reduce((acc,x)=>(acc[x.player]=(acc[x.player]||0)+1,acc),{})}
+  async function mvpTotals(){return canonicalTotals(await mvpAwards(),()=>1)}
   async function deleteMvp(matchNumber,pin){const remote=await request('deleteMvp',{matchNumber,pin});if(remote)return;localStorage.setItem(MVP_KEY,JSON.stringify((await mvpAwards()).filter(x=>String(x.matchNumber)!==String(matchNumber))))}
   const localList=key=>{try{return JSON.parse(localStorage.getItem(key)||'[]')}catch{return[]}};
   async function lineups(){const remote=await request('listLineups').catch(()=>null);return remote?.items||localList(LINEUP_KEY)}
