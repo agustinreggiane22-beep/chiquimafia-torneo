@@ -18,6 +18,8 @@ Correcciones agregadas:
 - Un voto por jugador y fecha, sin duplicados.
 - Corrección de jugadores duplicados por mayúsculas, acentos o espacios.
 - Caja del torneo conectada correctamente con Google Apps Script.
+- El cuadro Más victorias muestra a todos los líderes cuando están empatados.
+- Unifica variantes como MATIBILLO/MATI BILLO y nombres con espacios invisibles.
 - Recuperación correcta de fechas eliminadas y vueltas a cargar.
 
 Para GitHub: subir todo el contenido de esta carpeta manteniendo css, js y assets.
