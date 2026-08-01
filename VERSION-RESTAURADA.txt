@@ -16,6 +16,8 @@ Correcciones agregadas:
 - Edición manual de los dos jugadores de cada cruce de playoffs.
 - El cuadro muestra los jugadores realmente guardados.
 - Un voto por jugador y fecha, sin duplicados.
+- Corrección de jugadores duplicados por mayúsculas, acentos o espacios.
+- Caja del torneo conectada correctamente con Google Apps Script.
 - Recuperación correcta de fechas eliminadas y vueltas a cargar.
 
 Para GitHub: subir todo el contenido de esta carpeta manteniendo css, js y assets.
