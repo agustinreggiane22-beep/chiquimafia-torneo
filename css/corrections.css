@@ -43,3 +43,5 @@
 .admin-subtool>summary { cursor:pointer; font-weight:800; padding:8px 0; }
 .admin-subtool-content { padding-top:12px; }
 .admin-subtool-content h4 { margin:0 0 14px; }
+
+.admin-grid>.admin-voting { grid-column:1/-1; min-width:0; }
