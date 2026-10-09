@@ -80,3 +80,5 @@ La carga consulta primero JSON con credenciales de Google omitidas. Si esa ruta
 no funciona, utiliza JSONP con el tiempo restante del mismo limite de 45 segundos.
 
 El generador permite cargar equipos guardados o generar equipos nuevos y exportar una imagen con fondo negro y rojo. El día se toma de la fecha guardada (incluidos los timestamps ISO de Apps Script); día, horario y lugar son editables antes de la vista previa o descarga. Horario y lugar se conservan por número de fecha en localStorage del dispositivo, con 18:00 y El Más Grande como valores iniciales. No se guardan en la hoja compartida. El fondo se carga únicamente al preparar la imagen.
+
+La exportación prepara un File PNG con URL temporal blob para descargarlo desde un enlace real, abrirlo o guardar la vista previa como imagen. Compartir usa Web Share solo desde un clic del usuario sobre un archivo ya preparado; cancelar no inicia otra descarga. La disponibilidad de WhatsApp y del diálogo nativo depende del navegador/dispositivo.

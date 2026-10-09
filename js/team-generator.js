@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   const PROFILE_KEY='chiquimafia_team_profiles_v1',DETAILS_KEY='chiquimafia_match_image_details_v1';
-  let backgroundPromise;
+  let backgroundPromise,preparedImage;
   const $=selector=>document.querySelector(selector);
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
   const roles={goalkeeper:'Arquero',defender:'Defensor',midfielder:'Volante',forward:'Delantero',utility:'Polifuncional'};
@@ -16,7 +16,7 @@
   function cost(white,black){const a=teamScore(white),b=teamScore(black);let value=Math.abs(a.total-b.total)*12+Math.abs(white.length-black.length)*50;for(const role of Object.keys(roles))value+=Math.abs((a.counts[role]||0)-(b.counts[role]||0))*(role==='goalkeeper'?18:5);return value}
   function shuffle(items){const copy=[...items];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
   function balance(players){let best=null;for(let attempt=0;attempt<5000;attempt++){const mixed=shuffle(players),cut=Math.ceil(mixed.length/2),white=mixed.slice(0,cut),black=mixed.slice(cut),score=cost(white,black);if(!best||score<best.score)best={white,black,score};if(score===0)break}return best}
-  function renderTeams(){const wrap=$('#generatedTeams');wrap.hidden=false;const render=(team,target,side)=>{$(target).innerHTML=team.map((p,index)=>`<div class="generated-player"><span><b>${esc(p.name)}</b> <small>${roles[p.role]} · N${p.level}</small></span><button type="button" data-swap="${side}" data-index="${index}" title="Cambiar de equipo">↔</button></div>`).join('')};render(teams.white,'#generatedWhite','white');render(teams.black,'#generatedBlack','black');$('#whiteStrength').textContent=`Nivel ${teamScore(teams.white).total}`;$('#blackStrength').textContent=`Nivel ${teamScore(teams.black).total}`;$('#generatorMessage').textContent=`Diferencia de nivel: ${Math.abs(teamScore(teams.white).total-teamScore(teams.black).total)}.`}
+  function renderTeams(){hideImageActions();const wrap=$('#generatedTeams');wrap.hidden=false;const render=(team,target,side)=>{$(target).innerHTML=team.map((p,index)=>`<div class="generated-player"><span><b>${esc(p.name)}</b> <small>${roles[p.role]} · N${p.level}</small></span><button type="button" data-swap="${side}" data-index="${index}" title="Cambiar de equipo">↔</button></div>`).join('')};render(teams.white,'#generatedWhite','white');render(teams.black,'#generatedBlack','black');$('#whiteStrength').textContent=`Nivel ${teamScore(teams.white).total}`;$('#blackStrength').textContent=`Nivel ${teamScore(teams.black).total}`;$('#generatorMessage').textContent=`Diferencia de nivel: ${Math.abs(teamScore(teams.white).total-teamScore(teams.black).total)}.`}
   function loadSavedTeams(match){
     const selected=[...match.white,...match.black];
     guests=[...new Set(guests.concat(selected.filter(name=>!names().includes(name))))];
@@ -38,6 +38,20 @@
   function restoreImageDetails(){const details=imageDetails()[$('#generatorMatch').value]||{};$('#generatorTime').value=details.time??'18:00';$('#generatorVenue').value=details.venue??'El Más Grande'}
   function saveImageDetails(){const details=imageDetails();details[$('#generatorMatch').value]={time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()};try{localStorage.setItem(DETAILS_KEY,JSON.stringify(details))}catch{}}
   function loadBackground(){if(!backgroundPromise)backgroundPromise=new Promise(resolve=>{const image=new Image(),timer=setTimeout(()=>resolve(null),12000);image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);resolve(null)};image.src='assets/match-red-background.png'});return backgroundPromise}
+  function imageSignature(){return JSON.stringify({teams,number:$('#generatorMatch').value,date:$('#generatorDate').value,time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()})}
+  function hideImageActions(){$('#imageExportActions').hidden=true;$('#teamsSharePreview').hidden=true}
+  function downloadPreparedImage(){const link=$('#saveTeamsImage');link.click();$('#generatorMessage').className='form-message success';$('#generatorMessage').textContent='Descarga solicitada. Si no se guarda, tocá «Compartir imagen» o «Abrir imagen».'}
+  async function sharePreparedImage(){
+    const message=$('#generatorMessage');
+    if(!preparedImage||preparedImage.signature!==imageSignature()){await shareImage(false);if(preparedImage&&preparedImage.signature===imageSignature())message.textContent='Imagen preparada. Tocá «Compartir imagen» para elegir WhatsApp u otra aplicación.';return}
+    try{
+      const files=[preparedImage.file];
+      if(!navigator.share||!navigator.canShare||!navigator.canShare({files})){message.textContent='Este navegador no permite compartir archivos directamente. Tocá «Guardar PNG» o «Abrir imagen» y guardala desde ahí.';return}
+      // Invoke from this button click while the browser still has user activation.
+      await navigator.share({files});
+      message.className='form-message success';message.textContent='Imagen compartida.';
+    }catch(error){if(error.name==='AbortError'){message.textContent='Compartir cancelado. La imagen sigue lista para guardar.';return}message.className='form-message error';message.textContent='No se pudo compartir. Tocá «Guardar PNG» o «Abrir imagen» para guardarla.'}
+  }
   async function shareImage(download=true){
     const message=$('#generatorMessage');
     if(!teams.white.length||!teams.black.length){message.className='form-message error';message.textContent='Elegí la fecha y tocá «Cargar equipos ya guardados» o generá nuevos equipos antes de descargar.';return}
@@ -72,12 +86,17 @@
       text(formattedDate.toUpperCase()+(time?` · ${time} HS`:''),w/2,1169,29,'#fff',940);
       text(venue||'Lugar a confirmar',w/2,1212,28,'#c6c6c6',940,500);
       text('NOS VEMOS EN LA CANCHA',w/2,1290,22,'#e9555e',900);
-      canvas.hidden=false;
-      if(download){const link=document.createElement('a');link.download=`chiquimafia-fecha-${number||'proxima'}.png`;link.href=canvas.toDataURL('image/png');link.click()}
-      message.className='form-message success';message.textContent=download?'Imagen lista para compartir.':'Vista previa lista. Podés cambiar día, horario y lugar antes de descargar.';
+      const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('No se pudo crear el archivo PNG.')),'image/png'));
+      const filename=`chiquimafia-fecha-${number||'proxima'}.png`,file=new File([blob],filename,{type:'image/png'}),url=URL.createObjectURL(file),oldUrl=preparedImage?.url;
+      preparedImage={file,url,signature:imageSignature()};
+      $('#teamsSharePreview').src=url;$('#teamsSharePreview').hidden=false;
+      $('#saveTeamsImage').href=url;$('#saveTeamsImage').download=filename;$('#openTeamsImage').href=url;$('#imageExportActions').hidden=false;
+      if(oldUrl)setTimeout(()=>URL.revokeObjectURL(oldUrl),60000);
+      message.className='form-message success';message.textContent='Vista previa lista. Podés guardar el PNG o compartir la imagen.';
+      if(download)downloadPreparedImage();
     }catch(error){message.className='form-message error';message.textContent='No se pudo preparar la imagen. '+error.message}finally{button.disabled=false}
   }
-  function init(){if(!$('#generatorRoster'))return;if(!document.querySelector('#playerOptions option')){setTimeout(init,500);return}profiles=readProfiles();renderRoster();const number=$('#lineupNumber')?.value||1,date=$('#lineupDate')?.value||'';$('#generatorMatch').value=number;$('#generatorDate').value=date;$('#addGeneratorGuest').onclick=()=>{const input=$('#generatorGuest'),name=input.value.trim();if(!name)return;if(!guests.some(x=>x.toLowerCase()===name.toLowerCase()))guests.push(name);input.value='';renderRoster();const row=[...document.querySelectorAll('.generator-player')].find(x=>x.dataset.name===name);if(row)row.querySelector('.generator-check').checked=true};$('#balanceTeams').onclick=()=>{const selected=[...document.querySelectorAll('.generator-player')].filter(row=>row.querySelector('.generator-check').checked).map(row=>playerData(row.dataset.name));if(selected.length<2){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí por lo menos dos jugadores.';return}teams=balance(selected);renderTeams()};$('#generatedTeams').onclick=event=>{const button=event.target.closest('[data-swap]');if(!button)return;const from=button.dataset.swap,to=from==='white'?'black':'white',index=Number(button.dataset.index);teams[to].push(teams[from].splice(index,1)[0]);renderTeams()};$('#publishGeneratedTeams').onclick=publish;restoreImageDetails();$('#generatorMatch').addEventListener('change',restoreImageDetails);$('#generatorTime').addEventListener('change',saveImageDetails);$('#generatorVenue').addEventListener('change',saveImageDetails);$('#previewTeamsImage').onclick=()=>shareImage(false);$('#downloadTeamsImage').onclick=()=>shareImage(true)}
+  function init(){if(!$('#generatorRoster'))return;if(!document.querySelector('#playerOptions option')){setTimeout(init,500);return}profiles=readProfiles();renderRoster();const number=$('#lineupNumber')?.value||1,date=$('#lineupDate')?.value||'';$('#generatorMatch').value=number;$('#generatorDate').value=date;$('#addGeneratorGuest').onclick=()=>{const input=$('#generatorGuest'),name=input.value.trim();if(!name)return;if(!guests.some(x=>x.toLowerCase()===name.toLowerCase()))guests.push(name);input.value='';renderRoster();const row=[...document.querySelectorAll('.generator-player')].find(x=>x.dataset.name===name);if(row)row.querySelector('.generator-check').checked=true};$('#balanceTeams').onclick=()=>{const selected=[...document.querySelectorAll('.generator-player')].filter(row=>row.querySelector('.generator-check').checked).map(row=>playerData(row.dataset.name));if(selected.length<2){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí por lo menos dos jugadores.';return}teams=balance(selected);renderTeams()};$('#generatedTeams').onclick=event=>{const button=event.target.closest('[data-swap]');if(!button)return;const from=button.dataset.swap,to=from==='white'?'black':'white',index=Number(button.dataset.index);teams[to].push(teams[from].splice(index,1)[0]);renderTeams()};$('#publishGeneratedTeams').onclick=publish;restoreImageDetails();$('#generatorMatch').addEventListener('change',restoreImageDetails);$('#generatorTime').addEventListener('change',saveImageDetails);$('#generatorVenue').addEventListener('change',saveImageDetails);$('#previewTeamsImage').onclick=()=>shareImage(false);$('#downloadTeamsImage').onclick=()=>{if(preparedImage&&preparedImage.signature===imageSignature())downloadPreparedImage();else shareImage(true)};$('#shareTeamsImage').onclick=sharePreparedImage;['#generatorMatch','#generatorDate','#generatorTime','#generatorVenue'].forEach(selector=>$(selector).addEventListener('input',hideImageActions))}
   window.addEventListener('chiqui:load-generator-lineup',event=>loadSavedTeams(event.detail));
   window.addEventListener('chiqui:players-changed',()=>{renderRoster()});
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
