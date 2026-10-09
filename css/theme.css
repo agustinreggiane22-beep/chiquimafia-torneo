@@ -75,3 +75,60 @@ footer { background:#0b1118; border-top:1px solid #304253; }
 .podium-place { color:var(--ink); }
 .empty-state { color:#b8c9d6; }
 .card .empty-state { color:var(--muted); }
+
+/* Estado de temporada: tarjeta clara con movimiento y acentos del torneo. */
+#inicio .season-card {
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(125deg,#e2f4ff 0%,#f8fcff 48%,#fff4d4 100%);
+  border:1px solid #99cde3;
+  border-top:4px solid #75cbed;
+  box-shadow:0 14px 35px #0003,inset 0 0 0 1px #ffffffb3;
+  animation:season-card-arrive .65s ease-out both;
+}
+#inicio .season-card:before {
+  content:"🏆";
+  position:absolute;
+  right:18px;
+  top:12px;
+  font-size:78px;
+  line-height:1;
+  opacity:.16;
+  pointer-events:none;
+  animation:season-trophy-float 5s ease-in-out infinite;
+}
+#inicio .season-card>div { position:relative; z-index:1; }
+#inicio .season-card .season-kicker { display:flex; align-items:center; gap:8px; color:#0d4b7b; font-weight:800; }
+.season-kicker i { width:8px; height:8px; border-radius:50%; background:#2183ac; box-shadow:0 0 0 4px #75cbed33; flex-shrink:0; }
+#inicio .season-card #phaseLabel {
+  display:inline-flex;
+  width:fit-content;
+  padding:7px 13px;
+  border-radius:10px;
+  background:#0d4b7b;
+  color:#fff;
+  font-size:22px;
+  box-shadow:0 5px 14px #0d4b7b20;
+}
+#inicio .season-card .season-progress-meta { align-items:center; gap:12px; margin-top:20px; }
+#inicio .season-card #roundLabel { color:#234966; }
+#inicio .season-card #progressLabel { color:#755711; background:#fff1bd; padding:5px 9px; border-radius:8px; font-weight:800; }
+#inicio .season-card .progress-track { height:12px; background:#bedeea; box-shadow:inset 0 1px 3px #0d4b7b12; }
+#inicio .season-card #progressBar { position:relative; overflow:hidden; background:linear-gradient(90deg,#2183ac,#75cbed 50%,#d9a928); }
+#inicio .season-card #progressBar:after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(100deg,transparent 25%,#ffffffa6 50%,transparent 75%);
+  transform:translateX(-120%);
+  animation:season-progress-shine 4.5s ease-in-out infinite;
+}
+@keyframes season-card-arrive { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+@keyframes season-trophy-float { 0%,100% { transform:translateY(0) rotate(-6deg); } 50% { transform:translateY(-6px) rotate(4deg); } }
+@keyframes season-progress-shine { 0%,35% { transform:translateX(-120%); } 75%,100% { transform:translateX(120%); } }
+@media(max-width:800px) { #inicio .season-card #phaseLabel { font-size:18px; } }
+@media(prefers-reduced-motion:reduce) {
+  #inicio .season-card,#inicio .season-card:before,#inicio .season-card #progressBar:after { animation:none; }
+  #inicio .season-card #progressBar { transition:none; }
+  #inicio .season-card #progressBar:after { display:none; }
+}
