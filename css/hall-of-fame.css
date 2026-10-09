@@ -1,0 +1,42 @@
+/* Archivo de temporadas: campeón destacado, podio y figuras. */
+#hallOfFame { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+#hallOfFame .fame-season { min-width:0; overflow:hidden; padding:26px; border-top:4px solid #d9a928; background:#fff; }
+.fame-season-header { display:flex; align-items:center; justify-content:space-between; gap:14px; padding-bottom:20px; }
+.fame-season-header .eyebrow { font-size:9px; letter-spacing:.13em; margin-bottom:8px; }
+.fame-season-header h3 { margin:0; font:900 30px/1.1 'Barlow Condensed',sans-serif; color:#11243a; overflow-wrap:anywhere; }
+.fame-archive-label { flex-shrink:0; padding:7px 10px; border-radius:20px; background:#edf5f9; color:#536b7d; font-size:9px; font-weight:700; }
+.fame-champion { display:flex; align-items:center; gap:20px; padding:24px 20px; border:1px solid #edd490; border-radius:18px; background:linear-gradient(120deg,#fff5d5,#fffdf5); }
+.fame-trophy { display:grid; place-items:center; width:72px; height:72px; flex:0 0 72px; border-radius:50%; background:#f8e4a5; font-size:42px; box-shadow:inset 0 0 0 5px #fffae9; }
+.fame-champion>div { min-width:0; }
+.fame-champion-label { display:block; color:#71520b; font-size:10px; font-weight:800; letter-spacing:.13em; }
+.fame-champion strong { display:block; margin:8px 0; font:900 clamp(28px,3vw,38px)/1 'Barlow Condensed',sans-serif; color:#11243a; overflow-wrap:anywhere; }
+.fame-champion-caption { color:#715f3b; font-size:11px; line-height:1.5; }
+.fame-podium { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:16px; }
+.fame-podium-place { display:flex; align-items:center; gap:10px; padding:16px 12px; border-radius:13px; background:#f2f6fa; border:1px solid #dce7ef; min-width:0; }
+.fame-podium-place>span { font-size:27px; }
+.fame-podium-place>div { min-width:0; }
+.fame-podium-place small,.fame-award small { display:block; color:#536b7d; font-size:9px; font-weight:800; letter-spacing:.04em; margin-bottom:6px; }
+.fame-podium-place strong { display:block; font:800 20px/1.1 'Barlow Condensed',sans-serif; color:#11243a; overflow-wrap:anywhere; }
+.fame-awards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; border-top:1px solid #dce7ef; padding-top:18px; margin-top:20px; }
+.fame-award { display:flex; align-items:center; gap:10px; padding:12px; min-width:0; border-radius:12px; background:#eff8fc; }
+.fame-award-icon { display:grid; place-items:center; width:36px; height:36px; flex-shrink:0; background:#fff; border-radius:10px; font-size:22px; }
+.fame-award>div { min-width:0; }
+.fame-award strong { display:block; color:#0d4b7b; font:800 21px/1.1 'Barlow Condensed',sans-serif; overflow-wrap:anywhere; }
+.fame-award-total { display:block; margin-top:5px; color:#536b7d; font-size:11px; }
+#hallOfFame .fame-empty { grid-column:1/-1; text-align:center; padding:38px 24px; background:linear-gradient(135deg,#fff8e3,#f3faff); }
+.fame-empty .fame-trophy { margin:0 auto 20px; }
+.fame-empty h3 { margin:0 0 12px; color:#11243a; font:900 32px 'Barlow Condensed',sans-serif; }
+.fame-empty p { color:#536b7d; font-size:13px; line-height:1.6; margin:0; }
+@media(max-width:1000px) { #hallOfFame { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:430px) {
+ #hallOfFame .fame-season { padding:18px; }
+ .fame-season-header { align-items:flex-start; flex-direction:column; gap:10px; }
+ .fame-champion { padding:20px 14px; gap:12px; }
+ .fame-trophy { width:58px; height:58px; flex-basis:58px; font-size:34px; }
+ .fame-podium-place { align-items:flex-start; padding:14px 10px; gap:7px; }
+ .fame-podium-place>span { font-size:22px; }
+ .fame-awards { grid-template-columns:minmax(0,1fr); }
+}
+#hallOfFame { align-items:start; }
+#hallOfFame .fame-season:only-child { grid-column:1/-1; width:100%; max-width:900px; margin-inline:auto; }
+@media(max-width:430px) { .fame-podium { grid-template-columns:minmax(0,1fr); } }

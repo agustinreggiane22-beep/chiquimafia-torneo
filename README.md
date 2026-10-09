@@ -92,3 +92,7 @@ Dentro de Marcador oficial, Disciplina y Caja del torneo son desplegables indepe
 Cruces de fase final también está dentro de Marcador oficial en un desplegable, junto a Disciplina y Caja. El formulario de avance del cuadro conserva su función independiente del marcador de equipos.
 
 La portada usa `css/home.css`, con estilos limitados a Inicio, y la foto original facilitada por el usuario en `assets/home-messi.jpg` (aproximadamente 31 KB). Mantener los IDs de los datos de temporada, partido destacado, próxima fecha y caja al actualizar el diseño.
+
+El Salón de la Fama usa `css/hall-of-fame.css`: cada temporada reúne campeón, podio y figuras en una tarjeta adaptable. Los premios explícitos del archivo se conservan; solo se deducen MVP/goleador cuando hay totales positivos. La mayor asistencia se calcula dentro de la misma temporada.
+
+Para la revisión completa, ejecutar `node --test tests/*.test.cjs` y los scripts `tests/page-behavior.cjs`, `tests/admin-voting.cjs`, `tests/playoff-visibility.cjs`, `tests/playoff-flow.cjs` y `tests/site-review.cjs`. Todos los scripts de navegador permiten `CHIQUI_TEST_URL` (por defecto `http://127.0.0.1:8000/`), interceptan Apps Script con datos de prueba y no modifican la planilla real. La revisión cubre declaraciones, aprobación, MVP público, correcciones de resultados, sanciones, caja, archivo/recuperación, descarga/compartir equipos, playoffs y pantallas de 360 a 1440 píxeles.

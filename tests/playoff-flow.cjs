@@ -7,14 +7,16 @@ const assert=require('node:assert/strict');
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   const names=Array.from({length:8},(_,i)=>'JUGADOR '+(i+1));
   const state={ok:true,players:names.map(name=>({name,status:'active'})),lineups:[17,18].map(matchNumber=>({matchNumber,date:'2026-10-10',white:names.slice(0,4),black:names.slice(4)})),results:[17,18].map(matchNumber=>({matchNumber,whiteGoals:0,blackGoals:0,winner:'draw',played:true})),mvps:[],sanctions:[],deletedDates:[],playoffs:[],history:[],fund:{amount:0}};
-  let failNextSave=false;
+  let failNextSave=false;const actions=[];
   await page.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));
   await page.route('https://script.google.com/**',r=>{
    let response=state;
    if(r.request().method()==='POST'){
-    const body=JSON.parse(r.request().postData());response={ok:true,items:[]};
+    const body=JSON.parse(r.request().postData());actions.push(body.action);response={ok:true,items:[]};
     if(body.action==='auth')response={ok:true,authenticated:true};
     if(body.action==='listPlayoffs')response={ok:true,items:state.playoffs};
+    if(body.action==='addHistoricalChampion'){const item={...body.item,champion:body.item.place===1};state.history.push(item);response={ok:true,item};}
+    if(body.action==='resetSeason'){state.results=[];state.lineups=[];state.playoffs=[];state.mvps=[];state.sanctions=[];response={ok:true};}
     if(body.action==='savePlayoff'){
      if(failNextSave){failNextSave=false;response={ok:false,error:'Error simulado al guardar'};}
      else {
@@ -64,14 +66,19 @@ const assert=require('node:assert/strict');
   await save('third',1,[winners[0],winners[3]],winners[3]);
   await save('final',1,[winners[1],winners[2]],winners[2]);
   assert.deepEqual(await page.locator('#finalPodium strong').allTextContents(),[winners[2],winners[1],winners[3]]);
-  assert.equal(await page.locator('#bracket .completed').count(),7);
+  assert.equal(await page.locator('#bracket .completed').count(),7);assert.equal(await page.locator('#homeChampionBanner').isVisible(),true);assert.equal(await page.locator('#homeChampionBanner>strong').textContent(),winners[2]);assert((await page.locator('#featuredMatch').textContent()).includes('Equipos: Claro 0–0 Oscuro'),'team score must not use the individual duel score');
   assert.equal(await page.locator('#standingsBody').textContent(),tableBefore);
   assert.deepEqual(await page.locator('#standingsBody .player-cell').allTextContents(),ranking);
   await load();
   assert.deepEqual(await page.locator('#finalPodium strong').allTextContents(),[winners[2],winners[1],winners[3]]);
   await page.setViewportSize({width:1440,height:1000});
   assert.equal(await page.locator('#finalPodium').isVisible(),true);
+  await page.locator('.admin-season-tools>summary').click();await page.locator('#seasonArchiveName').fill('Prueba de cierre');await page.locator('#resetConfirmation').fill('INCORRECTO');await page.locator('#resetSeasonForm button').click();assert(!actions.includes('resetSeason'));
+  await page.locator('#resetConfirmation').fill('FINALIZAR');page.on('dialog',dialog=>dialog.dismiss());await page.locator('#resetSeasonForm button').click();assert(!actions.includes('resetSeason'),'cancel must not reset');page.removeAllListeners('dialog');page.on('dialog',dialog=>dialog.accept());
+  await page.locator('#resetSeasonForm button').click();await page.waitForFunction(()=>document.querySelector('#resetMessage').textContent.includes('Torneo reiniciado'));
+  assert.equal(actions.filter(x=>x==='resetSeason').length,1);assert.equal(state.players.length,8);assert.equal(state.history.length,3,'zero totals must not create arbitrary scorer/MVP awards');assert.deepEqual(state.history.map(x=>x.player),[winners[2],winners[1],winners[3]]);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('chiquimafia_pending_podium_v1')),null);
   assert.deepEqual(errors,[]);
-  console.log('PASS: top-eight seeding; rejected save and retry; four quarter-finals, two semi-finals, third place and final; winner/loser advancement; podium survives reload; standings unchanged; mobile and desktop; no real backend writes.');
+  console.log('PASS: top-eight seeding; rejected save and retry; four quarter-finals, two semi-finals, third place and final; winner/loser advancement; podium and home champion update immediately and survive reload; team/individual scores stay separate; standings unchanged; season close requires confirmation and archives podium without fake awards; mobile and desktop; no real backend writes.');
  } finally {await browser.close()}
 })().catch(error=>{console.error(error);process.exitCode=1});
