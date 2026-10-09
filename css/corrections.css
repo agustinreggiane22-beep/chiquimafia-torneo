@@ -17,3 +17,6 @@
 .generated-player:last-child { border:0; }
 .generated-player small { opacity:.72; }
 @media(max-width:720px){.generator-roster{grid-template-columns:1fr}.generator-player{grid-template-columns:25px minmax(80px,1fr) 105px 78px}.generated-teams{grid-template-columns:1fr}.generator-actions>*{flex:1 1 100%}}
+
+.upcoming-fixture { display:grid; gap:16px; margin-bottom:36px; }
+.home-info-grid > :only-child { grid-column:1 / -1; }

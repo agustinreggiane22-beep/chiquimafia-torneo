@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css?v=2026072115">
   <link rel="stylesheet" href="css/enhancements.css?v=2026072115">
-  <link rel="stylesheet" href="css/corrections.css?v=2026100601">
+  <link rel="stylesheet" href="css/corrections.css?v=2026100904">
 </head>
 <body>
   <div class="app-shell">
@@ -40,12 +40,14 @@
           <div class="progress-track"><span id="progressBar"></span></div>
         </article>
         <article id="featuredMatch" class="featured-match" aria-live="polite"></article>
-        <div id="nextMatchPreview" hidden aria-live="polite"></div>
-        <div class="home-info-grid"><article class="next-match-card"><span>⏱ PRÓXIMO PARTIDO</span><strong id="nextMatchDate">Calculando…</strong><small id="nextMatchCountdown">Se juega cada 7 días</small></article><article class="fund-card"><span>🐷 CAJA DEL TORNEO</span><strong id="fundAmount">$0</strong><small>Disponible para los próximos partidos</small></article></div>
+        <div class="home-info-grid"><article class="fund-card"><span>🐷 CAJA DEL TORNEO</span><strong id="fundAmount">$0</strong><small>Disponible para los próximos partidos</small></article></div>
         <article id="homeChampionBanner" class="home-champion-banner" hidden></article>
       </section>
 
       <section id="clasificacion" class="page-section content-section">
+        <div class="upcoming-fixture"><article class="next-match-card"><span>⏱ PRÓXIMO PARTIDO</span><strong id="nextMatchDate">Calculando…</strong><small id="nextMatchCountdown">Se juega cada 7 días</small></article>
+          <div id="nextMatchPreview" hidden aria-live="polite"></div>
+        </div>
         <header class="section-header"><div><span class="eyebrow">TEMPORADA ACTUAL</span><h2>Clasificación</h2></div><span class="live-badge" id="syncStatus">Conectando</span></header>
         <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"></tbody></table></div></div>
       </section>

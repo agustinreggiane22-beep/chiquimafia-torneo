@@ -67,7 +67,7 @@ La carga inicial reutiliza las listas de la respuesta de Apps Script durante
 30 segundos. Las consultas repetidas comparten la misma solicitud y guardar un
 cambio invalida esa copia. Recargar la página siempre consulta el estado del torneo.
 Los rankings actuales incluyen únicamente a los jugadores activos; los invitados
-se conservan en las convocatorias y los registros de cada partido. Inicio muestra
-el próximo partido pendiente con sus equipos y la fecha guardada, además del
-último resultado. Si aún no se guardó un próximo partido, la fecha de la tarjeta
+se conservan en las convocatorias y los registros de cada partido. El próximo
+partido pendiente, con sus equipos y la fecha guardada, aparece encima de la
+clasificación. Inicio conserva el último resultado. Si aún no se guardó un próximo partido, la fecha de la tarjeta
 pequeña se estima a partir del último partido y se identifica como estimada.
