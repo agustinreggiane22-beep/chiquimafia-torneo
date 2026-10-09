@@ -97,7 +97,7 @@
 
       <section id="administracion" class="page-section content-section">
         <header class="section-header"><div><span class="eyebrow">ACCESO PROTEGIDO</span><h2>Administración</h2></div></header>
-        <article id="adminLogin" class="card admin-login"><h3>Ingresar como administrador</h3><p>Usá el PIN para revisar las declaraciones de goles.</p><form id="adminLoginForm"><input id="adminPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" required><button type="submit">Ingresar</button></form><p id="adminLoginMessage" class="form-message"></p></article>
+        <article id="adminLogin" class="card admin-login"><h3>Ingresar como administrador</h3><p>Usá el PIN para revisar las declaraciones de goles.</p><form id="adminLoginForm"><input id="adminPin" type="password" inputmode="text" autocapitalize="none" spellcheck="false" autocomplete="current-password" placeholder="PIN" required><button type="submit">Ingresar</button></form><p id="adminLoginMessage" class="form-message"></p></article>
         <div id="adminPanel" hidden><datalist id="playerOptions"></datalist><div class="admin-toolbar"><div><strong>Panel del torneo</strong><span id="pendingCount">0 solicitudes</span></div><div class="admin-toolbar-actions"><button id="openLiveScore" type="button" disabled>⚽ Marcador en vivo</button><button id="adminLogout">Cerrar sesión</button></div></div><p id="liveScoreAvailability" class="admin-help">Primero guardá los equipos de un partido para usar el marcador.</p>
           <div class="admin-grid">
             <article class="card admin-tool team-generator-card">
