@@ -1,96 +1,77 @@
-/* Tema oscuro compartido por las secciones públicas y la administración. */
+/* Fondo oscuro continuo con tarjetas claras y acentos celestes y dorados. */
 :root {
-  color-scheme:dark;
+  color-scheme:light;
   --bg:#10151a;
-  --paper:#15212d;
-  --ink:#edf4fa;
-  --muted:#a9bac8;
-  --line:#304253;
-  --blue:#91d0ec;
-  --gold:#e4bb4c;
+  --paper:#fff;
+  --ink:#11243a;
+  --muted:#596d80;
+  --line:#d5e2ec;
+  --blue:#0d4b7b;
+  --gold:#d9a928;
   --shadow:0 18px 50px #0003;
 }
-body { background:var(--bg); }
+body { background:var(--bg); color:#edf4fa; }
 .topbar { background:#101820; border-bottom:1px solid #ffffff14; box-shadow:0 4px 25px #0003; }
-.brand,.section-header h2 { color:var(--ink); }
+.brand,.section-header h2 { color:#edf4fa; }
 .main-nav a { color:#b8c9d6; }
 .main-nav a:hover,.main-nav a.active { background:#233748; color:#c0eaff; }
 .menu-button { background:#253b4d; }
-.card,.duel,.admin-season-tools,.generator-player { background:var(--paper); border-color:var(--line); }
 .content-section { border-top:1px solid #ffffff09; }
+.section-header .eyebrow,.admin-subtitle { color:#91d0ec; }
+.card,.duel,.admin-season-tools,.generator-player { background:var(--paper); color:var(--ink); border-color:var(--line); }
+.card { color-scheme:light; }
 .section-header select,.form-card input,.form-card select,.admin-login input,
 .admin-tool input,.admin-tool select,.vote-summary select {
-  background:#101b26; color:var(--ink); border-color:#40576b;
+  background:#f5f9fc; color:var(--ink); border-color:#afc5d6;
 }
-input::placeholder { color:#95a8b8; opacity:1; }
-input,select,button { accent-color:#91d0ec; }
+input::placeholder { color:#596d80; opacity:1; }
+input,select,button { accent-color:#0d4b7b; }
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible {
-  outline:2px solid #91d0ec; outline-offset:3px;
+  outline:2px solid #3198c0; outline-offset:3px;
 }
-th,.history-overview-head { background:#1c2d3b; color:#bbcfdd; }
-td,.rank-row { border-color:var(--line); }
-#clasificacion tbody tr:nth-child(odd) { background:#192733; }
-tbody tr:hover,#clasificacion tbody tr:hover,.rank-row-pro:hover { background:#243a4b; }
-tbody tr:nth-child(-n+8) td:first-child { background:#244d65; color:#eff8ff; }
-tbody tr:first-child td:first-child { background:var(--gold); color:#18232c; }
-.player-initial { background:#274154; color:#bce9ff; }
-#clasificacion .table-scroll { scrollbar-color:#6ba9c7 #15212d; }
-#clasificacion .table-scroll::-webkit-scrollbar-track { background:#15212d; }
-.team ul { color:#c0cfda; }
-.result-pill { background:#263e52; }
-.match-state { background:#243e51; color:#b7e7ff; }
-.played-match .match-state,.live-badge { background:#183e31; color:#9fe3bc; }
-.live-badge.cached,.sharing-warning { background:#42351c; color:#f5d682; }
-.upcoming-match { border-color:#619ab4; }
-.stat-box { background:linear-gradient(145deg,#172b40,#244968); }
-.stat-box:nth-child(2) { background:linear-gradient(145deg,#39301c,#5a4620); }
-.stat-box span,.stat-box small { opacity:1; color:#c6d5df; }
-.stat-box:nth-child(2) span,.stat-box:nth-child(2) small { color:#ead7aa; }
-.rank-position { background:#25394a; color:#e0edf6; }
-.rank-row-pro:nth-child(-n+3) .rank-position { background:#473b22; }
-.rank-track { background:#304253; }
+.secondary-admin-button { background:#e7f5fb!important; color:#0d4b7b!important; }
+.stat-box:nth-child(2) { color:#18232c; }
+.stat-box span,.stat-box small { opacity:1; }
 .rank-value,.history-metrics-grid .history-card h3 { color:var(--ink); }
-.top-scorer-card,.champion-history { background:linear-gradient(135deg,#2b2a23,#19242e); border-color:#786437; }
-.top-scorer-card span,.top-scorer-card strong,.champion-history strong,
-.season-awards>small { color:#f2d57d; }
-.top-scorer-card small { color:#e5d7b1; }
+.top-scorer-card,.champion-history { background:linear-gradient(135deg,#fff8de,#fff); color:var(--ink); border-color:#d9a928; }
+.top-scorer-card span,.top-scorer-card strong,.champion-history strong { color:#0d4b7b; }
+.top-scorer-card small { color:#755711; }
 .champion-history p { color:var(--muted); }
 .season-awards p b { color:var(--ink); }
-.champion { background:linear-gradient(145deg,#433820,#675022); color:#fff0ba; }
-.form-card h3,.admin-login h3 { color:var(--ink); }
-.form-card label { color:#c0cfda; }
-.form-message { color:#99dfb6!important; }
-.form-message.error,.sanction-row b { color:#ffb1a7!important; }
-.primary-button,.admin-login button,.admin-tool button { background:#28465d; color:#f4f9fd; }
-.secondary-admin-button { background:#263e50!important; color:#bde9fb!important; }
-.pending-actions button { background:#204b37; color:#b8f1ce; }
-.pending-actions .reject,.approved-card .pending-actions button,
-.delete-small,.danger-admin-button { background:#4c292b!important; color:#ffc0b8!important; }
-.danger-tool { background:#291f25; border-color:#825052; }
-.danger-tool>p { color:#e8bcb8; }
-.danger-tool button { background:#803f3a; }
-.mvp-choice,.official-mvp { background:#3b321f; color:#f5dc91; border-color:#786437; }
-.remove-mvp { background:#4c292b; color:#ffc0b8; }
-.image-settings,.match-danger-actions,.admin-subtool,.approved-declarations { border-color:var(--line); }
-.generated-teams>div { background:#2b3c4b; border-color:#66869d; }
-.generated-teams>div:last-child { background:#10202f; border-color:#40576b; }
-.playoff-duel.completed,.playoff-duel.completed.mood-fire,
-.playoff-duel.completed.mood-ice,.playoff-duel.completed.mood-storm { background:var(--paper); }
-.playoff-duel>div { background:#192936; }
-.playoff-duel>div>b { color:var(--ink); }
-.duel .advanced,.playoff-duel .advanced { background:linear-gradient(90deg,#204632,#192e29); color:#b2edc9; }
-.duel .advanced b { color:#b2edc9; }
-.playoff-duel .duel-mood { background:#233644e8!important; }
-.mood-fire { background:linear-gradient(125deg,#34251f,#15212d 65%); }
-.mood-ice { background:linear-gradient(125deg,#173b4c,#15212d 65%); }
-.mood-storm { background:linear-gradient(125deg,#3d341f,#15212d 65%); }
-.mood-ice:after { background:linear-gradient(125deg,#4cbbdd20,transparent 48%,#68d2f418); }
-.error-panel { background:#322128; color:#ffdfda; border-color:#825052; }
-.error-panel span { color:#ebbfba; }
-footer { background:#0b1118; border-top:1px solid var(--line); }
-@media(max-width:800px) { .main-nav { background:#15212d; border:1px solid var(--line); } }
-.podium-place.first { background:linear-gradient(145deg,#493b20,#665024); color:#ffe7a2; }
-.podium-place.second { background:linear-gradient(145deg,#293745,#3d4a57); color:#e9f0f6; }
-.podium-place.third { background:linear-gradient(145deg,#493126,#65432e); color:#ffd7b9; }
-#inicio .home-champion-banner>strong { color:#fff0ba; }
-#inicio .home-champion-banner>span,#inicio .home-champion-banner>div { color:#e5d7b1; }
+.trust-card { background:linear-gradient(145deg,#edf8ff,#fff); color:var(--ink); border-top:3px solid #75cbed; }
+.trust-card h3 { color:var(--ink); }
+.trust-card p,.trust-card ul { color:#425c70; }
+.admin-toolbar span,.vote-date-summary { color:#b8c9d6; }
+.card .vote-date-summary { color:var(--muted); }
+.generated-teams>div { background:#f7fbfe; color:var(--ink); }
+.generated-teams>div:last-child { background:#102b46; color:#fff; }
+.error-panel { color:var(--ink); }
+footer { background:#0b1118; border-top:1px solid #304253; }
+@media(max-width:800px) { .main-nav { background:#15212d; border:1px solid #304253; } }
+
+/* La imagen y los títulos de Inicio permanecen sobre el fondo oscuro. */
+#inicio .season-card,#inicio .featured-match,#inicio .next-match-card,
+#inicio .home-info-grid .fund-card,#inicio .home-champion-banner {
+  background:#f8fbfe; color:var(--ink); border-color:#d5e2ec;
+}
+#inicio .featured-match { border-top-color:#75cbed; }
+#inicio .season-card strong,#inicio .featured-match h2,#inicio .compact-result>strong,
+#inicio .compact-team,#inicio .next-match-card strong,#inicio .fund-card strong,
+#inicio .home-champion-banner>strong { color:#11243a; }
+#inicio .season-card span,#inicio .compact-awards,#inicio .mood-caption,
+#inicio .featured-score small,#inicio .next-match-card small,#inicio .fund-card small,
+#inicio .home-champion-banner>div { color:#596d80; }
+#inicio .featured-kicker,#inicio .compact-awards>b,#inicio .next-match-card span,
+#inicio .fund-card span { color:#0d4b7b; }
+#inicio .featured-button { background:#0d4b7b; color:#fff; }
+#inicio .progress-track { background:#d8edf6; }
+#inicio .progress-track span { background:#2183ac; }
+#inicio .compact-result { background:#e5f2fa; }
+#inicio .home-info-grid .fund-card,#inicio .home-champion-banner {
+  background:linear-gradient(135deg,#fff8de,#fff); border-color:#d9a928;
+}
+#inicio .home-champion-banner>span { color:#755711; }
+#inicio .next-match-card:after,#inicio .home-info-grid .fund-card:after { border-color:#75cbed40; }
+.podium-place { color:var(--ink); }
+.empty-state { color:#b8c9d6; }
+.card .empty-state { color:var(--muted); }
