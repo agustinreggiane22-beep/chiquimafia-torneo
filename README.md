@@ -57,7 +57,7 @@ El sitio no necesita instalación ni compilación. Desde la raíz del repositori
 `python3 -m http.server 8000 --bind 127.0.0.1`.
 
 Las pruebas de reutilización de datos se ejecutan con
-`node --test tests/goals-cache.test.cjs`.
+`node --test tests/*.test.cjs`.
 Con Playwright y Chromium disponibles, y el servidor local en marcha, ejecutar
 `node tests/page-behavior.cjs` para comprobar los rankings, la próxima fecha y las
 actualizaciones de administración. Esta prueba intercepta Apps Script con datos
@@ -72,3 +72,6 @@ Fechas completa (partidos a disputar, fechas jugadas y todas las fechas) aparece
 encima de Clasificación. Inicio conserva el último resultado y su resumen
 original de próximo partido. Si aún no se guardó un próximo partido, la fecha de la tarjeta
 pequeña se estima a partir del último partido y se identifica como estimada.
+
+La consulta inicial permite hasta 45 segundos para una respuesta lenta de Apps
+Script. El panel de error muestra el mensaje concreto de la carga fallida.

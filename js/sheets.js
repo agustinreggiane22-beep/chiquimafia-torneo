@@ -83,7 +83,27 @@
     const h=rows[at],col=a=>headerIndex(h,a),ix={match:col(['matchnumber']),white:col(['whitegoals']),black:col(['blackgoals']),winner:col(['winner']),played:col(['played']),updated:col(['updatedat'])};
     return rows.slice(at+1).map(r=>({matchNumber:number(r[ix.match]),whiteGoals:number(r[ix.white]),blackGoals:number(r[ix.black]),winner:clean(r[ix.winner]),played:['true','si','sí','1'].includes(key(r[ix.played])),updatedAt:clean(r[ix.updated])})).filter(x=>x.matchNumber>0);
   }
-  function readState(){return new Promise((resolve,reject)=>{const api=String(window.CHIQUI_CONFIG.goalsApiUrl||'').trim();if(!api){reject(new Error('Falta configurar Google Apps Script'));return}const callback='__chiquiState'+Date.now()+Math.random().toString(36).slice(2),script=document.createElement('script'),finish=value=>{clearTimeout(timer);delete window[callback];script.remove();resolve(value)};window[callback]=payload=>finish(payload);script.src=api+'?mode=state&callback='+encodeURIComponent(callback)+'&t='+Date.now();script.onerror=()=>{clearTimeout(timer);delete window[callback];script.remove();reject(new Error('No se pudo leer el torneo'))};const timer=setTimeout(()=>{delete window[callback];script.remove();reject(new Error('La conexión con el torneo demoró demasiado'))},15000);document.head.appendChild(script)})}
+  function readState(){
+    return new Promise((resolve,reject)=>{
+      const api=String(window.CHIQUI_CONFIG.goalsApiUrl||'').trim();
+      if(!api){reject(new Error('Falta configurar Google Apps Script'));return}
+      const callback='__chiquiState'+Date.now()+Math.random().toString(36).slice(2),script=document.createElement('script');
+      let settled=false;
+      const finish=(error,value)=>{
+        if(settled)return;
+        settled=true;clearTimeout(timer);script.remove();
+        // A response already queued by the browser may arrive after a timeout.
+        window[callback]=()=>{};
+        setTimeout(()=>{delete window[callback]},60000);
+        error?reject(error):resolve(value);
+      };
+      window[callback]=payload=>finish(null,payload);
+      script.onerror=()=>finish(new Error('No se pudo conectar con Google Apps Script. Probá con datos móviles o una red que permita acceder a Google.'));
+      const timer=setTimeout(()=>finish(new Error('Google Apps Script no respondió en 45 segundos. Tocá Reintentar para volver a cargar el torneo.')),45000);
+      script.src=api+'?mode=state&callback='+encodeURIComponent(callback)+'&t='+Date.now();
+      document.head.appendChild(script);
+    });
+  }
   const array=value=>{if(Array.isArray(value))return value;if(typeof value==='string'){try{return JSON.parse(value)}catch{return[]}}return[]};
   function uniqueNames(values){
     const byKey=new Map();
