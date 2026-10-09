@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="css/theme.css?v=2026100927">
   <link rel="stylesheet" href="css/hall-of-fame.css?v=2026100924">
   <link rel="stylesheet" href="css/live-score.css?v=2026100932">
-  <link rel="stylesheet" href="css/mvp-voting.css?v=2026100938">
+  <link rel="stylesheet" href="css/mvp-voting.css?v=2026100939">
 </head>
 <body>
   <div class="app-shell">
@@ -85,7 +85,8 @@
         </div>
         <div id="mvpVotingPanel" hidden>
   <article id="mvpVotingDialog" aria-labelledby="mvpCardTitle">
-    <header class="mvp-dialog-header"><div><h2 id="mvpCardTitle">Votación de MVP</h2><span>Elegí al mejor del partido · Un voto por jugador</span></div></header>
+    <div class="mvp-frame-glints" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <header class="mvp-dialog-header"><div><h2 id="mvpCardTitle">Votación de MVP</h2><span>Elegí al mejor del partido</span></div></header>
     <div class="mvp-dialog-controls"><div class="mvp-match-row"><label>Partido<select id="mvpMatchSelect" aria-label="Fecha de la votación"></select></label><p id="mvpWindowStatus" class="mvp-window-status" role="status"></p></div><div class="mvp-voter-row"><span id="mvpVoterName">Elegí tu nombre para votar</span><button id="mvpChooseVoter" type="button">Soy…</button></div></div>
     <div class="mvp-dialog-scroll">  <div id="mvpVoterDialog" hidden aria-labelledby="mvpVoterTitle"><header><div><h2 id="mvpVoterTitle">¿Quién sos?</h2><p>Elegí tu nombre entre los convocados.</p></div><button id="mvpCloseVoter" type="button">Cerrar</button></header><div id="mvpVoterTeams" class="mvp-team-columns"></div><p>El voto es personal. Elegí únicamente tu propio nombre.</p></div>
 <div id="mvpCandidateTeams" class="mvp-team-columns"></div><div id="mvpClosedResult" class="mvp-closed-result" hidden></div><p class="mvp-rules">También cuentan las atajadas, la defensa y las asistencias. Las barras muestran el avance en vivo, sin cantidades. El MVP se publica al cierre.</p></div>
