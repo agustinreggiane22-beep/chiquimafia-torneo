@@ -28,3 +28,15 @@
 .image-settings summary,.match-danger-actions summary,.admin-season-tools>summary { cursor:pointer; font-weight:800; padding:6px 0 14px; }
 .admin-season-tools { grid-column:1/-1; border:1px solid #dce7ef; border-radius:16px; padding:16px; background:#f8fbfd; }
 .admin-season-tools .admin-grid { margin-bottom:0; }
+
+.admin-match-tools { grid-column:1/-1; }
+.admin-match-tools>h3 { margin:0 0 14px; font-size:22px; }
+.admin-match-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.vote-date-label { display:grid; gap:7px; font-size:12px; font-weight:700; }
+.vote-date-summary { grid-column:1/-1; margin:0; }
+.approved-declarations { margin:18px 0; padding:16px; border:1px solid #dce7ef; border-radius:14px; }
+.approved-declarations>summary { cursor:pointer; font-weight:800; }
+@media(max-width:1000px){.admin-match-grid{grid-template-columns:1fr}}
+.admin-grid>*,.admin-match-grid>* { min-width:0; }
+@media(max-width:1000px){.admin-match-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:800px){.admin-grid{grid-template-columns:minmax(0,1fr)}}
