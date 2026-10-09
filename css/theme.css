@@ -86,17 +86,7 @@ footer { background:#0b1118; border-top:1px solid #304253; }
   box-shadow:0 14px 35px #0003,inset 0 0 0 1px #ffffffb3;
   animation:season-card-arrive .65s ease-out both;
 }
-#inicio .season-card:before {
-  content:"🏆";
-  position:absolute;
-  right:18px;
-  top:12px;
-  font-size:78px;
-  line-height:1;
-  opacity:.16;
-  pointer-events:none;
-  animation:season-trophy-float 5s ease-in-out infinite;
-}
+
 #inicio .season-card>div { position:relative; z-index:1; }
 #inicio .season-card .season-kicker { display:flex; align-items:center; gap:8px; color:#0d4b7b; font-weight:800; }
 .season-kicker i { width:8px; height:8px; border-radius:50%; background:#2183ac; box-shadow:0 0 0 4px #75cbed33; flex-shrink:0; }
@@ -124,11 +114,10 @@ footer { background:#0b1118; border-top:1px solid #304253; }
   animation:season-progress-shine 4.5s ease-in-out infinite;
 }
 @keyframes season-card-arrive { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
-@keyframes season-trophy-float { 0%,100% { transform:translateY(0) rotate(-6deg); } 50% { transform:translateY(-6px) rotate(4deg); } }
 @keyframes season-progress-shine { 0%,35% { transform:translateX(-120%); } 75%,100% { transform:translateX(120%); } }
 @media(max-width:800px) { #inicio .season-card #phaseLabel { font-size:18px; } }
 @media(prefers-reduced-motion:reduce) {
-  #inicio .season-card,#inicio .season-card:before,#inicio .season-card #progressBar:after { animation:none; }
+  #inicio .season-card,#inicio .season-card #progressBar:after { animation:none; }
   #inicio .season-card #progressBar { transition:none; }
   #inicio .season-card #progressBar:after { display:none; }
 }
