@@ -1,0 +1,11 @@
+/* Continuous navy curves blend into the Messi cover without changing the cards. */
+body { position:relative; isolation:isolate; }
+.page-background { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; contain:strict; background:#08172e; }
+.page-background::before { content:""; position:absolute; inset:-5%; background:url('../assets/page-curves.svg') center/cover no-repeat,radial-gradient(ellipse at 80% 18%,#254c7380,transparent 72%),linear-gradient(155deg,#06142e,#0a2a50 50%,#05142d); opacity:.9; animation:page-curve-drift 26s ease-in-out infinite; will-change:transform; }
+.app-shell { position:relative; z-index:1; }
+#inicio { background:linear-gradient(180deg,#10151af5 0%,#10151aa6 38%,#10151a38 75%,#10151a00 100%); }
+#inicio::before { -webkit-mask-image:linear-gradient(90deg,transparent,#000 42%),linear-gradient(180deg,#000 55%,transparent 100%); -webkit-mask-composite:source-in; mask-image:linear-gradient(90deg,transparent,#000 42%),linear-gradient(180deg,#000 55%,transparent 100%); mask-composite:intersect; }
+.content-section { border-top-color:#ffffff05; }
+@keyframes page-curve-drift { 0%,100% { transform:translate3d(-8px,-9px,0) scale(1); } 50% { transform:translate3d(8px,12px,0) scale(1.025); } }
+@media(max-width:800px) { #inicio::before { -webkit-mask-image:linear-gradient(90deg,transparent,#000 35%),linear-gradient(180deg,#000 58%,transparent 100%); mask-image:linear-gradient(90deg,transparent,#000 35%),linear-gradient(180deg,#000 58%,transparent 100%); } }
+@media(prefers-reduced-motion:reduce) { .page-background::before { animation:none; will-change:auto; } }
