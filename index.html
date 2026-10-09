@@ -24,7 +24,7 @@
       </a>
       <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="mainNav">Menú</button>
       <nav id="mainNav" class="main-nav" aria-label="Navegación principal">
-        <a class="active" href="#inicio">Inicio</a><a href="#fechas">Fechas</a><a href="#clasificacion">Clasificación</a><a href="#cargar-goles">Cargar goles y MVP</a><a href="#estadisticas">Estadísticas</a><a href="#historia">Salón de la Fama</a><a href="#playoffs">Playoffs</a><a href="#administracion">Admin</a>
+        <a class="active" href="#inicio">Inicio</a><a href="#fechas">Fechas</a><a href="#clasificacion">Clasificación</a><a href="#cargar-goles">Cargar goles y MVP</a><a href="#estadisticas">Estadísticas</a><a href="#historia">Salón de la Fama</a><a href="#playoffs" hidden>Playoffs</a><a href="#administracion">Admin</a>
       </nav>
     </header>
 
@@ -56,7 +56,7 @@
         <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"></tbody></table></div></div>
       </section>
 
-      <section id="playoffs" class="page-section content-section playoffs-section">
+      <section id="playoffs" class="page-section content-section playoffs-section" hidden>
         <header class="section-header"><div><span class="eyebrow">LOS OCHO MEJORES</span><h2>Playoffs</h2></div></header>
         <div class="bracket" id="bracket"></div><div class="final-podium" id="finalPodium" hidden></div>
       </section>
@@ -139,7 +139,7 @@
   <script src="js/config.js?v=2026072707"></script>
   <script src="js/sheets.js?v=2026100907"></script>
   <script src="js/goals.js?v=2026100901"></script>
-  <script src="js/app.js?v=2026100920"></script>
+  <script src="js/app.js?v=2026100922"></script>
   <script src="js/team-generator.js?v=2026100913"></script>
 </body>
 </html>
