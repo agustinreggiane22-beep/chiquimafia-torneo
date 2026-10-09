@@ -17,3 +17,6 @@
 .generated-player:last-child { border:0; }
 .generated-player small { opacity:.72; }
 @media(max-width:720px){.generator-roster{grid-template-columns:1fr}.generator-player{grid-template-columns:25px minmax(80px,1fr) 105px 78px}.generated-teams{grid-template-columns:1fr}.generator-actions>*{flex:1 1 100%}}
+
+.teams-share-preview { display:block; width:min(100%,540px); height:auto; margin:20px auto 0; border-radius:18px; box-shadow:0 14px 40px #08294b33; }
+.teams-share-preview[hidden] { display:none; }

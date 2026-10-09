@@ -1,6 +1,7 @@
 (function(){
   'use strict';
-  const PROFILE_KEY='chiquimafia_team_profiles_v1';
+  const PROFILE_KEY='chiquimafia_team_profiles_v1',DETAILS_KEY='chiquimafia_match_image_details_v1';
+  let backgroundPromise;
   const $=selector=>document.querySelector(selector);
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
   const roles={goalkeeper:'Arquero',defender:'Defensor',midfielder:'Volante',forward:'Delantero',utility:'Polifuncional'};
@@ -24,15 +25,59 @@
     document.querySelectorAll('.generator-player').forEach(row=>{row.querySelector('.generator-check').checked=selected.includes(row.dataset.name)});
     $('#generatorMatch').value=match.number;
     const raw=String(match.date||''),parts=raw.split('/');
-    $('#generatorDate').value=/^\d{4}-\d{2}-\d{2}$/.test(raw)?raw:(parts.length===3?`${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`:'');
+    $('#generatorDate').value=/^\d{4}-\d{2}-\d{2}/.test(raw)?raw.slice(0,10):(parts.length===3?`${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`:'');
+    restoreImageDetails();
+    $('#teamsShareCanvas').hidden=true;
     renderTeams();
     $('#generatorMessage').className='form-message success';
     $('#generatorMessage').textContent=`Fecha ${match.number} cargada. Ya podés descargar la imagen o modificar los equipos.`;
   }
   function copyToLineup(){const fill=(selector,players)=>[...document.querySelectorAll(`${selector} .lineup-player`)].forEach((input,index)=>input.value=players[index]?.name||'');fill('#whiteSelectors',teams.white);fill('#blackSelectors',teams.black);$('#lineupNumber').value=$('#generatorMatch').value;$('#lineupDate').value=$('#generatorDate').value}
   async function publish(){const msg=$('#generatorMessage');if(!teams.white.length||!teams.black.length){msg.className='form-message error';msg.textContent='Primero generá los equipos.';return}const matchNumber=Number($('#generatorMatch').value),date=$('#generatorDate').value,pin=sessionStorage.getItem('chiqui_admin_pin');if(!matchNumber||!date){msg.className='form-message error';msg.textContent='Completá el número de partido y el día.';return}try{await ChiquiGoals.saveLineup({matchNumber,date,white:teams.white.map(p=>p.name),black:teams.black.map(p=>p.name)},pin);copyToLineup();msg.className='form-message success';msg.textContent='✓ Equipos guardados y publicados. También quedaron cargados en el formulario de abajo.'}catch(error){msg.className='form-message error';msg.textContent=error.message}}
-  function shareImage(){if(!teams.white.length||!teams.black.length){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí la fecha y tocá «Cargar equipos ya guardados» o generá nuevos equipos antes de descargar.';return}const canvas=$('#teamsShareCanvas'),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,date=$('#generatorDate').value,number=$('#generatorMatch').value;const roundRect=(x,y,width,height,r,fill)=>{ctx.beginPath();ctx.roundRect(x,y,width,height,r);ctx.fillStyle=fill;ctx.fill()};ctx.fillStyle='#73cce9';ctx.fillRect(0,0,w,h);const gradient=ctx.createLinearGradient(0,0,w,h);gradient.addColorStop(0,'rgba(255,255,255,.42)');gradient.addColorStop(1,'rgba(13,75,123,.22)');ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);ctx.textAlign='center';ctx.fillStyle='#08294b';ctx.font='900 44px Arial';ctx.fillText('CHIQUIMAFIA TORNEO',w/2,85);ctx.font='800 30px Arial';ctx.fillStyle='#b38308';ctx.fillText(`PRÓXIMO PARTIDO · FECHA ${number}`,w/2,135);ctx.font='600 24px Arial';ctx.fillStyle='#31546e';ctx.fillText(date||'DÍA A CONFIRMAR',w/2,175);const drawTeam=(team,x,title,dark)=>{roundRect(x,220,470,980,34,dark?'#092b4c':'#ffffff');ctx.fillStyle=dark?'#fff':'#092b4c';ctx.font='900 34px Arial';ctx.fillText(title,x+235,280);team.forEach((p,index)=>{const y=355+index*92;ctx.textAlign='left';ctx.font='800 29px Arial';ctx.fillText(p.name,x+42,y);ctx.font='500 20px Arial';ctx.globalAlpha=.72;ctx.fillText(roles[p.role],x+42,y+30);ctx.globalAlpha=1});ctx.textAlign='center'};drawTeam(teams.white,55,'⚪ EQUIPO CLARO',false);drawTeam(teams.black,555,'⚫ EQUIPO OSCURO',true);ctx.fillStyle='#08294b';ctx.font='700 24px Arial';ctx.fillText('Equipos generados para un partido parejo',w/2,1270);const link=document.createElement('a');link.download=`chiquimafia-fecha-${number||'proxima'}.png`;link.href=canvas.toDataURL('image/png');link.click()}
-  function init(){if(!$('#generatorRoster'))return;if(!document.querySelector('#playerOptions option')){setTimeout(init,500);return}profiles=readProfiles();renderRoster();const number=$('#lineupNumber')?.value||1,date=$('#lineupDate')?.value||'';$('#generatorMatch').value=number;$('#generatorDate').value=date;$('#addGeneratorGuest').onclick=()=>{const input=$('#generatorGuest'),name=input.value.trim();if(!name)return;if(!guests.some(x=>x.toLowerCase()===name.toLowerCase()))guests.push(name);input.value='';renderRoster();const row=[...document.querySelectorAll('.generator-player')].find(x=>x.dataset.name===name);if(row)row.querySelector('.generator-check').checked=true};$('#balanceTeams').onclick=()=>{const selected=[...document.querySelectorAll('.generator-player')].filter(row=>row.querySelector('.generator-check').checked).map(row=>playerData(row.dataset.name));if(selected.length<2){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí por lo menos dos jugadores.';return}teams=balance(selected);renderTeams()};$('#generatedTeams').onclick=event=>{const button=event.target.closest('[data-swap]');if(!button)return;const from=button.dataset.swap,to=from==='white'?'black':'white',index=Number(button.dataset.index);teams[to].push(teams[from].splice(index,1)[0]);renderTeams()};$('#publishGeneratedTeams').onclick=publish;$('#downloadTeamsImage').onclick=shareImage}
+  function imageDetails(){try{return JSON.parse(localStorage.getItem(DETAILS_KEY)||'{}')}catch{return{}}}
+  function restoreImageDetails(){const details=imageDetails()[$('#generatorMatch').value]||{};$('#generatorTime').value=details.time??'18:00';$('#generatorVenue').value=details.venue??'El Más Grande'}
+  function saveImageDetails(){const details=imageDetails();details[$('#generatorMatch').value]={time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()};try{localStorage.setItem(DETAILS_KEY,JSON.stringify(details))}catch{}}
+  function loadBackground(){if(!backgroundPromise)backgroundPromise=new Promise(resolve=>{const image=new Image(),timer=setTimeout(()=>resolve(null),12000);image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);resolve(null)};image.src='assets/match-red-background.png'});return backgroundPromise}
+  async function shareImage(download=true){
+    const message=$('#generatorMessage');
+    if(!teams.white.length||!teams.black.length){message.className='form-message error';message.textContent='Elegí la fecha y tocá «Cargar equipos ya guardados» o generá nuevos equipos antes de descargar.';return}
+    const button=download?$('#downloadTeamsImage'):$('#previewTeamsImage');button.disabled=true;
+    try{
+      saveImageDetails();
+      const background=await loadBackground(),canvas=$('#teamsShareCanvas'),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,date=$('#generatorDate').value,number=$('#generatorMatch').value,time=$('#generatorTime').value,venue=$('#generatorVenue').value.trim();
+      const panel=(x,y,width,height,r,fill)=>{ctx.beginPath();ctx.roundRect(x,y,width,height,r);ctx.fillStyle=fill;ctx.fill()};
+      const text=(value,x,y,size,color,maxWidth,weight=800)=>{ctx.fillStyle=color;ctx.font=`${weight} ${size}px Arial`;while(ctx.measureText(value).width>maxWidth&&size>13){size--;ctx.font=`${weight} ${size}px Arial`}ctx.fillText(value,x,y,maxWidth)};
+      ctx.clearRect(0,0,w,h);ctx.fillStyle='#101010';ctx.fillRect(0,0,w,h);
+      if(background){const scale=Math.max(w/background.width,h/background.height);ctx.drawImage(background,(w-background.width*scale)/2,(h-background.height*scale)/2,background.width*scale,background.height*scale)}
+      ctx.fillStyle='rgba(0,0,0,.16)';ctx.fillRect(0,0,w,h);
+      ctx.textAlign='center';text('EL TORNEO DEL BARRIO',w/2,83,23,'#bcbcbc',900,600);
+      text('CHIQUIMAFIA',w/2,166,74,'#fff',960,900);
+      panel(416,199,248,51,3,'#c7202c');text(`FECHA ${number}`,w/2,235,29,'#fff',220);
+      ctx.fillStyle='#ffffff20';ctx.fillRect(98,288,884,1);
+      panel(500,331,80,67,3,'#cf222e');text('VS',w/2,379,35,'#fff',70,900);
+      text('EQUIPO CLARO',278,378,34,'#fff',370,900);text('EQUIPO OSCURO',806,378,34,'#fff',370,900);
+      ctx.fillStyle='#b92c3480';ctx.fillRect(539,432,2,650);
+      const drawTeam=(team,left)=>{
+        const rowHeight=Math.min(80,650/Math.max(8,team.length));
+        team.forEach((player,index)=>{
+          const y=470+index*rowHeight;
+          ctx.textAlign=left?'right':'left';text(player.name,left?456:624,y,35,'#fff',348,900);
+          text(roles[player.role],left?456:624,y+27,18,'#a6a6a6',348,500);
+          ctx.textAlign=left?'left':'right';text(String(index+1).padStart(2,'0'),left?478:602,y,25,'#bdbdbd',38,500);
+        });
+      };
+      drawTeam(teams.white,true);drawTeam(teams.black,false);
+      ctx.textAlign='center';ctx.fillStyle='#ffffff25';ctx.fillRect(98,1110,884,1);
+      const formattedDate=date?new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(new Date(date+'T12:00:00')):'Día a confirmar';
+      text(formattedDate.toUpperCase()+(time?` · ${time} HS`:''),w/2,1169,29,'#fff',940);
+      text(venue||'Lugar a confirmar',w/2,1212,28,'#c6c6c6',940,500);
+      text('NOS VEMOS EN LA CANCHA',w/2,1290,22,'#e9555e',900);
+      canvas.hidden=false;
+      if(download){const link=document.createElement('a');link.download=`chiquimafia-fecha-${number||'proxima'}.png`;link.href=canvas.toDataURL('image/png');link.click()}
+      message.className='form-message success';message.textContent=download?'Imagen lista para compartir.':'Vista previa lista. Podés cambiar día, horario y lugar antes de descargar.';
+    }catch(error){message.className='form-message error';message.textContent='No se pudo preparar la imagen. '+error.message}finally{button.disabled=false}
+  }
+  function init(){if(!$('#generatorRoster'))return;if(!document.querySelector('#playerOptions option')){setTimeout(init,500);return}profiles=readProfiles();renderRoster();const number=$('#lineupNumber')?.value||1,date=$('#lineupDate')?.value||'';$('#generatorMatch').value=number;$('#generatorDate').value=date;$('#addGeneratorGuest').onclick=()=>{const input=$('#generatorGuest'),name=input.value.trim();if(!name)return;if(!guests.some(x=>x.toLowerCase()===name.toLowerCase()))guests.push(name);input.value='';renderRoster();const row=[...document.querySelectorAll('.generator-player')].find(x=>x.dataset.name===name);if(row)row.querySelector('.generator-check').checked=true};$('#balanceTeams').onclick=()=>{const selected=[...document.querySelectorAll('.generator-player')].filter(row=>row.querySelector('.generator-check').checked).map(row=>playerData(row.dataset.name));if(selected.length<2){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí por lo menos dos jugadores.';return}teams=balance(selected);renderTeams()};$('#generatedTeams').onclick=event=>{const button=event.target.closest('[data-swap]');if(!button)return;const from=button.dataset.swap,to=from==='white'?'black':'white',index=Number(button.dataset.index);teams[to].push(teams[from].splice(index,1)[0]);renderTeams()};$('#publishGeneratedTeams').onclick=publish;restoreImageDetails();$('#generatorMatch').addEventListener('change',restoreImageDetails);$('#generatorTime').addEventListener('change',saveImageDetails);$('#generatorVenue').addEventListener('change',saveImageDetails);$('#previewTeamsImage').onclick=()=>shareImage(false);$('#downloadTeamsImage').onclick=()=>shareImage(true)}
   window.addEventListener('chiqui:load-generator-lineup',event=>loadSavedTeams(event.detail));
   window.addEventListener('chiqui:players-changed',()=>{renderRoster()});
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
