@@ -75,3 +75,6 @@ pequeña se estima a partir del último partido y se identifica como estimada.
 
 La consulta inicial permite hasta 45 segundos para una respuesta lenta de Apps
 Script. El panel de error muestra el mensaje concreto de la carga fallida.
+
+La carga consulta primero JSON con credenciales de Google omitidas. Si esa ruta
+no funciona, utiliza JSONP con el tiempo restante del mismo limite de 45 segundos.

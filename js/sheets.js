@@ -83,10 +83,26 @@
     const h=rows[at],col=a=>headerIndex(h,a),ix={match:col(['matchnumber']),white:col(['whitegoals']),black:col(['blackgoals']),winner:col(['winner']),played:col(['played']),updated:col(['updatedat'])};
     return rows.slice(at+1).map(r=>({matchNumber:number(r[ix.match]),whiteGoals:number(r[ix.white]),blackGoals:number(r[ix.black]),winner:clean(r[ix.winner]),played:['true','si','sí','1'].includes(key(r[ix.played])),updatedAt:clean(r[ix.updated])})).filter(x=>x.matchNumber>0);
   }
-  function readState(){
+  async function readState(){
+    const api=String(window.CHIQUI_CONFIG.goalsApiUrl||'').trim();
+    if(!api)throw new Error('Falta configurar Google Apps Script');
+    const started=Date.now(),deadline=45000;let directError=null;
+    if(typeof fetch==='function'&&typeof AbortController==='function'){
+      const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
+      try{
+        const response=await fetch(api+'?mode=state&t='+Date.now(),{method:'GET',credentials:'omit',cache:'no-store',signal:controller.signal});
+        if(!response.ok)throw new Error('Google Apps Script respondió con HTTP '+response.status);
+        return await response.json();
+      }catch(error){
+        // Some browser/proxy routes reject ContentService redirects; keep JSONP as a fallback.
+        directError=error.message;
+      }finally{clearTimeout(timer)}
+    }
+    try{return await readStateJsonp(api,Math.max(1,deadline-(Date.now()-started)))}
+    catch(error){throw new Error(error.message+(directError?' Detalle de la consulta JSON: '+directError:''))}
+  }
+  function readStateJsonp(api,timeout){
     return new Promise((resolve,reject)=>{
-      const api=String(window.CHIQUI_CONFIG.goalsApiUrl||'').trim();
-      if(!api){reject(new Error('Falta configurar Google Apps Script'));return}
       const callback='__chiquiState'+Date.now()+Math.random().toString(36).slice(2),script=document.createElement('script');
       let settled=false;
       const finish=(error,value)=>{
@@ -99,7 +115,8 @@
       };
       window[callback]=payload=>finish(null,payload);
       script.onerror=()=>finish(new Error('No se pudo conectar con Google Apps Script. Probá con datos móviles o una red que permita acceder a Google.'));
-      const timer=setTimeout(()=>finish(new Error('Google Apps Script no respondió en 45 segundos. Tocá Reintentar para volver a cargar el torneo.')),45000);
+      script.onload=()=>{if(!settled)finish(new Error('Google Apps Script respondió sin los datos del torneo. Revisá el acceso y la implementación de la aplicación web.'))};
+      const timer=setTimeout(()=>finish(new Error('Google Apps Script no respondió en 45 segundos. Tocá Reintentar para volver a cargar el torneo.')),timeout);
       script.src=api+'?mode=state&callback='+encodeURIComponent(callback)+'&t='+Date.now();
       document.head.appendChild(script);
     });
