@@ -6,11 +6,43 @@
   const API=()=>String(window.CHIQUI_CONFIG.goalsApiUrl||'').trim();
   const localRead=()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}};
   const localWrite=items=>localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
-  async function request(action,payload={}){
-    if(!API())return null;
+  // Reuse one snapshot during rendering; fetch fresh data after any successful write.
+  const READ_FIELDS={listWebPlayers:'players',listLineups:'lineups',listResults:'results',listMvp:'mvps',listSanctions:'sanctions',listDeletedDates:'deletedDates',listPlayoffs:'playoffs',list:'submissions'};
+  const READ_TTL=30000,readCache=new Map(),pendingReads=new Map();
+  let readGeneration=0;
+  const copy=value=>JSON.parse(JSON.stringify(value));
+  function clearReadCache(){readGeneration+=1;readCache.clear();pendingReads.clear()}
+  function seedState(state){
+    clearReadCache();
+    const now=Date.now();
+    Object.entries(READ_FIELDS).forEach(([action,field])=>{
+      if(Array.isArray(state[field]))readCache.set(action,{value:{ok:true,items:copy(state[field])},at:now});
+    });
+  }
+  async function sendRequest(action,payload){
     const response=await fetch(API(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
     if(!response.ok)throw new Error('No se pudo conectar con el registro de goles');
     const result=await response.json();if(result.ok===false)throw new Error(result.error||'Operación rechazada');return result;
+  }
+  async function request(action,payload={}){
+    if(!API())return null;
+    if(!Object.prototype.hasOwnProperty.call(READ_FIELDS,action)){
+      const result=await sendRequest(action,payload);
+      if(action!=='auth')clearReadCache();
+      return result;
+    }
+    const cached=readCache.get(action);
+    if(cached&&Date.now()-cached.at<READ_TTL)return copy(cached.value);
+    let pending=pendingReads.get(action);
+    if(!pending){
+      const generation=readGeneration;
+      pending=sendRequest(action,payload).then(result=>{
+        if(generation===readGeneration&&Array.isArray(result.items))readCache.set(action,{value:copy(result),at:Date.now()});
+        return result;
+      }).finally(()=>{if(pendingReads.get(action)===pending)pendingReads.delete(action)});
+      pendingReads.set(action,pending);
+    }
+    return copy(await pending);
   }
   async function list(){const remote=await request('list').catch(()=>null);return remote?.items||localRead()}
   async function submit(input){
@@ -51,5 +83,5 @@
   async function addHistoricalChampion(item,pin){const remote=await request('addHistoricalChampion',{item,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.');return remote.item}
   async function deleteHistoricalChampion(season,player,pin){const remote=await request('deleteHistoricalChampion',{season,player,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.')}
   async function saveFund(amount,pin){const remote=await request('saveFund',{amount,pin});if(!remote)throw new Error('No se pudo guardar la caja.');return remote.item}
-  window.ChiquiGoals={list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,results,saveResult,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,addHistoricalChampion,deleteHistoricalChampion,saveFund,isShared:()=>Boolean(API())};
+  window.ChiquiGoals={seedState,list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,results,saveResult,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,addHistoricalChampion,deleteHistoricalChampion,saveFund,isShared:()=>Boolean(API())};
 })();

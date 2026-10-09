@@ -103,6 +103,6 @@
     const history=names.map(player=>({player,values:historyMap.get(key(player))||[]}));
     return{standings,matches,players:names,stats:standings.map(x=>({...x})),history,pointsHistory:history,historicalStats:state.history||[],fund:state.fund||{amount:0},results:[],mappings:[{type:'Google Apps Script',live:true}],allLive:true};
   }
-  async function loadAll(){const state=await readState();if(!state||state.ok===false)throw new Error(state?.error||'No se pudo cargar el torneo');return buildTournament(state)}
+  async function loadAll(){const state=await readState();if(!state||state.ok===false)throw new Error(state?.error||'No se pudo cargar el torneo');window.ChiquiGoals?.seedState(state);return buildTournament(state)}
   window.ChiquiSheets={loadAll,key,clean,number};
 })();
