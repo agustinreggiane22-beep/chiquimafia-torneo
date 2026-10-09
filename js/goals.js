@@ -7,13 +7,14 @@
   const localRead=()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}};
   const localWrite=items=>localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
   // Reuse one snapshot during rendering; fetch fresh data after any successful write.
-  const READ_FIELDS={listWebPlayers:'players',listLineups:'lineups',listResults:'results',listMvp:'mvps',listSanctions:'sanctions',listDeletedDates:'deletedDates',listPlayoffs:'playoffs',list:'submissions'};
+  const READ_FIELDS={listWebPlayers:'players',listLineups:'lineups',listResults:'results',listMvp:'mvps',listSanctions:'sanctions',listDeletedDates:'deletedDates',listPlayoffs:'playoffs',list:'submissions',listMatchRecords:'matchRecords'};
   const READ_TTL=30000,readCache=new Map(),pendingReads=new Map();
-  let readGeneration=0;
+  let readGeneration=0,capabilities={},serverOffset=0,latestMatchRecords=[],automationReady=false;
   const copy=value=>JSON.parse(JSON.stringify(value));
   function clearReadCache(){readGeneration+=1;readCache.clear();pendingReads.clear()}
   function seedState(state){
     clearReadCache();
+    capabilities=state.capabilities||{};automationReady=Boolean(state.automationReady);serverOffset=Date.parse(state.serverNow||'')-Date.now()||0;latestMatchRecords=copy(state.matchRecords||[]);
     const now=Date.now();
     Object.entries(READ_FIELDS).forEach(([action,field])=>{
       if(Array.isArray(state[field]))readCache.set(action,{value:{ok:true,items:copy(state[field])},at:now});
@@ -57,10 +58,16 @@
     const items=localRead(),item=items.find(x=>x.id===id);if(!item)throw new Error('No se encontró la solicitud');item.status=status;item.reviewedAt=new Date().toISOString();localWrite(items);return item;
   }
   function canonicalTotals(items,valueOf){const grouped=new Map();items.forEach(item=>{const raw=String(item.player||'').trim(),id=window.ChiquiSheets?.key?ChiquiSheets.key(raw):raw.toLowerCase().replace(/[^a-z0-9]/g,''),current=grouped.get(id),preferred=id==='joacoreggi'?'JOACOREGGI':(!current||(/\s/.test(raw)&&!/\s/.test(current.player))?raw:current.player);grouped.set(id,{player:preferred,value:Number(current?.value||0)+Number(valueOf(item)||0)})});return Object.fromEntries([...grouped.values()].map(x=>[x.player,x.value]))}
-  async function approvedTotals(){return canonicalTotals((await list()).filter(x=>x.status==='approved'),x=>x.goals)}
+  async function matchRecords(refresh=false){if(!capabilities.matchVotingV2)return [];if(refresh){readCache.delete('listMatchRecords');readCache.delete('listMvp')}const remote=await request('listMatchRecords');if(remote.serverNow)serverOffset=Date.parse(remote.serverNow)-Date.now()||0;latestMatchRecords=remote.items||[];return copy(latestMatchRecords)}
+  async function approvedTotals(){const [items,records]=await Promise.all([list(),matchRecords()]),managed=new Set(records.map(x=>Number(x.matchNumber)));return canonicalTotals(items.filter(x=>x.status==='approved'&&!managed.has(Number(x.matchNumber))).concat(records.flatMap(x=>x.scorers||[])),x=>x.goals)}
+  function scorerPoints(player,rounds=18){const id=window.ChiquiSheets?.key?ChiquiSheets.key(player):player;return latestMatchRecords.filter(r=>Number(r.matchNumber)<=rounds).flatMap(r=>r.scorerAwards||[]).filter(a=>(window.ChiquiSheets?.key?ChiquiSheets.key(a.player):a.player)===id).reduce((sum,a)=>sum+Number(a.points||0),0)}
+  async function voteMvp(item){if(!capabilities.matchVotingV2)throw new Error('La nueva votación necesita actualizar Apps Script.');return (await request('voteMvp',{item})).item}
+  async function mvpVotes(pin){if(!capabilities.matchVotingV2)return [];return (await request('listMvpVotes',{pin})).items||[]}
+  function supportsVoting(){return Boolean(capabilities.matchVotingV2)}
+  function serverTime(){return Date.now()+serverOffset}
   async function mvpAwards(){const remote=await request('listMvp').catch(()=>null);if(remote)return remote.items||[];try{return JSON.parse(localStorage.getItem(MVP_KEY)||'[]')}catch{return[]}}
   async function confirmMvp(matchNumber,player,pin){const remote=await request('confirmMvp',{matchNumber,player,pin});if(remote)return remote.item;const items=await mvpAwards(),existing=items.find(x=>String(x.matchNumber)===String(matchNumber));if(existing)existing.player=player;else items.push({matchNumber,player,confirmedAt:new Date().toISOString()});localStorage.setItem(MVP_KEY,JSON.stringify(items));return items.find(x=>String(x.matchNumber)===String(matchNumber))}
-  async function mvpTotals(){return canonicalTotals(await mvpAwards(),()=>1)}
+  async function mvpTotals(){return canonicalTotals(await mvpAwards(),x=>Number(x.points??1))}
   async function deleteMvp(matchNumber,pin){const remote=await request('deleteMvp',{matchNumber,pin});if(remote)return;localStorage.setItem(MVP_KEY,JSON.stringify((await mvpAwards()).filter(x=>String(x.matchNumber)!==String(matchNumber))))}
   const localList=key=>{try{return JSON.parse(localStorage.getItem(key)||'[]')}catch{return[]}};
   async function lineups(){const remote=await request('listLineups').catch(()=>null);return remote?.items||localList(LINEUP_KEY)}
@@ -83,5 +90,5 @@
   async function addHistoricalChampion(item,pin){const remote=await request('addHistoricalChampion',{item,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.');return remote.item}
   async function deleteHistoricalChampion(season,player,pin){const remote=await request('deleteHistoricalChampion',{season,player,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.')}
   async function saveFund(amount,pin){const remote=await request('saveFund',{amount,pin});if(!remote)throw new Error('No se pudo guardar la caja.');return remote.item}
-  window.ChiquiGoals={seedState,list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,results,saveResult,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,addHistoricalChampion,deleteHistoricalChampion,saveFund,isShared:()=>Boolean(API())};
+  window.ChiquiGoals={savedScorers:matchNumber=>copy(latestMatchRecords.find(r=>Number(r.matchNumber)===Number(matchNumber))?.scorers||null),automationReady:()=>automationReady,supportsVoting,matchRecords,scorerPoints,voteMvp,mvpVotes,serverTime,seedState,list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,results,saveResult,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,addHistoricalChampion,deleteHistoricalChampion,saveFund,isShared:()=>Boolean(API())};
 })();

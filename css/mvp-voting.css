@@ -1,0 +1,124 @@
+.mvp-voting-panel { max-width:760px; padding:24px; margin:auto; }
+.mvp-voting-top { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; }
+.mvp-voting-top h3 { margin:0 0 8px; font-size:26px; }
+.mvp-voting-top p { margin:0; font-size:13px; color:#506477; line-height:1.5; }
+.mvp-voting-top label { flex-shrink:0; font-size:12px; font-weight:800; }
+#mvpMatchSelect { display:block; margin-top:7px; min-height:44px; border:1px solid #bbd7e6; border-radius:10px; padding:9px 12px; background:#f0f8fc; color:#172e42; }
+.mvp-window-status { padding:12px; border:1px solid #afd5e6; border-radius:12px; background:#e9f6fc; font-size:12px; font-weight:800; color:#17455b; line-height:1.6; }
+.mvp-window-status[data-phase="closed"] { background:#fff7df; border-color:#dfc878; color:#725511; }
+.mvp-voter-row { display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; font-weight:800; }
+.mvp-voter-row button { min-height:44px; border:1px solid #a8cbdc; border-radius:10px; background:#f1f8fc; color:#19394d; padding:10px 14px; cursor:pointer; }
+.mvp-instructions { font-size:12px; line-height:1.6; color:#506477; }
+.mvp-team-columns { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; }
+.mvp-team h4 { font-size:13px; margin:6px 0 12px; }
+.mvp-player { display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; min-height:60px; margin-bottom:8px; padding:10px; background:#f0f7fb; border:1px solid #bfd6e2; border-radius:11px; color:#172e42; cursor:pointer; touch-action:manipulation; text-align:left; }
+.mvp-team-dark .mvp-player { background:#e8eff5; }
+.mvp-player strong { min-width:0; overflow-wrap:anywhere; font-size:13px; line-height:1.3; }
+.mvp-player span { flex-shrink:0; font-size:11px; font-weight:800; background:#d2eafb; color:#1265a8; padding:8px; border-radius:8px; }
+.mvp-player.selected { border:2px solid #258dda; padding:9px; background:#dff2ff; box-shadow:0 0 0 2px #258dda15; }
+.mvp-player.selected span { background:#258dda; color:white; }
+.mvp-player:disabled { cursor:default; opacity:.6; }
+.mvp-confirmation { border:1px solid #9ac7dd; border-radius:12px; padding:16px; margin-top:16px; background:#eff8fc; }
+.mvp-confirmation strong { font-size:17px; }
+.mvp-confirmation p,.mvp-rules { font-size:12px; color:#506477; line-height:1.6; }
+.mvp-confirmation>div { display:flex; gap:10px; }
+.mvp-confirmation button { flex:1; min-height:48px; padding:10px; border:1px solid #a2c9dd; border-radius:10px; background:white; color:#1c4057; font-weight:800; cursor:pointer; }
+#mvpConfirmVote { background:#1b7bb4; color:white; border-color:#1b7bb4; }
+.mvp-confirmation button:disabled { opacity:.5; cursor:default; }
+.mvp-closed-result { padding:16px; border-radius:12px; background:#fff8e5; border:1px solid #e4ce83; }
+.mvp-closed-result h4 { margin:0 0 12px; }
+.mvp-closed-result>div { display:flex; justify-content:space-between; gap:12px; margin:8px 0; }
+.mvp-closed-result b { color:#82630c; }
+.mvp-closed-result p { font-size:12px; margin-bottom:0; }
+.mvp-private-votes { padding:12px 0; font-size:13px; }
+.mvp-private-votes summary { cursor:pointer; font-weight:800; }
+#mvpVoterDialog { width:min(650px,calc(100% - 24px)); max-height:calc(100dvh - 32px); padding:20px; border:1px solid #a8cbdc; border-radius:16px; background:#f8fbfd; color:#172e42; }
+#mvpVoterDialog::backdrop { background:#000b; }
+#mvpVoterDialog header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+#mvpVoterDialog h2 { font-size:25px; margin:0; }
+#mvpVoterDialog p { font-size:12px; line-height:1.5; }
+#mvpCloseVoter { border:0; padding:10px 12px; min-height:44px; border-radius:10px; background:#dcecf6; color:#17374d; cursor:pointer; }
+.live-goal-assignment { max-width:55%; min-height:40px; background:#243e52; color:white; border:1px solid #66879e; border-radius:8px; }
+@media(max-width:600px) { .mvp-voting-panel { padding:16px; } .mvp-voting-top { flex-wrap:wrap; } .mvp-voting-top h3 { font-size:23px; } .mvp-team-columns { gap:10px; } .mvp-player { flex-wrap:wrap; align-content:center; gap:5px; min-height:64px; } .mvp-player strong { flex:1 1 70px; } .mvp-player span { padding:6px; } .mvp-confirmation>div { flex-wrap:wrap; } .mvp-confirmation button { flex:1 1 110px; } }
+/* Compact entry on the page; full voting list scrolls inside its own screen. */
+#mvpVotingPanel { max-width:none; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 20px; }
+#mvpVotingPanel[hidden] { display:none; }
+#mvpVotingPanel h3 { margin:0 0 6px; font-size:20px; }
+#mvpVotingPanel p { margin:0; font-size:12px; line-height:1.5; color:#506477; max-width:560px; }
+#mvpEntryStatus { display:block; margin-top:8px; font-size:12px; font-weight:800; color:#17455b; }
+#openMvpVoting { flex-shrink:0; min-height:46px; padding:12px 18px; border:0; border-radius:10px; background:#167dad; color:white; font-weight:800; cursor:pointer; }
+#cargar-goles:has(#mvpVotingPanel:not([hidden])) .section-header h2 { font-size:34px; }
+#mvpVotingDialog { width:min(650px,100%); height:min(820px,100dvh); max-width:100%; max-height:100dvh; margin:auto; padding:0; border:1px solid #547083; border-radius:18px; background:#101820; color:#f0f8fc; }
+#mvpVotingDialog::backdrop { background:#000b; }
+#mvpVotingDialog[open] { display:flex; flex-direction:column; }
+.mvp-dialog-header { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid #ffffff24; }
+.mvp-dialog-header h2 { margin:0; font:900 25px/1.1 'Barlow Condensed',sans-serif; }
+.mvp-dialog-header span { color:#b9d6e5; font-size:11px; }
+#closeMvpVoting { min-height:40px; border:0; border-radius:9px; padding:10px 12px; background:#253b4d; color:white; font-weight:800; cursor:pointer; }
+.mvp-dialog-controls { padding:10px 16px; border-bottom:1px solid #ffffff24; }
+.mvp-match-row { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+.mvp-match-row label { flex-shrink:0; font-size:11px; }
+#mvpVotingDialog #mvpMatchSelect { min-height:36px; margin-top:3px; padding:6px 9px; background:#203647; color:white; border-color:#547083; }
+#mvpVotingDialog .mvp-window-status { flex:1; margin:0; border:0; padding:0; background:transparent; color:#a4ddf3; font-size:11px; line-height:1.5; }
+#mvpVotingDialog .mvp-voter-row { font-size:12px; }
+#mvpVotingDialog .mvp-voter-row button { min-height:36px; padding:7px 10px; background:#203647; color:#f0f8fc; border-color:#547083; }
+.mvp-dialog-scroll { flex:1; min-height:0; overflow:auto; overscroll-behavior:contain; padding:10px 16px; }
+#mvpVotingDialog .mvp-team h4 { font-size:12px; margin:2px 0 10px; }
+#mvpVotingDialog .mvp-player { min-height:54px; padding:9px; margin-bottom:7px; flex-wrap:nowrap; gap:6px; }
+#mvpVotingDialog .mvp-player.selected { padding:8px; }
+#mvpVotingDialog .mvp-player strong { font-size:12px; flex:1; }
+#mvpVotingDialog .mvp-player span { display:grid; place-items:center; width:30px; height:30px; padding:0; font-size:20px; }
+#mvpVotingDialog .mvp-player:disabled span { font-size:11px; }
+#mvpVotingDialog .mvp-team-dark .mvp-player { background:#253e53; color:#f4f8fc; border-color:#66879e; }
+#mvpVotingDialog .mvp-team-dark .mvp-player.selected { background:#214d6e; border-color:#42a8ef; }
+#mvpVotingDialog .mvp-rules { color:#b9d6e5; font-size:11px; margin:10px 0 0; }
+.mvp-dialog-footer { display:block; border-top:1px solid #ffffff24; padding:10px 16px max(12px,env(safe-area-inset-bottom)); background:#101820; }
+#mvpVotingDialog .mvp-confirmation { margin:0; padding:0; background:none; border:0; }
+#mvpVotingDialog .mvp-confirmation strong { font-size:13px; display:block; margin-bottom:9px; }
+#mvpVotingDialog .mvp-confirmation>div { flex-wrap:nowrap; }
+#mvpVotingDialog .mvp-confirmation button { min-height:44px; background:#253b4d; color:white; border:0; font-size:12px; }
+#mvpVotingDialog #mvpConfirmVote { background:#a4ddf3; color:#11243a; }
+#mvpVoteMessage { font-size:12px; line-height:1.5; margin:0 0 8px; color:#b9d6e5; }
+#mvpVoteMessage:empty { display:none; }
+#mvpVoteMessage.error { color:#ffb7ae; }
+#mvpTapHint { margin:0; font-size:12px; color:#b9d6e5; }
+#mvpVotingDialog .mvp-closed-result { background:#263443; border-color:#c7a750; color:white; }
+#mvpVotingDialog .mvp-closed-result b { color:#ead087; }
+@media(max-width:600px) { #mvpVotingPanel { flex-wrap:wrap; padding:16px; gap:12px; } #mvpVotingDialog { width:100%; height:100dvh; margin:0; border-radius:0; } .mvp-dialog-header { padding-top:max(14px,env(safe-area-inset-top)); } }
+
+/* Voting stays directly on the page, with its roster scrolling inside. */
+#mvpVotingPanel { display:block; padding:0; margin:0; }
+#mvpVotingPanel[hidden] { display:none; }
+#mvpVotingDialog { display:flex; flex-direction:column; width:100%; max-width:720px; height:600px; max-height:none; margin:0 auto; border-radius:16px; box-shadow:0 12px 35px #0002; }
+#mvpVoterDialog { width:100%; max-height:none; margin:0 0 14px; padding:12px; background:#152b3b; color:white; border-color:#547083; border-radius:10px; }
+#mvpVoterDialog[hidden] { display:none; }
+#mvpVoterDialog h2 { font-size:20px; }
+#mvpVotingDialog .mvp-team h4 { color:#e8f5fc; }
+#mvpVotingDialog .mvp-dialog-header { padding:12px 16px; }
+#mvpVotingDialog .mvp-dialog-header h2 { font-size:22px; }
+#cargar-goles:has(#mvpVotingPanel:not([hidden])) .section-header { margin-bottom:16px; }
+@media(max-width:600px) { #mvpVotingDialog { height:560px; border-radius:14px; } #mvpVotingDialog .mvp-dialog-header { padding:11px 14px; } }
+/* Subtle feedback stays quick enough to use during the match. */
+#mvpVotingDialog { border-color:#5a829b; background:linear-gradient(150deg,#142733 0%,#101820 48%,#17242c 100%); }
+#mvpVotingDialog .mvp-dialog-header { position:relative; background:linear-gradient(110deg,#a4ddf312,#e2c46b0a); }
+#mvpVotingDialog .mvp-dialog-header::before { content:""; position:absolute; top:0; left:16px; right:16px; height:2px; background:linear-gradient(90deg,#8cd3f3,#e7c96c,#8cd3f3); }
+#mvpVotingDialog .mvp-dialog-header h2 { color:#eaf7ff; }
+#mvpVotingDialog .mvp-dialog-header span { color:#d8c687; }
+#mvpVotingDialog .mvp-window-status[data-phase="open"]::before { content:""; display:inline-block; width:7px; height:7px; margin-right:6px; border-radius:50%; background:#85d6a5; box-shadow:0 0 0 3px #85d6a515; animation:mvp-status-pulse 2.8s ease-in-out infinite; }
+#mvpVotingDialog .mvp-player { transition:border-color .16s,background .16s,box-shadow .16s; }
+#mvpVotingDialog .mvp-player>span { transition:transform .15s,background .15s; }
+#mvpVotingDialog .mvp-player:not(:disabled):hover { border-color:#5db5ed; box-shadow:0 3px 12px #0002; }
+#mvpVotingDialog .mvp-player:not(:disabled):active>span { transform:scale(.85); }
+#mvpVotingDialog .mvp-player.selected { box-shadow:0 0 0 2px #53b4f31c,0 4px 16px #53b4f31c; }
+#mvpVotingDialog .mvp-player.selected>span { animation:mvp-chosen .26s ease-out; }
+#mvpVotingDialog .mvp-enter .mvp-player { animation:mvp-row-enter .24s ease-out both; animation-delay:calc(var(--player-order,0)*25ms); }
+#mvpVotingDialog .mvp-confirmation:not([hidden]) { animation:mvp-confirm-enter .2s ease-out; }
+#mvpVotingDialog #mvpVoteMessage.success:not(:empty) { color:#a4e1bb; }
+#mvpVotingDialog .mvp-dialog-footer { background:linear-gradient(110deg,#111e28,#142531); }
+#mvpVotingDialog #mvpConfirmVote { box-shadow:0 3px 12px #84cfee20; transition:background .15s,transform .15s; }
+#mvpVotingDialog #mvpConfirmVote:not(:disabled):active { transform:scale(.98); }
+@keyframes mvp-row-enter { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+@keyframes mvp-chosen { 0% { transform:scale(.75); } 65% { transform:scale(1.12); } 100% { transform:scale(1); } }
+@keyframes mvp-confirm-enter { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+@keyframes mvp-status-pulse { 0%,100% { opacity:1; box-shadow:0 0 0 3px #85d6a515; } 50% { opacity:.65; box-shadow:0 0 0 5px #85d6a509; } }
+@media(prefers-reduced-motion:reduce) { #mvpVotingDialog *,#mvpVotingDialog *::before { animation:none!important; transition:none!important; } }

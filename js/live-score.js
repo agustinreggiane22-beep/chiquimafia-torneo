@@ -11,7 +11,7 @@
  const event=(team,player='')=>({id:crypto.randomUUID?.()||Date.now()+'-'+Math.random(),team,player,at:new Date().toISOString()});
  function fresh(match){
   const events=[];
-  if(match.played)for(const team of ['white','black'])for(let i=0;i<Number(match[team+'Goals']||0);i++)events.push(event(team));
+  if(match.played){const official=window.ChiquiGoals?.savedScorers?.(match.number);if(official&&['white','black'].every(team=>official.filter(x=>x.team===team).reduce((sum,x)=>sum+Number(x.goals||0),0)===Number(match[team+'Goals']||0))){official.forEach(x=>{for(let i=0;i<x.goals;i++)events.push(event(x.team,x.player))})}else for(const team of ['white','black'])for(let i=0;i<Number(match[team+'Goals']||0);i++)events.push(event(team));}
   return{version:1,number:match.number,date:match.date,white:[...match.white],black:[...match.black],events,published:Boolean(match.played),updatedAt:new Date().toISOString()};
  }
  function read(match){
@@ -33,7 +33,7 @@
    $('#live'+(team==='white'?'White':'Black')+'Players').innerHTML=list.map((player,index)=>`<button type="button" class="live-player" data-team="${team}" data-index="${index}"${draft.published?' disabled':''}><span>${esc(player)}</span><b>${counts[player]||0}</b><i aria-hidden="true">+1</i></button>`).join('')+(available?`<button type="button" class="live-unknown" data-team="${team}" data-unknown="true"${draft.published?' disabled':''}>Gol sin identificar <b>${counts['']||0}</b></button>`:'');
   }
   const last=draft?.events.at(-1);$('#liveLastGoal').textContent=last?`Último gol: ${last.player||'sin identificar'} · ${last.team==='white'?'Claro':'Oscuro'}`:'Tocá al jugador que hizo el gol.';
-  $('#liveGoalHistory').innerHTML=draft?.events.length?[...draft.events].reverse().map((e,i)=>`<li><span>${draft.events.length-i}. ${esc(e.player||'Sin identificar')}</span><b>${e.team==='white'?'Claro':'Oscuro'}</b></li>`).join(''):'<li>Todavía no se anotaron goles.</li>';
+  $('#liveGoalHistory').innerHTML=draft?.events.length?[...draft.events].reverse().map((e,i)=>`<li><span>${draft.events.length-i}. ${esc(e.player||'Sin identificar')} · ${e.team==='white'?'Claro':'Oscuro'}</span>${!e.player&&!draft.published&&ChiquiGoals.supportsVoting()?`<select class="live-goal-assignment" data-assign-event="${esc(e.id)}" aria-label="Asignar jugador al gol ${draft.events.length-i}"><option value="">Asignar goleador</option>${draft[e.team].map((p,index)=>`<option value="${index}">${esc(p)}</option>`).join('')}</select>`:''}</li>`).join(''):'<li>Todavía no se anotaron goles.</li>';
  }
  function loadSelected(){
   current=matches.find(m=>String(m.number)===$('#liveMatchSelect').value);draft=null;
@@ -71,12 +71,13 @@
  }
  function renderReview(saved){
   const totals=score(saved),goals=saved.events.reduce((map,e)=>{const id=e.team+'\u0000'+e.player;const row=map.get(id)||{team:e.team,player:e.player,count:0};row.count++;map.set(id,row);return map},new Map());
-  $('#liveScoreReview').hidden=false;
+  $('#liveScoreReview').hidden=false;$('#liveScoreReview p').textContent=ChiquiGoals.supportsVoting()?'Al publicar, estos goles se suman a las estadísticas. El goleador recibe 0,5 puntos, repartidos si hay empate. Los jugadores solo votan al MVP.':'Estas anotaciones se guardan en este celular. Los goles de las estadísticas y los votos MVP se revisan en las declaraciones del partido.';
   $('#liveScoreReviewTitle').textContent=`Anotaciones de la fecha ${saved.number} · Claro ${totals.white}–${totals.black} Oscuro`;
   $('#liveScoreReviewPlayers').innerHTML=[...goals.values()].map(row=>`<li><span>${esc(row.player||'Sin identificar')} · ${row.team==='white'?'Claro':'Oscuro'}</span><b>${row.count}</b></li>`).join('')||'<li>Sin goles anotados.</li>';
  }
  function review(){
   if(!authorized()||!draft)return;
+  if(ChiquiGoals.supportsVoting()&&draft.events.some(e=>!e.player)){message('Hay goles sin identificar. Abrí “Opciones del partido” y asigná el goleador a cada gol antes de publicar.',true);$('#liveGoalHistory').closest('details').open=true;$('#liveGoalHistory').scrollIntoView({block:'nearest'});return}
   const totals=score(draft);
   $('#resultMatch').value=draft.number;$('#resultWhite').value=totals.white;$('#resultBlack').value=totals.black;
   renderReview(draft);close();
@@ -102,5 +103,12 @@
  document.addEventListener('visibilitychange',keepAwake);
  window.addEventListener('storage',e=>{if(dialog.open&&current&&e.key===key(current))loadSelected()});
  new MutationObserver(()=>{if(!authorized())close()}).observe($('#adminPanel'),{attributes:true,attributeFilter:['hidden']});
- window.ChiquiLiveScore={setMatches,noteOfficialResult};
+ function scorersForResult(match,whiteGoals,blackGoals){
+  const saved=read(match);if(!saved)return null;
+  if(saved.events.some(e=>!e.player))throw new Error('Hay goles sin identificar. Asigná cada goleador desde Opciones del partido.');
+  const totals=score(saved);if(totals.white!==whiteGoals||totals.black!==blackGoals)throw new Error('El resultado no coincide con tus anotaciones. Corregí los goles desde el marcador en vivo y volvé a revisar.');
+  const rows=new Map();saved.events.forEach(e=>{const id=e.team+'\u0000'+ChiquiSheets.key(e.player),row=rows.get(id)||{player:e.player,team:e.team,goals:0};row.goals++;rows.set(id,row)});return [...rows.values()];
+ }
+ $('#liveGoalHistory').addEventListener('change',e=>{const select=e.target.closest('select[data-assign-event]');if(!select||!authorized()||!draft||draft.published||select.value==='')return;try{const latest=read(current)||draft,goal=latest.events.find(x=>x.id===select.dataset.assignEvent);if(!goal||latest.published)return;const player=latest[goal.team][Number(select.value)];if(!player)return;save({...latest,events:latest.events.map(x=>x.id===goal.id?{...x,player}:x)});message('Goleador asignado y guardado.');render()}catch(error){message(errorText(error),true)}});
+ window.ChiquiLiveScore={scorersForResult,setMatches,noteOfficialResult};
 })();
