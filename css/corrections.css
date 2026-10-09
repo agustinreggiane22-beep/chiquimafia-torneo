@@ -31,12 +31,15 @@
 
 .admin-match-tools { grid-column:1/-1; }
 .admin-match-tools>h3 { margin:0 0 14px; font-size:22px; }
-.admin-match-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
 .vote-date-label { display:grid; gap:7px; font-size:12px; font-weight:700; }
 .vote-date-summary { grid-column:1/-1; margin:0; }
 .approved-declarations { margin:18px 0; padding:16px; border:1px solid #dce7ef; border-radius:14px; }
 .approved-declarations>summary { cursor:pointer; font-weight:800; }
-@media(max-width:1000px){.admin-match-grid{grid-template-columns:1fr}}
-.admin-grid>*,.admin-match-grid>* { min-width:0; }
-@media(max-width:1000px){.admin-match-grid{grid-template-columns:minmax(0,1fr)}}
+.admin-grid>* { min-width:0; }
 @media(max-width:800px){.admin-grid{grid-template-columns:minmax(0,1fr)}}
+
+.admin-match-tools #resultForm { max-width:640px; }
+.admin-subtool { border-top:1px solid #dce7ef; margin-top:18px; padding-top:12px; }
+.admin-subtool>summary { cursor:pointer; font-weight:800; padding:8px 0; }
+.admin-subtool-content { padding-top:12px; }
+.admin-subtool-content h4 { margin:0 0 14px; }
