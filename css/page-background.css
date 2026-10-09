@@ -1,9 +1,13 @@
 /* Continuous navy curves blend into the Messi cover without changing the cards. */
 body { position:relative; isolation:isolate; }
 .page-background { position:fixed; inset:0 0 auto; height:100vh; height:100lvh; z-index:0; overflow:hidden; pointer-events:none; contain:strict; background:#08172e; }
-.page-background::before { content:""; position:absolute; inset:0; background:url('../assets/page-curves.svg?v=2026100944') center/cover no-repeat,radial-gradient(ellipse at 80% 18%,#254c7380,transparent 72%),linear-gradient(155deg,#06142e,#0a2a50 50%,#05142d); opacity:.9; }
+.page-background::before { content:""; position:absolute; inset:0; background:url('../assets/page-curves.svg?v=2026100945') center/cover no-repeat,radial-gradient(ellipse at 80% 18%,#254c7380,transparent 72%),linear-gradient(155deg,#06142e,#0a2a50 50%,#05142d); opacity:.9; }
 .app-shell { position:relative; z-index:1; }
 #inicio { background:linear-gradient(180deg,#10151af5 0%,#10151aa6 38%,#10151a38 75%,#10151a00 100%); }
 #inicio::before { -webkit-mask-image:linear-gradient(90deg,transparent,#000 42%),linear-gradient(180deg,#000 55%,transparent 100%); -webkit-mask-composite:source-in; mask-image:linear-gradient(90deg,transparent,#000 42%),linear-gradient(180deg,#000 55%,transparent 100%); mask-composite:intersect; }
 .content-section { border-top-color:#ffffff05; }
 @media(max-width:800px) { #inicio::before { -webkit-mask-image:linear-gradient(90deg,transparent,#000 35%),linear-gradient(180deg,#000 58%,transparent 100%); mask-image:linear-gradient(90deg,transparent,#000 35%),linear-gradient(180deg,#000 58%,transparent 100%); } }
+.brand-crest { display:block; width:36px; height:36px; object-fit:contain; flex-shrink:0; }
+#inicio .hero-crest { display:block; width:96px; height:96px; object-fit:contain; margin:0 0 14px; }
+@media(max-width:800px) { #inicio .hero-crest { width:80px; height:80px; } }
+@media(max-width:800px) { .topbar .brand { gap:8px; font-size:18px; } .brand-crest { width:32px; height:32px; } }
