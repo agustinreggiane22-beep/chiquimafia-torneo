@@ -8,11 +8,37 @@ body { position:relative; isolation:isolate; }
 .content-section { border-top-color:#ffffff05; }
 @media(max-width:800px) { #inicio::before { -webkit-mask-image:linear-gradient(90deg,transparent,#000 35%),linear-gradient(180deg,#000 58%,transparent 100%); mask-image:linear-gradient(90deg,transparent,#000 35%),linear-gradient(180deg,#000 58%,transparent 100%); } }
 .brand-crest { display:block; width:36px; height:36px; object-fit:contain; flex-shrink:0; }
-#inicio .hero-crest { display:block; width:160px; height:160px; object-fit:contain; margin:0 0 14px auto; }
-@media(max-width:800px) { #inicio .hero-crest { width:128px; height:128px; } }
+#inicio .hero-heading { display:grid; grid-template-columns:minmax(0,1fr) clamp(128px,12vw,160px); align-items:center; gap:16px; }
+#inicio .hero-crest { display:block; width:100%; height:auto; aspect-ratio:1; object-fit:contain; margin:0; }
+@media(max-width:800px) { #inicio .hero-heading { grid-template-columns:minmax(0,1fr) clamp(104px,30vw,128px); gap:12px; } }
 @media(max-width:800px) { .topbar .brand { gap:8px; font-size:18px; } .brand-crest { width:32px; height:32px; } }
 
 /* Use the locally hosted heading face throughout the top of the page. */
 #inicio h1 { font-family:'Chiqui MVP','Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(64px,7.4vw,104px); line-height:.95; letter-spacing:0; }
 .topbar .brand { font-family:'Chiqui MVP','Barlow Condensed',sans-serif; font-weight:900; font-size:24px; }
-@media(max-width:800px) { #inicio h1 { font-size:clamp(44px,12vw,60px); } .topbar .brand { font-size:22px; } }
+@media(max-width:800px) { #inicio h1 { font-size:clamp(38px,11vw,60px); } .topbar .brand { font-size:22px; } }
+
+/* Compact home summaries share the moving gold, sky and blue accent. */
+#inicio .season-card { border-top-width:1px; }
+#inicio .season-card::before,
+#inicio .next-match-card::before,
+#inicio .home-info-grid .fund-card::before {
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0;
+  height:5px;
+  z-index:2;
+  pointer-events:none;
+  background:linear-gradient(90deg,#d9a928,#ffe582,#75cbed,#0d4b7b,#75cbed,#ffe582,#d9a928);
+  background-size:200% 100%;
+  animation:home-accent-flow 6s ease-in-out infinite;
+}
+@keyframes home-accent-flow {
+  0%,100% { background-position:0% 50%; }
+  50% { background-position:100% 50%; }
+}
+@media(prefers-reduced-motion:reduce) {
+  #inicio .season-card::before,
+  #inicio .next-match-card::before,
+  #inicio .home-info-grid .fund-card::before { animation:none; }
+}
