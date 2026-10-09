@@ -130,3 +130,20 @@
 #mvpCandidateTeams .mvp-player::before { content:""; position:absolute; inset:0 auto 0 0; width:var(--vote-share,0%); background:linear-gradient(90deg,#d9ae4399 0%,#e7c76870 60%,#e7c76800 100%); transition:width .45s ease; pointer-events:none; z-index:-1; }
 #mvpCandidateTeams .mvp-player.has-vote-progress:disabled { opacity:1; }
 #mvpCandidateTeams .mvp-player.has-vote-progress { border-color:#d8bd76; }
+
+/* A sports-card frame surrounds the whole voting surface. */
+#cargar-goles:has(#mvpVotingPanel:not([hidden])) > .section-header { display:none; }
+#mvpVotingDialog { position:relative; isolation:isolate; padding:8px 8px 10px; border:0; border-radius:24px; background:radial-gradient(ellipse at 100% 0%,#254c73,transparent 55%),linear-gradient(145deg,#071b38,#103b60 62%,#071b38); box-shadow:0 16px 36px #0003,0 0 0 1px #dfbc6b60; }
+#mvpVotingDialog::before { content:""; position:absolute; inset:0; z-index:2; padding:2px; border-radius:inherit; pointer-events:none; background:linear-gradient(115deg,#d3ac55 0%,#fff2b6 12%,#977332 20%,#d7b558 37%,#ffedac 44%,#9c7837 54%,#dfc775 72%,#fff4be 80%,#bd913c 100%); background-size:250% 250%; -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); mask-composite:exclude; animation:mvp-frame-shine 9s ease-in-out infinite; }
+#mvpVotingDialog .mvp-dialog-header { flex-shrink:0; overflow:hidden; min-height:80px; padding:14px 16px 16px; border:0; background:transparent; border-radius:17px 17px 0 0; }
+#mvpVotingDialog .mvp-dialog-header>div { position:relative; z-index:1; }
+#mvpVotingDialog .mvp-dialog-header h2 { margin:0 0 5px; color:#fff; font:900 32px/1.05 'Barlow Condensed','Arial Narrow',sans-serif; text-transform:uppercase; letter-spacing:.5px; }
+#mvpVotingDialog .mvp-dialog-header span { color:#c8def0; font-size:11px; line-height:1.4; }
+#mvpVotingDialog .mvp-dialog-header::before { top:-135px; right:-45px; left:auto; width:250px; height:250px; border:40px solid #c7e6ff0c; border-radius:50%; background:transparent; box-shadow:0 0 0 35px #c7e6ff07; animation:mvp-frame-arcs 16s ease-in-out infinite; }
+#mvpVotingDialog .mvp-dialog-controls { background:#fff; border-radius:16px 16px 0 0; padding-top:12px; }
+#mvpVotingDialog .mvp-dialog-scroll { background:linear-gradient(145deg,#fff,#f4f8fc); }
+#mvpVotingDialog .mvp-dialog-footer { border-radius:0 0 16px 16px; background:linear-gradient(110deg,#f6fbfe,#fffaf0); }
+@keyframes mvp-frame-shine { 0%,100% { background-position:0% 15%; } 50% { background-position:100% 85%; } }
+@keyframes mvp-frame-arcs { 0%,100% { transform:translate(0,0); } 50% { transform:translate(-10px,8px); } }
+@media(max-width:600px) { #mvpVotingDialog { border-radius:22px; padding:7px 7px 9px; } #mvpVotingDialog .mvp-dialog-header { padding:12px 12px 14px; min-height:76px; } #mvpVotingDialog .mvp-dialog-header h2 { font-size:clamp(24px,7vw,29px); } }
+@media(prefers-reduced-motion:reduce) { #mvpVotingDialog::before { animation:none!important; } }
