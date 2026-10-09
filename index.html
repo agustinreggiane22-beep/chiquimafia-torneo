@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css?v=2026072115">
   <link rel="stylesheet" href="css/enhancements.css?v=2026072115">
-  <link rel="stylesheet" href="css/corrections.css?v=2026100904">
+  <link rel="stylesheet" href="css/corrections.css?v=2026100905">
 </head>
 <body>
   <div class="app-shell">
@@ -22,7 +22,7 @@
       </a>
       <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="mainNav">Menú</button>
       <nav id="mainNav" class="main-nav" aria-label="Navegación principal">
-        <a class="active" href="#inicio">Inicio</a><a href="#clasificacion">Clasificación</a><a href="#fechas">Fechas</a><a href="#cargar-goles">Cargar goles y MVP</a><a href="#estadisticas">Estadísticas</a><a href="#historia">Salón de la Fama</a><a href="#playoffs">Playoffs</a><a href="#administracion">Admin</a>
+        <a class="active" href="#inicio">Inicio</a><a href="#fechas">Fechas</a><a href="#clasificacion">Clasificación</a><a href="#cargar-goles">Cargar goles y MVP</a><a href="#estadisticas">Estadísticas</a><a href="#historia">Salón de la Fama</a><a href="#playoffs">Playoffs</a><a href="#administracion">Admin</a>
       </nav>
     </header>
 
@@ -40,14 +40,16 @@
           <div class="progress-track"><span id="progressBar"></span></div>
         </article>
         <article id="featuredMatch" class="featured-match" aria-live="polite"></article>
-        <div class="home-info-grid"><article class="fund-card"><span>🐷 CAJA DEL TORNEO</span><strong id="fundAmount">$0</strong><small>Disponible para los próximos partidos</small></article></div>
+        <div class="home-info-grid"><article class="next-match-card"><span>⏱ PRÓXIMO PARTIDO</span><strong id="nextMatchDate">Calculando…</strong><small id="nextMatchCountdown">Se juega cada 7 días</small></article><article class="fund-card"><span>🐷 CAJA DEL TORNEO</span><strong id="fundAmount">$0</strong><small>Disponible para los próximos partidos</small></article></div>
         <article id="homeChampionBanner" class="home-champion-banner" hidden></article>
       </section>
 
+      <section id="fechas" class="page-section content-section">
+        <header class="section-header"><div><span class="eyebrow">BLANCO VS NEGRO</span><h2>Fechas</h2></div><select id="matchFilter" aria-label="Filtrar fechas"><option value="upcoming">Partidos a disputar</option><option value="played">Fechas jugadas</option><option value="all">Todas</option></select></header>
+        <div id="matchesGrid" class="matches-grid"></div>
+      </section>
+
       <section id="clasificacion" class="page-section content-section">
-        <div class="upcoming-fixture"><article class="next-match-card"><span>⏱ PRÓXIMO PARTIDO</span><strong id="nextMatchDate">Calculando…</strong><small id="nextMatchCountdown">Se juega cada 7 días</small></article>
-          <div id="nextMatchPreview" hidden aria-live="polite"></div>
-        </div>
         <header class="section-header"><div><span class="eyebrow">TEMPORADA ACTUAL</span><h2>Clasificación</h2></div><span class="live-badge" id="syncStatus">Conectando</span></header>
         <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"></tbody></table></div></div>
       </section>
@@ -55,11 +57,6 @@
       <section id="playoffs" class="page-section content-section playoffs-section">
         <header class="section-header"><div><span class="eyebrow">LOS OCHO MEJORES</span><h2>Playoffs</h2></div></header>
         <div class="bracket" id="bracket"></div><div class="final-podium" id="finalPodium" hidden></div>
-      </section>
-
-      <section id="fechas" class="page-section content-section">
-        <header class="section-header"><div><span class="eyebrow">BLANCO VS NEGRO</span><h2>Fechas</h2></div><select id="matchFilter" aria-label="Filtrar fechas"><option value="upcoming">Partidos a disputar</option><option value="played">Fechas jugadas</option><option value="all">Todas</option></select></header>
-        <div id="matchesGrid" class="matches-grid"></div>
       </section>
 
       <section id="cargar-goles" class="page-section content-section">
@@ -120,7 +117,7 @@
   <script src="js/config.js?v=2026072707"></script>
   <script src="js/sheets.js?v=2026100901"></script>
   <script src="js/goals.js?v=2026100901"></script>
-  <script src="js/app.js?v=2026100902"></script>
+  <script src="js/app.js?v=2026100905"></script>
   <script src="js/team-generator.js?v=2026100903"></script>
 </body>
 </html>
