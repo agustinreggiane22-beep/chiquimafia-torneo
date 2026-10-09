@@ -1,12 +1,7 @@
-/* Fechas and Clasificación share the approved blue curves and light panels of the voting design. */
-.sports-frame { position:relative; isolation:isolate; min-width:0; padding:10px 10px 26px; border-radius:30px; background:#071a38 url('../assets/mvp-frame.svg') center/100% 100% no-repeat; box-shadow:0 18px 40px #0004; }
-.sports-frame > .section-header { display:grid; grid-template-columns:minmax(0,1fr); justify-content:stretch; justify-items:center; gap:10px; margin:0; padding:16px 12px 19px; border-radius:20px 20px 0 0; background:url('../assets/mvp-frame.svg') center top/100% 570px no-repeat; text-align:center; }
-.sports-frame > .section-header .eyebrow { margin:0 0 6px; font-size:9px; color:#b9d9ed; letter-spacing:.18em; }
-.sports-frame > .section-header h2 { font:900 44px/1 'Chiqui MVP','Barlow Condensed',sans-serif; letter-spacing:.4px; color:#fff; text-shadow:0 2px 8px #0004; }
-.sports-frame > .section-header select { max-width:100%; min-height:38px; padding:7px 12px; border:1px solid #94bfd7; border-radius:10px; background:#eff7ff; color:#17324d; font-size:12px; }
-.sports-frame > .section-header .live-badge { justify-self:center; background:#e4f8ed; color:#226443; border:1px solid #a5d7b7; font-size:11px; }
-.sports-frame-body { position:relative; min-width:0; padding:12px; border-radius:22px 22px 30px 30px; background:linear-gradient(145deg,#fff,#f2f6fc); color:#11243a; }
-.sports-frame-body .table-card { padding:0; border:0; border-radius:12px; box-shadow:none; }
-.sports-frame-body .matches-grid { min-width:0; }
-.sports-frame-body .match-card { box-shadow:0 4px 14px #0b294b0b; }
-@media(max-width:600px) { .sports-frame { padding:9px 9px 24px; border-radius:28px; } .sports-frame > .section-header { padding:14px 7px 17px; } .sports-frame > .section-header h2 { font-size:38px; } .sports-frame-body { padding:9px; } }
+/* Section titles sit directly over the continuous page background. */
+.section-header.sports-heading { display:grid; grid-template-columns:minmax(0,1fr); justify-content:stretch; justify-items:center; gap:10px; margin:0 0 20px; padding:0; text-align:center; }
+.section-header.sports-heading .eyebrow { margin:0 0 6px; font-size:9px; color:#b9d9ed; letter-spacing:.18em; }
+.section-header.sports-heading h2 { font:900 44px/1 'Chiqui MVP','Barlow Condensed',sans-serif; letter-spacing:.4px; color:#fff; text-shadow:0 2px 8px #0004; }
+.section-header.sports-heading select { max-width:100%; min-height:38px; padding:7px 12px; border:1px solid #94bfd7; border-radius:10px; background:#eff7ff; color:#17324d; font-size:12px; }
+.section-header.sports-heading .live-badge { justify-self:center; background:#e4f8ed; color:#226443; border:1px solid #a5d7b7; font-size:11px; }
+@media(max-width:600px) { .section-header.sports-heading h2 { font-size:38px; } }

@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="css/hall-of-fame.css?v=2026100924">
   <link rel="stylesheet" href="css/live-score.css?v=2026100932">
   <link rel="stylesheet" href="css/mvp-voting.css?v=2026100939">
-  <link rel="stylesheet" href="css/sports-panels.css?v=2026100941">
+  <link rel="stylesheet" href="css/sports-panels.css?v=2026100942">
   <link rel="stylesheet" href="css/page-background.css?v=2026100941">
 </head>
 <body>
@@ -53,21 +53,13 @@
       </section>
 
       <section id="fechas" class="page-section content-section">
-        <div class="sports-frame">
-        <header class="section-header"><div><span class="eyebrow">BLANCO VS NEGRO</span><h2>Fechas</h2></div><select id="matchFilter" aria-label="Filtrar fechas"><option value="upcoming">Partidos a disputar</option><option value="played">Fechas jugadas</option><option value="all">Todas</option></select></header>
-        <div class="sports-frame-body">
+        <header class="section-header sports-heading"><div><span class="eyebrow">BLANCO VS NEGRO</span><h2>Fechas</h2></div><select id="matchFilter" aria-label="Filtrar fechas"><option value="upcoming">Partidos a disputar</option><option value="played">Fechas jugadas</option><option value="all">Todas</option></select></header>
         <div id="matchesGrid" class="matches-grid"></div>
-        </div>
-        </div>
       </section>
 
       <section id="clasificacion" class="page-section content-section">
-        <div class="sports-frame">
-        <header class="section-header"><div><span class="eyebrow">TEMPORADA ACTUAL</span><h2>Clasificación</h2></div><span class="live-badge" id="syncStatus">Conectando</span></header>
-        <div class="sports-frame-body">
+        <header class="section-header sports-heading"><div><span class="eyebrow">TEMPORADA ACTUAL</span><h2>Clasificación</h2></div><span class="live-badge" id="syncStatus">Conectando</span></header>
         <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"></tbody></table></div></div>
-        </div>
-        </div>
       </section>
 
       <section id="playoffs" class="page-section content-section playoffs-section" hidden>
