@@ -20,3 +20,11 @@
 
 .teams-share-preview { display:block; width:min(100%,540px); height:auto; margin:20px auto 0; border-radius:18px; box-shadow:0 14px 40px #08294b33; }
 .teams-share-preview[hidden] { display:none; }
+
+.team-mode-label { margin:20px 0 12px; }
+#manualTeamFields .lineup-player { margin-bottom:8px; }
+#manualTeamFields[hidden],#balancedTeamFields[hidden],#generatedTeams[hidden] { display:none; }
+.image-settings,.match-danger-actions { border-top:1px solid #dce7ef; padding-top:14px; margin-top:18px; }
+.image-settings summary,.match-danger-actions summary,.admin-season-tools>summary { cursor:pointer; font-weight:800; padding:6px 0 14px; }
+.admin-season-tools { grid-column:1/-1; border:1px solid #dce7ef; border-radius:16px; padding:16px; background:#f8fbfd; }
+.admin-season-tools .admin-grid { margin-bottom:0; }
