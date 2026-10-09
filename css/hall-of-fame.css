@@ -5,8 +5,8 @@
 #historia .section-header h2::after { transform:scaleX(-1); }
 #hallOfFame { display:block; }
 .fame-season-picker { display:flex; flex-direction:column; align-items:center; gap:10px; max-width:720px; margin:0 auto 22px; }
-.fame-season-picker label { color:#0d4b7b; font-size:10px; letter-spacing:.14em; font-weight:800; }
-.fame-season-picker select { width:min(100%,360px); border:1px solid #d7b66e99; border-radius:12px; padding:13px 36px 13px 18px; background:#fff; color:#11243a; font:700 15px Inter,system-ui,sans-serif; text-align:center; }
+.fame-season-picker label { color:#d7bd80; font-size:10px; letter-spacing:.14em; font-weight:800; }
+.fame-season-picker select { width:min(100%,360px); border:1px solid #d7b66e99; border-radius:12px; padding:13px 36px 13px 18px; background:#080808; color:#fff4dc; font:700 15px Inter,system-ui,sans-serif; text-align:center; }
 .fame-season-picker select:focus-visible { outline:2px solid #75cbed; outline-offset:3px; }
 #hallOfFame .fame-season { position:relative; width:100%; max-width:720px; margin-inline:auto; min-width:0; overflow:hidden; padding:0; border:0; border-radius:8px; background:transparent; box-shadow:0 18px 45px #0004; }
 .fame-season-header { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
@@ -38,7 +38,7 @@
 }
 
 /* The same polished gold perimeter and glints as the MVP voting panel. */
-.fame-panel { position:relative; isolation:isolate; width:100%; max-width:760px; margin:0 auto; padding:24px 20px; border:0; border-radius:30px; background:linear-gradient(145deg,#fff,#f2f6fc); box-shadow:0 18px 40px #0005,0 0 18px #dfbc6b25,inset 0 0 0 3px #e2bf7055; }
+.fame-panel { position:relative; isolation:isolate; width:100%; max-width:760px; margin:0 auto; padding:24px 20px; border:0; border-radius:30px; background:#000; box-shadow:0 18px 40px #0005,0 0 18px #dfbc6b25,inset 0 0 0 3px #e2bf7055; }
 .fame-panel::before { content:""; position:absolute; inset:0; z-index:2; padding:3px; border-radius:inherit; pointer-events:none; background:linear-gradient(115deg,#aa7d32 0%,#fff4c5 12%,#a47830 20%,#e7c579 37%,#fff4c5 44%,#a47830 54%,#dfc775 72%,#fff4c5 80%,#bd913c 100%); background-size:250% 250%; -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); mask-composite:exclude; animation:mvp-frame-shine 9s ease-in-out infinite; }
 @media(max-width:600px) { .fame-panel { padding:20px 8px 12px; border-radius:24px; } #historia .section-header h2 { gap:8px; } #historia .section-header .eyebrow { font-size:9px; letter-spacing:.13em; } }
 @media(prefers-reduced-motion:reduce) { .fame-panel::before { animation:none; } }
