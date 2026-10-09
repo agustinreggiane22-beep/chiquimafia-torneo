@@ -1,42 +1,34 @@
-/* Archivo de temporadas: campeón destacado, podio y figuras. */
-#hallOfFame { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
-#hallOfFame .fame-season { min-width:0; overflow:hidden; padding:26px; border-top:4px solid #d9a928; background:#fff; }
-.fame-season-header { display:flex; align-items:center; justify-content:space-between; gap:14px; padding-bottom:20px; }
-.fame-season-header .eyebrow { font-size:9px; letter-spacing:.13em; margin-bottom:8px; }
-.fame-season-header h3 { margin:0; font:900 30px/1.1 'Barlow Condensed',sans-serif; color:#11243a; overflow-wrap:anywhere; }
-.fame-archive-label { flex-shrink:0; padding:7px 10px; border-radius:20px; background:#edf5f9; color:#536b7d; font-size:9px; font-weight:700; }
-.fame-champion { display:flex; align-items:center; gap:20px; padding:24px 20px; border:1px solid #edd490; border-radius:18px; background:linear-gradient(120deg,#fff5d5,#fffdf5); }
-.fame-trophy { display:grid; place-items:center; width:72px; height:72px; flex:0 0 72px; border-radius:50%; background:#f8e4a5; font-size:42px; box-shadow:inset 0 0 0 5px #fffae9; }
-.fame-champion>div { min-width:0; }
-.fame-champion-label { display:block; color:#71520b; font-size:10px; font-weight:800; letter-spacing:.13em; }
-.fame-champion strong { display:block; margin:8px 0; font:900 clamp(28px,3vw,38px)/1 'Barlow Condensed',sans-serif; color:#11243a; overflow-wrap:anywhere; }
-.fame-champion-caption { color:#715f3b; font-size:11px; line-height:1.5; }
-.fame-podium { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:16px; }
-.fame-podium-place { display:flex; align-items:center; gap:10px; padding:16px 12px; border-radius:13px; background:#f2f6fa; border:1px solid #dce7ef; min-width:0; }
-.fame-podium-place>span { font-size:27px; }
-.fame-podium-place>div { min-width:0; }
-.fame-podium-place small,.fame-award small { display:block; color:#536b7d; font-size:9px; font-weight:800; letter-spacing:.04em; margin-bottom:6px; }
-.fame-podium-place strong { display:block; font:800 20px/1.1 'Barlow Condensed',sans-serif; color:#11243a; overflow-wrap:anywhere; }
-.fame-awards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; border-top:1px solid #dce7ef; padding-top:18px; margin-top:20px; }
-.fame-award { display:flex; align-items:center; gap:10px; padding:12px; min-width:0; border-radius:12px; background:#eff8fc; }
-.fame-award-icon { display:grid; place-items:center; width:36px; height:36px; flex-shrink:0; background:#fff; border-radius:10px; font-size:22px; }
-.fame-award>div { min-width:0; }
-.fame-award strong { display:block; color:#0d4b7b; font:800 21px/1.1 'Barlow Condensed',sans-serif; overflow-wrap:anywhere; }
-.fame-award-total { display:block; margin-top:5px; color:#536b7d; font-size:11px; }
-#hallOfFame .fame-empty { grid-column:1/-1; text-align:center; padding:38px 24px; background:linear-gradient(135deg,#fff8e3,#f3faff); }
-.fame-empty .fame-trophy { margin:0 auto 20px; }
-.fame-empty h3 { margin:0 0 12px; color:#11243a; font:900 32px 'Barlow Condensed',sans-serif; }
-.fame-empty p { color:#536b7d; font-size:13px; line-height:1.6; margin:0; }
-@media(max-width:1000px) { #hallOfFame { grid-template-columns:minmax(0,1fr); } }
-@media(max-width:430px) {
- #hallOfFame .fame-season { padding:18px; }
- .fame-season-header { align-items:flex-start; flex-direction:column; gap:10px; }
- .fame-champion { padding:20px 14px; gap:12px; }
- .fame-trophy { width:58px; height:58px; flex-basis:58px; font-size:34px; }
- .fame-podium-place { align-items:flex-start; padding:14px 10px; gap:7px; }
- .fame-podium-place>span { font-size:22px; }
- .fame-awards { grid-template-columns:minmax(0,1fr); }
+/* One physical trophy cabinet; plaques remain live text for every season. */
+#historia .section-header { justify-content:center; text-align:center; }
+#historia .section-header h2 { font-family:'Chiqui MVP','Barlow Condensed',sans-serif; font-weight:900; }
+#hallOfFame { display:block; }
+.fame-season-picker { display:flex; flex-direction:column; align-items:center; gap:10px; max-width:720px; margin:0 auto 22px; }
+.fame-season-picker label { color:#d7bd80; font-size:10px; letter-spacing:.14em; font-weight:800; }
+.fame-season-picker select { width:min(100%,360px); border:1px solid #d7b66e99; border-radius:12px; padding:13px 36px 13px 18px; background:#101b2c; color:#fff4dc; font:700 15px Inter,system-ui,sans-serif; text-align:center; }
+.fame-season-picker select:focus-visible { outline:2px solid #75cbed; outline-offset:3px; }
+#hallOfFame .fame-season { position:relative; width:100%; max-width:720px; margin-inline:auto; min-width:0; overflow:hidden; padding:0; border:0; border-radius:8px; background:transparent; box-shadow:0 18px 45px #0004; }
+.fame-season-header { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.fame-cabinet { position:relative; container-type:inline-size; }
+.fame-cabinet-art { display:block; width:100%; height:auto; aspect-ratio:3/4; }
+.fame-podium,.fame-awards { display:contents; }
+.fame-champion,.fame-podium-place,.fame-award { --award-color:#fff0be; position:absolute; text-align:center; display:flex; flex-direction:column; justify-content:center; gap:2px; min-width:0; height:4%; }
+.fame-champion { top:36.1%; left:39%; width:22%; }
+.fame-silver { top:62.1%; left:22.5%; width:17%; --award-color:#e5edf4; }
+.fame-bronze { top:62.1%; left:60.5%; width:17%; --award-color:#edbc8c; }
+.fame-award-mvps { top:83.7%; left:22.5%; width:17%; --award-color:#e2c1ff; }
+.fame-award-goals { top:83.7%; left:60.5%; width:17%; --award-color:#c2f2ff; }
+.fame-champion-label,.fame-podium-place small,.fame-award small { display:block; color:var(--award-color); font:700 clamp(6px,1.25cqw,9px)/1.15 Inter,system-ui,sans-serif; letter-spacing:.025em; }
+.fame-engraving { display:block; margin:0; color:#fff8e8; font:800 clamp(10px,3cqw,23px)/1.05 'Chiqui MVP','Barlow Condensed',sans-serif; overflow-wrap:anywhere; text-shadow:0 1px 3px #000; }
+.fame-champion .fame-engraving { font-size:clamp(12px,3.5cqw,28px); }
+.fame-award-total { position:absolute; top:100%; left:0; width:100%; color:#f4e5c3; font:600 clamp(5px,1cqw,8px)/1.1 Inter,system-ui,sans-serif; }
+.fame-award-attendance { top:91.1%; left:28%; width:44%; height:4%; --award-color:#ade4c7; }
+.fame-award-attendance .fame-engraving { font-size:clamp(12px,2.7cqw,20px); }
+#hallOfFame .fame-empty { text-align:center; padding:38px 24px; border:1px solid #d7b66e66; background:linear-gradient(145deg,#142337,#080f1c); }
+.fame-empty .fame-trophy { display:block; font-size:48px; margin:0 auto 20px; }
+.fame-empty h3 { margin:0 0 12px; color:#fff4dc; font:900 32px 'Chiqui MVP','Barlow Condensed',sans-serif; }
+.fame-empty p { color:#b5c2d3; font-size:13px; line-height:1.6; margin:0; }
+@media(max-width:600px) {
+ .fame-season-picker label { font-size:9px; }
+ .fame-champion,.fame-podium-place,.fame-award { gap:1px; }
+ .fame-award-total { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 }
-#hallOfFame { align-items:start; }
-#hallOfFame .fame-season:only-child { grid-column:1/-1; width:100%; max-width:900px; margin-inline:auto; }
-@media(max-width:430px) { .fame-podium { grid-template-columns:minmax(0,1fr); } }
