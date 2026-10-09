@@ -54,7 +54,7 @@
   function imageDetails(){try{return JSON.parse(localStorage.getItem(DETAILS_KEY)||'{}')}catch{return{}}}
   function restoreImageDetails(){const details=imageDetails()[$('#generatorMatch').value]||{};$('#generatorTime').value=details.time??'18:00';$('#generatorVenue').value=details.venue??'El Más Grande'}
   function saveImageDetails(){const details=imageDetails();details[$('#generatorMatch').value]={time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()};try{localStorage.setItem(DETAILS_KEY,JSON.stringify(details))}catch{}}
-  function loadBackground(){if(!backgroundPromise)backgroundPromise=new Promise(resolve=>{const image=new Image(),timer=setTimeout(()=>resolve(null),12000);image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);resolve(null)};image.src='assets/match-red-background.png'});return backgroundPromise}
+  function loadBackground(){if(!backgroundPromise)backgroundPromise=new Promise(resolve=>{const image=new Image(),timer=setTimeout(()=>resolve(null),12000);image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);resolve(null)};image.src='assets/match-red-background.webp'});return backgroundPromise}
   function imageSignature(){return JSON.stringify({teams,number:$('#generatorMatch').value,date:$('#generatorDate').value,time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()})}
   function hideImageActions(){$('#imageExportActions').hidden=true;$('#teamsSharePreview').hidden=true}
   function downloadPreparedImage(){const link=$('#saveTeamsImage');link.click();$('#generatorMessage').className='form-message success';$('#generatorMessage').textContent='Descarga solicitada. Si no se guarda, tocá «Compartir imagen» o «Abrir imagen».'}

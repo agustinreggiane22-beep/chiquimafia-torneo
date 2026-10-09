@@ -35,6 +35,15 @@ test('authentication and rejected writes do not invalidate valid reads',async()=
  const {api,calls}=setup(body=>body.action==='auth'?{ok:true,authenticated:true}:{ok:false,error:'Rejected'});api.seedState(fields);
  assert.equal(await api.authenticate('test-pin'),true);await assert.rejects(api.addSanction({},'test-pin'),/Rejected/);await api.sanctions();assert.equal(calls.length,2);
 });
+test('private vote reads validate each PIN without invalidating public cached lists',async()=>{
+ const {api,calls}=setup(body=>body.pin==='valid-pin'?{ok:true,items:[{voter:'A',candidate:'B'}]}:{ok:false,error:'Invalid PIN'});
+ api.seedState({...fields,capabilities:{matchVotingV2:true}});
+ assert.equal((await api.mvpVotes('valid-pin'))[0].candidate,'B');
+ await assert.rejects(api.mvpVotes('invalid-pin'),/Invalid PIN/);
+ assert.equal((await api.webPlayers())[0].name,'A');
+ assert.equal((await api.sanctions())[0].points,-1);
+ assert.deepEqual(calls.map(x=>[x.action,x.pin]),[['listMvpVotes','valid-pin'],['listMvpVotes','invalid-pin']]);
+});
 test('failed reads are retried rather than cached as successful empty lists',async()=>{
  let fail=true;const {api,calls}=setup(()=>{if(fail){fail=false;throw Error('Offline')}return{ok:true,items:[{player:'A',status:'approved',goals:2}]}});
  assert.equal((await api.list()).length,0);assert.equal((await api.list()).length,1);assert.equal(calls.length,2);

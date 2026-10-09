@@ -29,7 +29,7 @@
     if(!API())return null;
     if(!Object.prototype.hasOwnProperty.call(READ_FIELDS,action)){
       const result=await sendRequest(action,payload);
-      if(action!=='auth')clearReadCache();
+      if(action!=='auth'&&action!=='listMvpVotes')clearReadCache();
       return result;
     }
     const cached=readCache.get(action);
