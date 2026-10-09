@@ -75,8 +75,8 @@ function tournamentState_() {
   closeMvpVoting();
   return {
     ok: true,
-    version: '2026-10-09-mvp-v2',
-    capabilities: {matchVotingV2:true},
+    version: '2026-10-09-mvp-v3',
+    capabilities: {matchVotingV2:true,voteProgress:true},
     automationReady: automationReady_(),
     serverNow: new Date().toISOString(),
     matchRecords: listMatchRecords_(),
@@ -446,8 +446,23 @@ function writeMatchRecord_(record) {
   if(index>=0)sheet.getRange(index+1,1,1,3).setValues([row]);else sheet.appendRow(row);
 }
 function listMatchRecords_() {
-  // Votes themselves are available only through the PIN-protected endpoint.
-  return rawMatchRecords_().map(record=>({...record,closed: Boolean(record.closed),mvpAwards:record.closed?record.mvpAwards||[]:[],voteCount:record.closed?Number(record.voteCount||0):null}));
+  // Publish aggregate proportions only. Individual ballots remain PIN-protected.
+  const records=rawMatchRecords_();if(!records.length)return [];
+  const votes=listMvpVotes_(),lineups=listRows_(LINEUP_SHEET_NAME,['matchNumber','date','white','black','updatedAt']);
+  return records.map(record=>{
+    const lineup=lineups.find(x=>Number(x.matchNumber)===Number(record.matchNumber)),players=new Map(),totals=new Map(),voters=new Set();
+    if(lineup)['white','black'].forEach(team=>{
+      const roster=Array.isArray(lineup[team])?lineup[team]:JSON.parse(lineup[team]||'[]');
+      roster.forEach(player=>players.set(participantKey_(player),player));
+    });
+    votes.filter(v=>Number(v.matchNumber)===Number(record.matchNumber)).forEach(v=>{
+      const voter=participantKey_(v.player),candidate=participantKey_(v.candidate);
+      if(!players.has(voter)||!players.has(candidate)||voter===candidate||voters.has(voter))return;
+      voters.add(voter);totals.set(candidate,(totals.get(candidate)||0)+1);
+    });
+    const voteProgress=[...totals].map(([id,count])=>({player:players.get(id),share:count/players.size}));
+    return {...record,closed:Boolean(record.closed),mvpAwards:record.closed?record.mvpAwards||[]:[],voteCount:record.closed?Number(record.voteCount||0):null,voteProgress};
+  });
 }
 function votingWindow_(value) {
   let iso;

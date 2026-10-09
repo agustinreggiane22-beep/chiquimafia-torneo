@@ -16,6 +16,19 @@
    return `<button type="button" style="--player-order:${index}" class="mvp-player${selected&&!identity?' selected':''}" data-team="${team}" data-index="${index}"${disabled?' disabled':''}${!identity?` aria-label="Elegir a ${esc(player)} como MVP" aria-pressed="${Boolean(selected)}"`:''}><strong>${esc(player)}</strong><span>${identity?'Soy yo':own?'Vos':selected?'✓':'+'}</span></button>`;
   }).join('')}</div></section>`).join('');
  }
+ let rosterSignature='';
+ function renderTeams(){
+  const node=$('#mvpCandidateTeams'),signature=JSON.stringify(current&&[current.number,current.date,current.white,current.black]);
+  if(signature!==rosterSignature){node.innerHTML=teamColumns();rosterSignature=signature}
+  const progress=new Map((record()?.voteProgress||[]).map(row=>[key(row.player),Number(row.share)]));
+  node.querySelectorAll('button[data-team]').forEach(button=>{
+   const player=current[button.dataset.team][Number(button.dataset.index)],selected=key(player)===key(candidate),own=voter&&key(player)===key(voter),share=Math.max(0,Math.min(1,progress.get(key(player))||0));
+   button.classList.toggle('selected',selected);button.classList.toggle('has-vote-progress',share>0);button.style.setProperty('--vote-share',`${share*100}%`);
+   button.disabled=Boolean(own||phase()!=='open'||submitted||sending);button.setAttribute('aria-pressed',String(selected));button.querySelector('span').textContent=own?'Vos':selected?'✓':'+';
+  });
+ }
+ const awardsSignature=()=>JSON.stringify(records.map(r=>[r.matchNumber,r.closed,r.mvpAwards,r.scorerAwards]));
+ function panelVisible(){const box=$('#mvpVotingPanel').getBoundingClientRect();return box.bottom>0&&box.top<innerHeight}
  function clock(){
   const r=record(),state=phase(),node=$('#mvpWindowStatus');
   node.dataset.phase=state;$('#mvpVotingDialog').dataset.phase=state;
@@ -25,7 +38,7 @@
   else {const diff=Date.parse(r.closesAt)-now(),hours=Math.floor(diff/3600000),minutes=Math.floor(diff%3600000/60000);node.textContent=`Votación abierta · Quedan ${hours} h ${minutes} min · Cierra ${date(r.closesAt)}`}
  }
  function render(){
-  clock();$('#mvpCandidateTeams').innerHTML=teamColumns();$('#mvpVoterName').textContent=voter?`Votás como ${voter}`:'Elegí tu nombre para votar';
+  clock();renderTeams();$('#mvpVoterName').textContent=voter?`Votás como ${voter}`:'Elegí tu nombre para votar';
   $('#mvpChooseVoter').textContent=voter?'Cambiar nombre':'Soy…';$('#mvpChooseVoter').disabled=!current||phase()!=='open'||sending;
   
   const showConfirm=Boolean(candidate&&!submitted&&phase()==='open');$('#mvpConfirmation').hidden=!showConfirm;$('#mvpTapHint').hidden=showConfirm||submitted||phase()==='closed';
@@ -40,7 +53,7 @@
  }
  async function refresh(){
   if(refreshing||sending||document.hidden)return;refreshing=true;
-  try{records=await ChiquiGoals.matchRecords(true);render();window.dispatchEvent(new Event('chiqui:voting-updated'));if(!$('#adminPanel').hidden)await renderAdmin()}catch{if(phase()==='closed')message('No se pudo consultar el resultado. Se actualizará cuando vuelva la conexión.',true)}finally{refreshing=false}
+  try{const previous=awardsSignature();records=await ChiquiGoals.matchRecords(true);render();if(previous!==awardsSignature())window.dispatchEvent(new Event('chiqui:voting-updated'));if(!$('#adminPanel').hidden)await renderAdmin()}catch{if(phase()==='closed')message('No se pudo consultar el resultado. Se actualizará cuando vuelva la conexión.',true)}finally{refreshing=false}
  }
  async function init(items){
   if(!ChiquiGoals.supportsVoting())return;
@@ -50,12 +63,12 @@
   $('#mvpMatchSelect').innerHTML=matches.map(m=>`<option value="${m.number}">Fecha ${m.number}</option>`).join('');
   const open=matches.find(m=>{const r=records.find(r=>Number(r.matchNumber)===m.number);return r&&!r.closed&&now()<Date.parse(r.closesAt)}),fallback=open||matches.find(m=>m.played)||matches[0];
   $('#mvpMatchSelect').value=matches.some(m=>String(m.number)===previous)?previous:String(fallback?.number||'');await loadSelected();
-  if(timer)clearInterval(timer);timer=setInterval(()=>{const old=$('#mvpWindowStatus').dataset.phase;clock();if(old!==phase())render();if(old!=='closed'&&phase()==='closed')refresh();else if(location.hash==='#cargar-goles'||!$('#adminPanel').hidden)refresh()},60000);
+  if(timer)clearInterval(timer);timer=setInterval(()=>{const old=$('#mvpWindowStatus').dataset.phase;clock();if(old!==phase())render();if(old!=='closed'&&phase()==='closed')refresh();else if(panelVisible()||!$('#adminPanel').hidden)refresh()},30000);
  }
  async function confirmVote(){
   if(sending||!voter||!candidate||submitted||phase()!=='open')return;
   sending=true;render();message('Registrando tu voto…');
-  try{const saved=await ChiquiGoals.voteMvp({matchNumber:current.number,player:voter,candidate});submitted=true;candidate=saved.candidate||candidate;remember();message(`✓ Tu voto por ${candidate} ya está registrado. No necesita aprobación.`);if(!$('#adminPanel').hidden)await renderAdmin()}
+  try{const saved=await ChiquiGoals.voteMvp({matchNumber:current.number,player:voter,candidate});submitted=true;candidate=saved.candidate||candidate;remember();message(`✓ Tu voto por ${candidate} ya está registrado. No necesita aprobación.`);try{records=await ChiquiGoals.matchRecords(true)}catch{}if(!$('#adminPanel').hidden)await renderAdmin()}
   catch(error){message(error.message,true)}finally{sending=false;render();}
  }
  let adminSequence=0;
@@ -74,6 +87,6 @@
  $('#mvpChooseVoter').addEventListener('click',()=>{if(!current)return;$('#mvpVoterTeams').innerHTML=teamColumns(true);$('#mvpVoterDialog').hidden=false;$('#mvpVoterDialog').scrollIntoView({behavior:'smooth',block:'nearest'})});
  $('#mvpVoterTeams').addEventListener('click',e=>{const button=e.target.closest('button[data-team]');if(!button)return;voter=current[button.dataset.team][Number(button.dataset.index)];submitted=false;if(key(voter)===key(candidate))candidate='';remember();$('#mvpVoterDialog').hidden=true;message('');render()});
  $('#mvpCloseVoter').addEventListener('click',()=>$('#mvpVoterDialog').hidden=true);$('#mvpChangeChoice').addEventListener('click',()=>{candidate='';render()});$('#mvpConfirmVote').addEventListener('click',confirmVote);
- document.addEventListener('visibilitychange',()=>{if(!document.hidden&&current&&phase()==='closed'&&!record()?.closed)refresh()});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&current&&(panelVisible()||phase()==='closed'&&!record()?.closed))refresh()});
  window.ChiquiVoting={init,renderAdmin,refresh};
 })();

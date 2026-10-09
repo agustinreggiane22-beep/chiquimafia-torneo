@@ -38,3 +38,10 @@ test('season archive contains fractional MVP/scorer points and official goals wi
 test('adding official scorers to a historical result preserves its existing MVP and never reopens voting',()=>{
  const b=fixture();b.context.saveResult_({matchNumber:2,whiteGoals:1,blackGoals:0});b.context.confirmMvp_(2,'DIEGO');assert(publish(b,[{player:'LORIA',team:'white',goals:1}]).ok);assert.equal(b.state().matchRecords[0].closed,true);assert.equal(b.state().mvps[0].player,'DIEGO');assert.equal(b.state().mvps[0].points,1);
 });
+test('public progress uses the unique eligible roster as denominator and never publishes voter identities',()=>{
+ const b=createBackend(),white=['LORIA','DIEGO','FRANCO','MATU','VALEN','BILLO','DARIO','INVITADO'],black=['LUCAS','AUGUSTO','LIHUEL','PABLO','GONZA','AGUS','LAUTY','KEVIN'];
+ assert(b.call('saveLineup',{pin:'test-pin',item:{matchNumber:2,date:'2026-10-03',white,black}}).ok);assert(publish(b,[]).ok);
+ const voters=[...white,...black].filter(p=>p!=='LORIA'&&p!=='DIEGO').slice(0,9);voters.forEach((player,i)=>assert(vote(b,player,i<6?'LORIA':'DIEGO').ok));
+ const record=b.state().matchRecords[0];assert.deepEqual(record.voteProgress,[{player:'LORIA',share:6/16},{player:'DIEGO',share:3/16}]);assert.equal(record.voteCount,null);assert.deepEqual(record.mvpAwards,[]);assert(!JSON.stringify(record).includes('candidate'));assert(!JSON.stringify(record.voteProgress).includes('FRANCO'));
+ const c=fixture();assert(publish(c,[]).ok);assert(vote(c,'LORIA','DIEGO').ok);assert.equal(c.state().matchRecords[0].voteProgress[0].share,1/8);
+});
