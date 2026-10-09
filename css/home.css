@@ -1,0 +1,63 @@
+/* Portada oscura; estilos limitados a Inicio. */
+#inicio {
+  color:#f4f7fa;
+  background:#10151a;
+  background-image:radial-gradient(ellipse at 80% 10%,#16334650,transparent 65%);
+  grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr)!important;
+  gap:26px;
+  padding:72px max(24px,calc((100vw - 1160px)/2)) 48px;
+  min-height:700px;
+  isolation:isolate;
+}
+#inicio:before { inset:0 0 0 auto; width:44%; height:100%; border:0; border-radius:0; background-image:linear-gradient(0deg,#10151a,transparent 60%),url('../assets/home-messi.jpg'); background-size:cover; background-position:center top; background-repeat:no-repeat; mask-image:linear-gradient(90deg,transparent,#000 42%); opacity:.8; animation:none; pointer-events:none; }
+#inicio:after { display:none; }
+#inicio>* { min-width:0; position:relative; z-index:1; }
+#inicio .hero-copy { grid-column:1!important; margin:0; max-width:none; text-align:left; }
+#inicio .eyebrow { color:#c6e7f3; letter-spacing:.22em; font-size:11px; margin-bottom:24px; }
+#inicio h1 { color:#fff; font-size:clamp(52px,6.2vw,88px); line-height:.92; letter-spacing:-.04em; }
+#inicio h1 span { color:#8ccbe7; text-shadow:none; }
+#inicio .hero-copy p { color:#b7c4cc; font-size:16px; max-width:430px; margin:24px 0; }
+#inicio .hero-actions { display:flex; gap:12px; flex-wrap:wrap; }
+#inicio .primary-button { color:#0c202b; background:#a4ddf2; box-shadow:0 8px 26px #0005; border-radius:10px; margin:0; }
+#inicio .hero-secondary { padding:15px 22px; border:1px solid #ffffff40; border-radius:10px; color:#eff8ff; text-decoration:none; font-size:14px; font-weight:800; }
+#inicio .season-card { grid-column:2!important; grid-row:1; align-self:end; border:1px solid #ffffff24; background:#101e2bdd; box-shadow:0 14px 35px #0003; padding:26px; border-radius:18px; text-align:left; animation:none; }
+#inicio .season-card>div:first-child { flex-direction:column; align-items:flex-start; gap:12px; }
+#inicio .season-card strong { color:#eff8ff; font-size:24px; }
+#inicio .season-card span { color:#b8c7d1; }
+#inicio .progress-track { height:6px; background:#ffffff1c; }
+#inicio .progress-track span { background:#8ccbe7; }
+#inicio .featured-match,#inicio .home-info-grid,#inicio .home-champion-banner { grid-column:1/-1!important; }
+#inicio .featured-match { background:#101b28f2; border:1px solid #ffffff26; border-top:3px solid #8ccbe7; box-shadow:0 14px 35px #0003; margin-top:12px; border-radius:18px; padding:22px; }
+#inicio .featured-match:before { display:none; }
+#inicio .featured-kicker { color:#8ccbe7; }
+#inicio .featured-match h2,#inicio .compact-result>strong,#inicio .compact-team { color:#fff; }
+#inicio .compact-awards,#inicio .mood-caption,#inicio .featured-score small { color:#bac9d4; }
+#inicio .compact-awards>b { color:#b8deee; }
+#inicio .featured-button { background:#e9f6fc; color:#15364b; border-radius:9px; box-shadow:none; }
+#inicio .home-info-grid { gap:18px; animation:none; }
+#inicio .next-match-card,#inicio .home-info-grid .fund-card { background:#101b28dd; border:1px solid #ffffff24; box-shadow:0 12px 28px #0003; border-radius:16px; padding:20px 24px; min-height:106px; }
+#inicio .next-match-card span,#inicio .fund-card span { color:#b7cedb; }
+#inicio .next-match-card strong,#inicio .fund-card strong { color:#f2f8fc; }
+#inicio .next-match-card small,#inicio .fund-card small { color:#9bafbd; }
+#inicio .home-champion-banner { background:#152331; color:#fff; border-color:#ffffff30; }
+@media(max-width:800px) {
+  #inicio { grid-template-columns:minmax(0,1fr)!important; padding:44px 20px 32px; gap:20px; min-height:auto; }
+  #inicio:before { width:100%; height:560px; background-size:cover; mask-image:linear-gradient(90deg,transparent,#000 35%); }
+  #inicio .hero-copy { text-align:left!important; padding-top:180px; }
+  #inicio h1 { font-size:clamp(36px,9.2vw,62px); }
+  #inicio .hero-copy p { font-size:14px; margin:20px 0; }
+  #inicio .season-card { grid-column:1!important; grid-row:auto; padding:20px; }
+  #inicio .season-card>div:first-child { flex-direction:row; align-items:center; gap:10px; }
+  #inicio .season-card strong { font-size:18px; }
+  #inicio .featured-match { margin-top:0; padding:18px; }
+  #inicio .compact-result { background:#ffffff0c; }
+  #inicio .home-info-grid { gap:12px; }
+  #inicio .next-match-card,#inicio .home-info-grid .fund-card { padding:16px; }
+  #inicio .next-match-card strong,#inicio .fund-card strong { font-size:21px; }
+}
+@media(max-width:430px) {
+  #inicio .hero-actions { gap:9px; }
+  #inicio .hero-actions a { padding:13px 15px; font-size:12px; }
+  #inicio .season-card>div:first-child { flex-direction:column; align-items:flex-start; }
+  #inicio .home-info-grid { grid-template-columns:minmax(0,1fr); }
+}

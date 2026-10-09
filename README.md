@@ -90,3 +90,5 @@ Marcador oficial, disciplina y caja se muestran juntos. La revisión de MVP y de
 Dentro de Marcador oficial, Disciplina y Caja del torneo son desplegables independientes, cerrados al entrar. Los formularios y sus datos se conservan. La prueba admin-voting comprueba apertura y cierre; permite cambiar la dirección del servidor con `CHIQUI_TEST_URL` si el puerto 8000 está ocupado.
 
 Cruces de fase final también está dentro de Marcador oficial en un desplegable, junto a Disciplina y Caja. El formulario de avance del cuadro conserva su función independiente del marcador de equipos.
+
+La portada usa `css/home.css`, con estilos limitados a Inicio, y la foto original facilitada por el usuario en `assets/home-messi.jpg` (aproximadamente 31 KB). Mantener los IDs de los datos de temporada, partido destacado, próxima fecha y caja al actualizar el diseño.
