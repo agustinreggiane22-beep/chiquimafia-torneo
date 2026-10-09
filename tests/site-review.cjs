@@ -62,6 +62,9 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
    await page.setViewportSize({width,height:900});
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'page must fit width '+width);
    assert(await page.locator('#hallOfFame').evaluate(e=>e.scrollWidth<=e.clientWidth),'hall must fit width '+width);
+   const plates=await page.evaluate(()=>{const c=document.querySelector('.fame-cabinet'),image=c.querySelector('img').getBoundingClientRect();return [...c.querySelectorAll('.fame-champion,.fame-podium-place,.fame-award')].map(e=>{const name=e.querySelector('strong'),box=name.getBoundingClientRect();return {role:e.className,center:(box.x+box.width/2-image.x)/image.width,fits:name.scrollWidth<=name.clientWidth,align:getComputedStyle(name).textAlign}})});
+   for(const plate of plates){const center=plate.role.includes('champion')||plate.role.includes('attendance')?.5:plate.role.includes('silver')||plate.role.includes('mvps')?.308:.697;assert(Math.abs(plate.center-center)<.004,'name must align with the artwork plaque at '+width+': '+plate.role);assert(plate.fits,'name must fit its plaque at '+width);assert.equal(plate.align,'center');}
+   assert(await page.locator('#historia h2').evaluate(e=>e.scrollWidth<=e.clientWidth),'title and laurels must fit width '+width);
   }
   await page.locator('#historia').screenshot({path:'/tmp/chiqui-hall-desktop.png'});await page.setViewportSize({width:390,height:844});await page.locator('#historia').screenshot({path:'/tmp/chiqui-hall-mobile.png'});
   await page.locator('#adminPin').fill('test-pin');await page.locator('#adminLoginForm button').click();await page.locator('.admin-season-tools>summary').click();

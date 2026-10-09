@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 112" fill="none">
+  <defs><linearGradient id="gold" x1="8" y1="100" x2="48" y2="8" gradientUnits="userSpaceOnUse"><stop stop-color="#a4772e"/><stop offset=".42" stop-color="#e8c875"/><stop offset=".7" stop-color="#fff1bb"/><stop offset="1" stop-color="#bd9347"/></linearGradient></defs>
+  <path d="M48 105C13 87 10 43 42 9" stroke="url(#gold)" stroke-width="2" stroke-linecap="round"/>
+  <g fill="url(#gold)">
+    <path d="M40 14C38 5 47 2 51 1C51 9 48 14 40 14Z"/>
+    <path d="M31 27C20 25 22 13 24 9C31 14 34 19 31 27Z"/>
+    <path d="M31 27C32 16 43 16 48 17C45 25 40 29 31 27Z"/>
+    <path d="M24 43C12 39 13 29 14 23C23 29 27 35 24 43Z"/>
+    <path d="M24 43C25 33 35 30 43 31C39 40 34 44 24 43Z"/>
+    <path d="M21 59C9 56 6 46 7 39C18 43 24 49 21 59Z"/>
+    <path d="M21 59C25 48 34 46 40 47C38 56 31 62 21 59Z"/>
+    <path d="M24 76C11 76 4 66 3 60C14 61 23 65 24 76Z"/>
+    <path d="M24 76C26 64 34 60 41 60C40 70 35 77 24 76Z"/>
+    <path d="M31 92C17 94 9 86 6 80C18 78 28 80 31 92Z"/>
+    <path d="M31 92C29 81 35 74 42 72C46 84 41 91 31 92Z"/>
+    <path d="M45 104C31 108 19 103 15 97C28 94 38 95 45 104Z"/>
+    <path d="M45 104C38 94 43 84 48 80C54 91 53 97 45 104Z"/>
+  </g>
+</svg>

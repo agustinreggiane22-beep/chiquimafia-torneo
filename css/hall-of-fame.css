@@ -1,6 +1,8 @@
 /* One physical trophy cabinet; plaques remain live text for every season. */
 #historia .section-header { justify-content:center; text-align:center; }
-#historia .section-header h2 { font-family:'Chiqui MVP','Barlow Condensed',sans-serif; font-weight:900; }
+#historia .section-header h2 { display:flex; align-items:center; justify-content:center; gap:14px; font-family:'Chiqui MVP','Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(32px,8vw,56px); }
+#historia .section-header h2::before,#historia .section-header h2::after { content:""; flex:0 0 clamp(25px,4.5vw,48px); width:clamp(25px,4.5vw,48px); height:clamp(50px,8vw,90px); background:url('../assets/fame-laurel.svg') center/contain no-repeat; }
+#historia .section-header h2::after { transform:scaleX(-1); }
 #hallOfFame { display:block; }
 .fame-season-picker { display:flex; flex-direction:column; align-items:center; gap:10px; max-width:720px; margin:0 auto 22px; }
 .fame-season-picker label { color:#d7bd80; font-size:10px; letter-spacing:.14em; font-weight:800; }
@@ -12,16 +14,18 @@
 .fame-cabinet-art { display:block; width:100%; height:auto; aspect-ratio:3/4; }
 .fame-podium,.fame-awards { display:contents; }
 .fame-champion,.fame-podium-place,.fame-award { --award-color:#fff0be; position:absolute; text-align:center; display:flex; flex-direction:column; justify-content:center; gap:2px; min-width:0; height:4%; }
-.fame-champion { top:36.1%; left:39%; width:22%; }
-.fame-silver { top:62.1%; left:22.5%; width:17%; --award-color:#e5edf4; }
-.fame-bronze { top:62.1%; left:60.5%; width:17%; --award-color:#edbc8c; }
-.fame-award-mvps { top:83.7%; left:22.5%; width:17%; --award-color:#e2c1ff; }
-.fame-award-goals { top:83.7%; left:60.5%; width:17%; --award-color:#c2f2ff; }
+.fame-champion,.fame-podium-place,.fame-award { transform:translate(-50%,-50%); }
+.fame-champion { top:38.2%; left:50%; width:22%; }
+.fame-silver { top:64%; left:30.8%; width:17%; --award-color:#e5edf4; }
+.fame-bronze { top:64%; left:69.7%; width:17%; --award-color:#edbc8c; }
+.fame-award-mvps { top:85.7%; left:30.8%; width:17%; --award-color:#e2c1ff; }
+.fame-award-goals { top:85.7%; left:69.7%; width:17%; --award-color:#c2f2ff; }
 .fame-champion-label,.fame-podium-place small,.fame-award small { display:block; color:var(--award-color); font:700 clamp(6px,1.25cqw,9px)/1.15 Inter,system-ui,sans-serif; letter-spacing:.025em; }
+.fame-podium-place small,.fame-award small { font-size:clamp(4.5px,1.2cqw,8.5px); letter-spacing:0; white-space:nowrap; }
 .fame-engraving { display:block; margin:0; color:#fff8e8; font:800 clamp(10px,3cqw,23px)/1.05 'Chiqui MVP','Barlow Condensed',sans-serif; overflow-wrap:anywhere; text-shadow:0 1px 3px #000; }
 .fame-champion .fame-engraving { font-size:clamp(12px,3.5cqw,28px); }
 .fame-award-total { position:absolute; top:100%; left:0; width:100%; color:#f4e5c3; font:600 clamp(5px,1cqw,8px)/1.1 Inter,system-ui,sans-serif; }
-.fame-award-attendance { top:91.1%; left:28%; width:44%; height:4%; --award-color:#ade4c7; }
+.fame-award-attendance { top:93.1%; left:50%; width:44%; height:4%; --award-color:#ade4c7; }
 .fame-award-attendance .fame-engraving { font-size:clamp(12px,2.7cqw,20px); }
 #hallOfFame .fame-empty { text-align:center; padding:38px 24px; border:1px solid #d7b66e66; background:linear-gradient(145deg,#142337,#080f1c); }
 .fame-empty .fame-trophy { display:block; font-size:48px; margin:0 auto 20px; }
@@ -32,3 +36,9 @@
  .fame-champion,.fame-podium-place,.fame-award { gap:1px; }
  .fame-award-total { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 }
+
+/* The same polished gold perimeter and glints as the MVP voting panel. */
+.fame-panel { position:relative; isolation:isolate; width:100%; max-width:760px; margin:0 auto; padding:24px 20px; border:0; border-radius:30px; box-shadow:0 18px 40px #0005,0 0 18px #dfbc6b25,inset 0 0 0 3px #e2bf7055; }
+.fame-panel::before { content:""; position:absolute; inset:0; z-index:2; padding:3px; border-radius:inherit; pointer-events:none; background:linear-gradient(115deg,#aa7d32 0%,#fff4c5 12%,#a47830 20%,#e7c579 37%,#fff4c5 44%,#a47830 54%,#dfc775 72%,#fff4c5 80%,#bd913c 100%); background-size:250% 250%; -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); mask-composite:exclude; animation:mvp-frame-shine 9s ease-in-out infinite; }
+@media(max-width:600px) { .fame-panel { padding:20px 8px 12px; border-radius:24px; } #historia .section-header h2 { gap:8px; } #historia .section-header .eyebrow { font-size:9px; letter-spacing:.13em; } }
+@media(prefers-reduced-motion:reduce) { .fame-panel::before { animation:none; } }
