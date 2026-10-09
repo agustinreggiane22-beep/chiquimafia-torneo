@@ -127,6 +127,6 @@
 
 /* The fill represents votes divided by eligible players, without a numeric label. */
 #mvpCandidateTeams .mvp-player { position:relative; overflow:hidden; isolation:isolate; }
-#mvpCandidateTeams .mvp-player::before { content:""; position:absolute; inset:0 auto 0 0; width:var(--vote-share,0%); background:linear-gradient(90deg,#78c9ee75,#a7def36b); transition:width .45s ease; pointer-events:none; z-index:-1; }
+#mvpCandidateTeams .mvp-player::before { content:""; position:absolute; inset:0 auto 0 0; width:var(--vote-share,0%); background:linear-gradient(90deg,#d9ae4399 0%,#e7c76870 60%,#e7c76800 100%); transition:width .45s ease; pointer-events:none; z-index:-1; }
 #mvpCandidateTeams .mvp-player.has-vote-progress:disabled { opacity:1; }
-#mvpCandidateTeams .mvp-player.has-vote-progress { border-color:#9acfe3; }
+#mvpCandidateTeams .mvp-player.has-vote-progress { border-color:#d8bd76; }
