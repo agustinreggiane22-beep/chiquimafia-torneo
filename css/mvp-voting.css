@@ -48,20 +48,20 @@
 #mvpEntryStatus { display:block; margin-top:8px; font-size:12px; font-weight:800; color:#17455b; }
 #openMvpVoting { flex-shrink:0; min-height:46px; padding:12px 18px; border:0; border-radius:10px; background:#167dad; color:white; font-weight:800; cursor:pointer; }
 #cargar-goles:has(#mvpVotingPanel:not([hidden])) .section-header h2 { font-size:34px; }
-#mvpVotingDialog { width:min(650px,100%); height:min(820px,100dvh); max-width:100%; max-height:100dvh; margin:auto; padding:0; border:1px solid #547083; border-radius:18px; background:#101820; color:#f0f8fc; }
+#mvpVotingDialog { width:min(650px,100%); height:min(820px,100dvh); max-width:100%; max-height:100dvh; margin:auto; padding:0; border:1px solid #547083; border-radius:18px; background:#fff; color:#11243a; }
 #mvpVotingDialog::backdrop { background:#000b; }
 #mvpVotingDialog[open] { display:flex; flex-direction:column; }
-.mvp-dialog-header { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid #ffffff24; }
+.mvp-dialog-header { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid #dce7ef; }
 .mvp-dialog-header h2 { margin:0; font:900 25px/1.1 'Barlow Condensed',sans-serif; }
 .mvp-dialog-header span { color:#b9d6e5; font-size:11px; }
 #closeMvpVoting { min-height:40px; border:0; border-radius:9px; padding:10px 12px; background:#253b4d; color:white; font-weight:800; cursor:pointer; }
-.mvp-dialog-controls { padding:10px 16px; border-bottom:1px solid #ffffff24; }
+.mvp-dialog-controls { padding:10px 16px; border-bottom:1px solid #dce7ef; }
 .mvp-match-row { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
 .mvp-match-row label { flex-shrink:0; font-size:11px; }
-#mvpVotingDialog #mvpMatchSelect { min-height:36px; margin-top:3px; padding:6px 9px; background:#203647; color:white; border-color:#547083; }
-#mvpVotingDialog .mvp-window-status { flex:1; margin:0; border:0; padding:0; background:transparent; color:#a4ddf3; font-size:11px; line-height:1.5; }
+#mvpVotingDialog #mvpMatchSelect { min-height:36px; margin-top:3px; padding:6px 9px; background:#f0f8fc; color:#172e42; border-color:#bbd7e6; }
+#mvpVotingDialog .mvp-window-status { flex:1; margin:0; border:0; padding:0; background:transparent; color:#17455b; font-size:11px; line-height:1.5; }
 #mvpVotingDialog .mvp-voter-row { font-size:12px; }
-#mvpVotingDialog .mvp-voter-row button { min-height:36px; padding:7px 10px; background:#203647; color:#f0f8fc; border-color:#547083; }
+#mvpVotingDialog .mvp-voter-row button { min-height:36px; padding:7px 10px; background:#f0f8fc; color:#19394d; border-color:#a8cbdc; }
 .mvp-dialog-scroll { flex:1; min-height:0; overflow:auto; overscroll-behavior:contain; padding:10px 16px; }
 #mvpVotingDialog .mvp-team h4 { font-size:12px; margin:2px 0 10px; }
 #mvpVotingDialog .mvp-player { min-height:54px; padding:9px; margin-bottom:7px; flex-wrap:nowrap; gap:6px; }
@@ -69,41 +69,41 @@
 #mvpVotingDialog .mvp-player strong { font-size:12px; flex:1; }
 #mvpVotingDialog .mvp-player span { display:grid; place-items:center; width:30px; height:30px; padding:0; font-size:20px; }
 #mvpVotingDialog .mvp-player:disabled span { font-size:11px; }
-#mvpVotingDialog .mvp-team-dark .mvp-player { background:#253e53; color:#f4f8fc; border-color:#66879e; }
-#mvpVotingDialog .mvp-team-dark .mvp-player.selected { background:#214d6e; border-color:#42a8ef; }
-#mvpVotingDialog .mvp-rules { color:#b9d6e5; font-size:11px; margin:10px 0 0; }
-.mvp-dialog-footer { display:block; border-top:1px solid #ffffff24; padding:10px 16px max(12px,env(safe-area-inset-bottom)); background:#101820; }
+#mvpVotingDialog .mvp-team-dark .mvp-player { background:#e8eff5; color:#172e42; border-color:#b8ccda; }
+#mvpVotingDialog .mvp-team-dark .mvp-player.selected { background:#dff2ff; border-color:#42a8ef; }
+#mvpVotingDialog .mvp-rules { color:#506477; font-size:11px; margin:10px 0 0; }
+.mvp-dialog-footer { display:block; border-top:1px solid #dce7ef; padding:10px 16px max(12px,env(safe-area-inset-bottom)); background:#f6fbfe; }
 #mvpVotingDialog .mvp-confirmation { margin:0; padding:0; background:none; border:0; }
 #mvpVotingDialog .mvp-confirmation strong { font-size:13px; display:block; margin-bottom:9px; }
 #mvpVotingDialog .mvp-confirmation>div { flex-wrap:nowrap; }
-#mvpVotingDialog .mvp-confirmation button { min-height:44px; background:#253b4d; color:white; border:0; font-size:12px; }
+#mvpVotingDialog .mvp-confirmation button { min-height:44px; background:#e3eff7; color:#1c4057; border:0; font-size:12px; }
 #mvpVotingDialog #mvpConfirmVote { background:#a4ddf3; color:#11243a; }
-#mvpVoteMessage { font-size:12px; line-height:1.5; margin:0 0 8px; color:#b9d6e5; }
+#mvpVoteMessage { font-size:12px; line-height:1.5; margin:0 0 8px; color:#506477; }
 #mvpVoteMessage:empty { display:none; }
-#mvpVoteMessage.error { color:#ffb7ae; }
-#mvpTapHint { margin:0; font-size:12px; color:#b9d6e5; }
-#mvpVotingDialog .mvp-closed-result { background:#263443; border-color:#c7a750; color:white; }
-#mvpVotingDialog .mvp-closed-result b { color:#ead087; }
+#mvpVoteMessage.error { color:#b02922; }
+#mvpTapHint { margin:0; font-size:12px; color:#506477; }
+#mvpVotingDialog .mvp-closed-result { background:#fff8e5; border-color:#e4ce83; color:#172e42; }
+#mvpVotingDialog .mvp-closed-result b { color:#82630c; }
 @media(max-width:600px) { #mvpVotingPanel { flex-wrap:wrap; padding:16px; gap:12px; } #mvpVotingDialog { width:100%; height:100dvh; margin:0; border-radius:0; } .mvp-dialog-header { padding-top:max(14px,env(safe-area-inset-top)); } }
 
 /* Voting stays directly on the page, with its roster scrolling inside. */
 #mvpVotingPanel { display:block; padding:0; margin:0; }
 #mvpVotingPanel[hidden] { display:none; }
 #mvpVotingDialog { display:flex; flex-direction:column; width:100%; max-width:720px; height:600px; max-height:none; margin:0 auto; border-radius:16px; box-shadow:0 12px 35px #0002; }
-#mvpVoterDialog { width:100%; max-height:none; margin:0 0 14px; padding:12px; background:#152b3b; color:white; border-color:#547083; border-radius:10px; }
+#mvpVoterDialog { width:100%; max-height:none; margin:0 0 14px; padding:12px; background:#f5f9fc; color:#11243a; border-color:#bfd6e2; border-radius:10px; }
 #mvpVoterDialog[hidden] { display:none; }
 #mvpVoterDialog h2 { font-size:20px; }
-#mvpVotingDialog .mvp-team h4 { color:#e8f5fc; }
+#mvpVotingDialog .mvp-team h4 { color:#11243a; }
 #mvpVotingDialog .mvp-dialog-header { padding:12px 16px; }
 #mvpVotingDialog .mvp-dialog-header h2 { font-size:22px; }
 #cargar-goles:has(#mvpVotingPanel:not([hidden])) .section-header { margin-bottom:16px; }
 @media(max-width:600px) { #mvpVotingDialog { height:560px; border-radius:14px; } #mvpVotingDialog .mvp-dialog-header { padding:11px 14px; } }
 /* Subtle feedback stays quick enough to use during the match. */
-#mvpVotingDialog { border-color:#5a829b; background:linear-gradient(150deg,#142733 0%,#101820 48%,#17242c 100%); }
-#mvpVotingDialog .mvp-dialog-header { position:relative; background:linear-gradient(110deg,#a4ddf312,#e2c46b0a); }
+#mvpVotingDialog { border-color:#dce7ef; background:linear-gradient(150deg,#fff 0%,#fff 65%,#f3f9fc 100%); overflow:hidden; color-scheme:light; }
+#mvpVotingDialog .mvp-dialog-header { position:relative; background:linear-gradient(110deg,#edf8fe,#fffaf0); }
 #mvpVotingDialog .mvp-dialog-header::before { content:""; position:absolute; top:0; left:16px; right:16px; height:2px; background:linear-gradient(90deg,#8cd3f3,#e7c96c,#8cd3f3); }
 #mvpVotingDialog .mvp-dialog-header h2 { color:#eaf7ff; }
-#mvpVotingDialog .mvp-dialog-header span { color:#d8c687; }
+#mvpVotingDialog .mvp-dialog-header span { color:#7a631f; }
 #mvpVotingDialog .mvp-window-status[data-phase="open"]::before { content:""; display:inline-block; width:7px; height:7px; margin-right:6px; border-radius:50%; background:#85d6a5; box-shadow:0 0 0 3px #85d6a515; animation:mvp-status-pulse 2.8s ease-in-out infinite; }
 #mvpVotingDialog .mvp-player { transition:border-color .16s,background .16s,box-shadow .16s; }
 #mvpVotingDialog .mvp-player>span { transition:transform .15s,background .15s; }
@@ -113,8 +113,8 @@
 #mvpVotingDialog .mvp-player.selected>span { animation:mvp-chosen .26s ease-out; }
 #mvpVotingDialog .mvp-enter .mvp-player { animation:mvp-row-enter .24s ease-out both; animation-delay:calc(var(--player-order,0)*25ms); }
 #mvpVotingDialog .mvp-confirmation:not([hidden]) { animation:mvp-confirm-enter .2s ease-out; }
-#mvpVotingDialog #mvpVoteMessage.success:not(:empty) { color:#a4e1bb; }
-#mvpVotingDialog .mvp-dialog-footer { background:linear-gradient(110deg,#111e28,#142531); }
+#mvpVotingDialog #mvpVoteMessage.success:not(:empty) { color:#246b41; }
+#mvpVotingDialog .mvp-dialog-footer { background:linear-gradient(110deg,#f6fbfe,#fff); color:#11243a; }
 #mvpVotingDialog #mvpConfirmVote { box-shadow:0 3px 12px #84cfee20; transition:background .15s,transform .15s; }
 #mvpVotingDialog #mvpConfirmVote:not(:disabled):active { transform:scale(.98); }
 @keyframes mvp-row-enter { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
