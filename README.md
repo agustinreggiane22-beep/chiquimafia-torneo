@@ -49,3 +49,25 @@ Sin configurar un servidor, el sistema funciona en modo de prueba y guarda las s
 5. Copiar su URL en `goalsApiUrl` dentro de `js/config.js`.
 
 El PIN inicial para el modo de prueba local es `2026`. En producción, manda el PIN guardado en Apps Script y no el valor visible en la web.
+
+
+## Desarrollo y comprobaciones
+
+El sitio no necesita instalación ni compilación. Desde la raíz del repositorio, ejecutar
+`python3 -m http.server 8000 --bind 127.0.0.1`.
+
+Las pruebas de reutilización de datos se ejecutan con
+`node --test tests/goals-cache.test.cjs`.
+Con Playwright y Chromium disponibles, y el servidor local en marcha, ejecutar
+`node tests/page-behavior.cjs` para comprobar los rankings, la próxima fecha y las
+actualizaciones de administración. Esta prueba intercepta Apps Script con datos
+simulados y no escribe en la planilla real.
+
+La carga inicial reutiliza las listas de la respuesta de Apps Script durante
+30 segundos. Las consultas repetidas comparten la misma solicitud y guardar un
+cambio invalida esa copia. Recargar la página siempre consulta el estado del torneo.
+Los rankings actuales incluyen únicamente a los jugadores activos; los invitados
+se conservan en las convocatorias y los registros de cada partido. Inicio muestra
+el próximo partido pendiente con sus equipos y la fecha guardada, además del
+último resultado. Si aún no se guardó un próximo partido, la fecha de la tarjeta
+pequeña se estima a partir del último partido y se identifica como estimada.
