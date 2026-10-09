@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="css/home.css?v=2026100915">
   <link rel="stylesheet" href="css/theme.css?v=2026100927">
   <link rel="stylesheet" href="css/hall-of-fame.css?v=2026100924">
+  <link rel="stylesheet" href="css/live-score.css?v=2026100930">
 </head>
 <body>
   <div class="app-shell">
@@ -97,7 +98,7 @@
       <section id="administracion" class="page-section content-section">
         <header class="section-header"><div><span class="eyebrow">ACCESO PROTEGIDO</span><h2>Administración</h2></div></header>
         <article id="adminLogin" class="card admin-login"><h3>Ingresar como administrador</h3><p>Usá el PIN para revisar las declaraciones de goles.</p><form id="adminLoginForm"><input id="adminPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" required><button type="submit">Ingresar</button></form><p id="adminLoginMessage" class="form-message"></p></article>
-        <div id="adminPanel" hidden><datalist id="playerOptions"></datalist><div class="admin-toolbar"><div><strong>Panel del torneo</strong><span id="pendingCount">0 solicitudes</span></div><button id="adminLogout">Cerrar sesión</button></div>
+        <div id="adminPanel" hidden><datalist id="playerOptions"></datalist><div class="admin-toolbar"><div><strong>Panel del torneo</strong><span id="pendingCount">0 solicitudes</span></div><div class="admin-toolbar-actions"><button id="openLiveScore" type="button" disabled>⚽ Marcador en vivo</button><button id="adminLogout">Cerrar sesión</button></div></div><p id="liveScoreAvailability" class="admin-help">Primero guardá los equipos de un partido para usar el marcador.</p>
           <div class="admin-grid">
             <article class="card admin-tool team-generator-card">
               <span class="eyebrow">EQUIPOS DEL PARTIDO</span><h3>Armar y editar equipos</h3>
@@ -114,6 +115,7 @@
             </article>
             <section class="card admin-tool admin-match-tools" aria-labelledby="officialToolsTitle"><span class="eyebrow">MARCADOR OFICIAL</span><h3 id="officialToolsTitle">Marcador oficial</h3>
 <form id="resultForm"><label>Fecha N.º<input id="resultMatch" type="number" min="1" required></label><div class="compact-fields"><label>Goles Equipo Claro<input id="resultWhite" type="number" min="0" required></label><label>Goles Equipo Oscuro<input id="resultBlack" type="number" min="0" required></label></div><button type="submit">Publicar resultado</button><p class="admin-help">Las fechas 1 a 18 actualizan la clasificación. Desde la fecha 19, los equipos y resultados se guardan como playoffs sin sumar puntos, PJ, victorias, empates ni derrotas.</p><p id="resultMessage" class="form-message"></p></form>
+<div id="liveScoreReview" class="live-score-review" hidden><h4 id="liveScoreReviewTitle"></h4><ul id="liveScoreReviewPlayers"></ul><p>Estas anotaciones se guardan en este celular. Los goles de las estadísticas y los votos MVP se revisan en las declaraciones del partido.</p></div>
 <details id="disciplineTools" class="admin-subtool"><summary>Disciplina</summary><div class="admin-subtool-content"><h4>Cargar sanción</h4><form id="sanctionForm"><label>Jugador<select id="sanctionPlayer" required></select></label><label>Puntos a descontar<input id="sanctionPoints" type="number" min="0.5" step="0.5" value="1" required></label><label>Motivo<input id="sanctionReason" maxlength="100" required placeholder="Ej.: llegada tarde"></label><button type="submit">Aplicar sanción</button><p id="sanctionMessage" class="form-message"></p></form><div id="sanctionsList"></div></div></details>
 <details id="fundTools" class="admin-subtool"><summary>Caja del torneo</summary><div class="admin-subtool-content"><h4>Actualizar dinero disponible</h4><form id="fundForm"><label>Saldo actual<input id="fundInput" type="number" min="0" step="100" required></label><button type="submit">Guardar saldo</button><p id="fundMessage" class="form-message"></p></form></div></details>
 <details id="playoffTools" class="admin-subtool"><summary>Cruces de fase final</summary><div class="admin-subtool-content"><h4>Cruces del cuadro de playoffs</h4><p class="admin-help">Elegí el cruce entre jugadores y quién avanza de ronda. El marcador de equipos se carga en “Marcador del partido”.</p><form id="playoffForm"><label>Ronda<select id="playoffRound"><option value="quarter">Cuartos de final</option><option value="semi">Semifinal</option><option value="third">Tercer puesto</option><option value="final">Final</option></select></label><label>Cruce<select id="playoffSlot"></select></label><div class="compact-fields"><label>Jugador 1<select id="playoffPlayer1"></select></label><label>Jugador 2<select id="playoffPlayer2"></select></label><label>Goles 1<input id="playoffScore1" type="number" min="0" required></label><label>Goles 2<input id="playoffScore2" type="number" min="0" required></label></div><label>Quién pasó de ronda<select id="playoffWinner" required></select></label><button type="submit">Guardar resultado</button><p id="playoffMessage" class="form-message"></p></form></div></details>
@@ -138,10 +140,21 @@
     </main>
     <footer><strong>CHIQUIMAFIA TORNEO</strong><span>Datos sincronizados desde Google Sheets</span></footer>
   </div>
+  <dialog id="liveScoreDialog" aria-labelledby="liveScoreTitle">
+    <header class="live-score-header"><div><h2 id="liveScoreTitle">Marcador del partido</h2><span id="liveScoreSaveStatus">Guardado en este celular</span></div><button id="closeLiveScore" type="button">Cerrar</button></header>
+    <div class="live-score-content"><label class="live-match-label">Partido<select id="liveMatchSelect" aria-label="Partido del marcador en vivo"></select></label>
+      <div class="live-scoreboard" aria-live="polite" aria-atomic="true"><div><small>⚪ Claro</small><strong id="liveWhiteScore">0</strong></div><span aria-hidden="true">—</span><div><small>⚫ Oscuro</small><strong id="liveBlackScore">0</strong></div></div>
+      <p id="liveLastGoal">Tocá al jugador que hizo el gol.</p>
+      <div id="livePlayers" class="live-player-columns"><section class="live-player-team"><h3>⚪ Equipo Claro</h3><div id="liveWhitePlayers"></div></section><section class="live-player-team dark"><h3>⚫ Equipo Oscuro</h3><div id="liveBlackPlayers"></div></section></div>
+      <details class="live-score-options"><summary>Opciones del partido y goles anotados</summary><ol id="liveGoalHistory"></ol><button id="liveReset" type="button">Empezar de cero</button><p>Solo borra estas anotaciones en el celular. El resultado oficial se conserva.</p></details><button id="liveReopen" type="button" hidden>Volver a editar anotaciones</button>
+    </div>
+    <footer class="live-score-footer"><p id="liveScoreMessage" role="status"></p><div class="live-score-actions"><button id="liveUndo" type="button" disabled>↶ Deshacer gol</button><button id="liveReview" type="button">Revisar resultado</button></div></footer>
+  </dialog>
   <script src="js/config.js?v=2026072707"></script>
   <script src="js/sheets.js?v=2026100907"></script>
   <script src="js/goals.js?v=2026100901"></script>
-  <script src="js/app.js?v=2026100924"></script>
+  <script src="js/live-score.js?v=2026100930"></script>
+  <script src="js/app.js?v=2026100930"></script>
   <script src="js/team-generator.js?v=2026100913"></script>
 </body>
 </html>
