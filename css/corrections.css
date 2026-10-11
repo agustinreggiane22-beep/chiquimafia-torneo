@@ -1,6 +1,6 @@
 .stat-highlights { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 800px) { .stat-highlights { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 430px) { .stat-highlights { grid-template-columns: 1fr; } }
+@media (max-width: 320px) { .stat-highlights { grid-template-columns: minmax(0, 1fr); } }
 
 .team-generator-card { grid-column: 1 / -1; }
 .guest-adder,.generator-actions { display:flex; gap:10px; margin:14px 0; flex-wrap:wrap; }

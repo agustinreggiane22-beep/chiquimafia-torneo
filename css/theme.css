@@ -30,7 +30,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,su
   outline:2px solid #3198c0; outline-offset:3px;
 }
 .secondary-admin-button { background:#e7f5fb!important; color:#0d4b7b!important; }
-.stat-box:nth-child(2) { color:#18232c; }
+.stat-box:nth-child(1) { background:linear-gradient(145deg,#071e3e,#155a8c); color:#fff; }
+.stat-box:nth-child(2) { background:linear-gradient(145deg,#861f32,#c43b48); color:#fff; }
+.stat-box:nth-child(3) { background:linear-gradient(145deg,#c8971d,#efc95d); color:#18232c; }
+.stat-box:nth-child(4) { background:linear-gradient(145deg,#0c483e,#19765b); color:#fff; }
+.stat-box { min-width:0; }
+.stat-box strong { overflow-wrap:anywhere; }
 .stat-box span,.stat-box small { opacity:1; }
 .rank-value,.history-metrics-grid .history-card h3 { color:var(--ink); }
 .top-scorer-card,.champion-history { background:linear-gradient(135deg,#fff8de,#fff); color:var(--ink); border-color:#d9a928; }
