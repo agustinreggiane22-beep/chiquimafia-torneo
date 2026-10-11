@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/mvp-voting.css?v=2026100939">
   <link rel="stylesheet" href="css/sports-panels.css?v=2026100942">
   <link rel="stylesheet" href="css/page-background.css?v=2026100949">
+  <link rel="stylesheet" href="css/duels.css?v=2026101101">
 </head>
 <body>
   <div class="page-background" aria-hidden="true"></div>
@@ -28,7 +29,7 @@
       </a>
       <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="mainNav">Menú</button>
       <nav id="mainNav" class="main-nav" aria-label="Navegación principal">
-        <a class="active" href="#inicio">Inicio</a><a href="#fechas">Fechas</a><a href="#clasificacion">Clasificación</a><a href="#cargar-goles" id="votingNav">Cargar goles y MVP</a><a href="#estadisticas">Estadísticas</a><a href="#historia">Salón de la Fama</a><a href="#playoffs" hidden>Playoffs</a><a href="#administracion">Admin</a>
+        <a class="active" href="#inicio">Inicio</a><a href="#fechas">Fechas</a><a href="#clasificacion">Clasificación</a><a href="#cargar-goles" id="votingNav">Cargar goles y MVP</a><a href="#estadisticas">Estadísticas</a><a href="#historia">Salón de la Fama</a><a href="#playoffs" hidden>Playoffs</a><a href="#administracion">Admin</a><a href="reglamento.html">Reglamento</a>
       </nav>
     </header>
 
@@ -119,10 +120,11 @@
               <span class="eyebrow">EQUIPOS DEL PARTIDO</span><h3>Armar y editar equipos</h3>
               <p class="admin-help">Un mismo panel para fase regular y playoffs. Cargá una fecha guardada o armá un partido nuevo.</p>
               <div class="compact-fields"><label>Partido/Fecha N.º<input id="generatorMatch" type="number" min="1" required></label><label>Día<input id="generatorDate" type="date" required></label></div>
+              <details id="duelTools" class="admin-subtool"><summary>⚔️ Desafío y capitanes</summary><div class="admin-subtool-content"><h4>Elegir los capitanes antes de armar los equipos</h4><p class="admin-help">Guardá el desafío aceptado en el grupo antes de armar los equipos. Los duelistas son los capitanes y eligen a sus jugadores; vos cargás los ocho de cada lado. Al publicar el resultado, la asistencia queda en 1,5 para el ganador y 0,5 para el perdedor. Si empatan, queda en 1 para cada uno.</p><p id="duelSetupNotice" class="admin-help" hidden>Para activar los desafíos, <a href="actualizar-desafios.html" target="_blank" rel="noopener">actualizá Apps Script con el código completo</a>. Tus datos actuales se conservan.</p><form id="duelForm"><label>Fecha<select id="duelMatch" required></select></label><div class="compact-fields"><label>Jugador que desafía<select id="duelChallenger" required></select></label><label>Jugador que acepta<select id="duelChallenged" required></select></label></div><label class="duel-confirmation"><input id="duelConfirmed" type="checkbox" required>Confirmo que el desafío fue aceptado en el grupo y cumple el reglamento.</label><div class="generator-actions"><button type="submit">Guardar desafío</button><button id="deleteDuel" class="danger-admin-button" type="button" hidden>Eliminar desafío</button></div></form><p id="duelMessage" class="form-message" role="status"></p><div id="duelStatus" class="admin-help" aria-live="polite"></div></div></details>
               <button id="loadGeneratedTeams" class="secondary-admin-button" type="button">Cargar equipos guardados</button>
               <label class="team-mode-label">Cómo armar los equipos<select id="teamBuildMode"><option value="balanced">Generar equipos parejos</option><option value="manual">Elegir jugadores manualmente</option></select></label>
               <div id="balancedTeamFields"><p class="admin-help">Marcá quiénes juegan y elegí posición y nivel para equilibrar los equipos. Los niveles no aparecen en la imagen.</p><div class="guest-adder"><input id="generatorGuest" maxlength="50" placeholder="Nombre de invitado"><button id="addGeneratorGuest" type="button">Agregar invitado</button></div><div id="generatorRoster" class="generator-roster"></div><button id="balanceTeams" type="button">⚖️ Generar equipos parejos</button></div>
-              <div id="manualTeamFields" hidden><p class="admin-help">Elegí jugadores registrados o escribí nombres de invitados. Los invitados aparecen en el partido, pero no suman en la clasificación.</p><div class="lineup-columns"><div><h4>⚪ Equipo Claro</h4><div id="whiteSelectors"></div></div><div><h4>⚫ Equipo Oscuro</h4><div id="blackSelectors"></div></div></div></div>
+              <div id="manualTeamFields" hidden><p class="admin-help">Elegí jugadores registrados o escribí nombres de invitados. Los invitados aparecen en el partido, pero no suman en la clasificación.</p><div class="lineup-columns"><div><h4>⚪ Equipo Claro</h4><p id="whiteCaptainBadge" class="captain-badge" hidden></p><div id="whiteSelectors"></div></div><div><h4>⚫ Equipo Oscuro</h4><p id="blackCaptainBadge" class="captain-badge" hidden></p><div id="blackSelectors"></div></div></div></div>
               <div id="generatedTeams" class="generated-teams" hidden><div><h4>⚪ Equipo Claro <small id="whiteStrength"></small></h4><div id="generatedWhite"></div></div><div><h4>⚫ Equipo Oscuro <small id="blackStrength"></small></h4><div id="generatedBlack"></div></div></div>
               <div class="generator-actions"><button id="publishGeneratedTeams" type="button">Guardar y publicar equipos</button></div><p id="generatorMessage" class="form-message"></p>
               <details class="image-settings"><summary>Imagen para compartir</summary><div class="compact-fields"><label>Horario<input id="generatorTime" type="time"></label><label>Lugar<input id="generatorVenue" type="text" maxlength="90" placeholder="Cancha o dirección"></label></div><p class="admin-help">El horario y el lugar se recuerdan por fecha en este dispositivo.</p><div class="generator-actions"><button id="previewTeamsImage" class="secondary-admin-button" type="button">Ver imagen</button><button id="downloadTeamsImage" class="secondary-admin-button" type="button">📲 Descargar imagen</button></div><div id="imageExportActions" hidden><div class="generator-actions"><a id="saveTeamsImage" hidden download>Descargar imagen</a><button id="shareTeamsImage" type="button">Compartir imagen</button><a id="openTeamsImage" class="secondary-admin-button" target="_blank" rel="noopener">Abrir imagen</a></div><p class="admin-help">Si el navegador bloquea la descarga, abrí la imagen o mantené presionada la vista previa para guardarla.</p></div><img id="teamsSharePreview" class="teams-share-preview" width="1080" height="1350" alt="Vista previa de los equipos para compartir" hidden><canvas id="teamsShareCanvas" width="1080" height="1350" hidden></canvas></details>
@@ -131,6 +133,7 @@
             <section class="card admin-tool admin-match-tools" aria-labelledby="officialToolsTitle"><span class="eyebrow">MARCADOR OFICIAL</span><h3 id="officialToolsTitle">Marcador oficial</h3>
 <form id="resultForm"><label>Fecha N.º<input id="resultMatch" type="number" min="1" required></label><div class="compact-fields"><label>Goles Equipo Claro<input id="resultWhite" type="number" min="0" required></label><label>Goles Equipo Oscuro<input id="resultBlack" type="number" min="0" required></label></div><button type="submit">Publicar resultado</button><p class="admin-help">Las fechas 1 a 18 actualizan la clasificación. Desde la fecha 19, los equipos y resultados se guardan como playoffs sin sumar puntos, PJ, victorias, empates ni derrotas.</p><p id="resultMessage" class="form-message"></p></form>
 <div id="liveScoreReview" class="live-score-review" hidden><h4 id="liveScoreReviewTitle"></h4><ul id="liveScoreReviewPlayers"></ul><p>Estas anotaciones se guardan en este celular. Los goles de las estadísticas y los votos MVP se revisan en las declaraciones del partido.</p></div>
+
 <details id="disciplineTools" class="admin-subtool"><summary>Disciplina</summary><div class="admin-subtool-content"><h4>Cargar sanción</h4><form id="sanctionForm"><label>Jugador<select id="sanctionPlayer" required></select></label><label>Puntos a descontar<input id="sanctionPoints" type="number" min="0.5" step="0.5" value="1" required></label><label>Motivo<input id="sanctionReason" maxlength="100" required placeholder="Ej.: llegada tarde"></label><button type="submit">Aplicar sanción</button><p id="sanctionMessage" class="form-message"></p></form><div id="sanctionsList"></div></div></details>
 <details id="fundTools" class="admin-subtool"><summary>Caja del torneo</summary><div class="admin-subtool-content"><h4>Actualizar dinero disponible</h4><form id="fundForm"><label>Saldo actual<input id="fundInput" type="number" min="0" step="100" required></label><button type="submit">Guardar saldo</button><p id="fundMessage" class="form-message"></p></form></div></details>
 <details id="playoffTools" class="admin-subtool"><summary>Cruces de fase final</summary><div class="admin-subtool-content"><h4>Cruces del cuadro de playoffs</h4><p class="admin-help">Elegí el cruce entre jugadores y quién avanza de ronda. El marcador de equipos se carga en “Marcador del partido”.</p><form id="playoffForm"><label>Ronda<select id="playoffRound"><option value="quarter">Cuartos de final</option><option value="semi">Semifinal</option><option value="third">Tercer puesto</option><option value="final">Final</option></select></label><label>Cruce<select id="playoffSlot"></select></label><div class="compact-fields"><label>Jugador 1<select id="playoffPlayer1"></select></label><label>Jugador 2<select id="playoffPlayer2"></select></label><label>Goles 1<input id="playoffScore1" type="number" min="0" required></label><label>Goles 2<input id="playoffScore2" type="number" min="0" required></label></div><label>Quién pasó de ronda<select id="playoffWinner" required></select></label><button type="submit">Guardar resultado</button><p id="playoffMessage" class="form-message"></p></form></div></details>
@@ -166,12 +169,12 @@
     <footer class="live-score-footer"><p id="liveScoreMessage" role="status"></p><div class="live-score-actions"><button id="liveUndo" type="button" disabled>↶ Deshacer gol</button><button id="liveReview" type="button">Revisar resultado</button></div></footer>
   </dialog>
   <script src="js/config.js?v=2026072707"></script>
-  <script src="js/sheets.js?v=2026100932"></script>
-  <script src="js/goals.js?v=2026100959"></script>
+  <script src="js/sheets.js?v=2026101101"></script>
+  <script src="js/goals.js?v=2026101101"></script>
   <script src="js/live-score.js?v=2026100932"></script>
   <script src="js/mvp-voting.js?v=2026100936"></script>
-  <script src="js/app.js?v=2026100959"></script>
-  <script src="js/team-generator.js?v=2026100959"></script>
+  <script src="js/app.js?v=2026101101"></script>
+  <script src="js/team-generator.js?v=2026101101"></script>
 </body>
 </html>
 

@@ -122,3 +122,27 @@ Publicar desde el marcador envía los goles por jugador junto con el resultado. 
 Pruebas: `node --test tests/*.test.cjs` incluye el servidor de Apps Script con Sheets, reloj y temporizadores simulados. `CHIQUI_TEST_URL=http://127.0.0.1:8000/ node tests/mvp-voting.cjs` combina ese mismo código del servidor y el navegador para comprobar votos, privacidad, plazos, empates, puntos, goles oficiales, correcciones, recarga y cuatro anchuras sin escribir en el torneo real. Las suites anteriores verifican la compatibilidad durante la actualización. La vista previa visual y los animaciones respetan `prefers-reduced-motion`.
 
 La revisión completa se ejecuta con `CHIQUI_TEST_URL=http://127.0.0.1:8000/ node tests/tournament-lifecycle.cjs`: usa el código real de Apps Script con datos simulados y recorre 18 fechas, premios, todos los cruces y el archivo de temporada. El cierre espera que terminen las votaciones MVP pendientes. Con el servidor actual, el archivo completo lo guarda Apps Script; la web evita escribir por separado otro registro del campeón.
+
+## Desafíos y reglamento (octubre de 2026)
+
+En Admin → Armar y editar equipos → Desafío y capitanes se registra un duelo
+aceptado en el grupo, antes de guardar los equipos. Ambos capitanes pertenecen
+al plantel; el modo manual los coloca en lados opuestos y permite cargar los
+jugadores que eligieron. La publicación de equipos y su PNG muestra ⚔️.
+Guardar un duelo o equipos no suma asistencia. Publicar el resultado suma
+asistencia (1) y puntos por resultado (ganar 2, empatar 1, perder 0), por separado.
+El duelo transfiere 0,5 de asistencia: ganador 1,5, perdedor 0,5; empate 1 cada
+uno. Su transferencia se deriva del resultado vigente, por lo que una corrección
+no acumula premios ni cambia votos/deadlines MVP. La hoja Desafios Web se archiva
+al cerrar la temporada y sus puntos se incluyen en el historial.
+
+La capacidad `duelsV1` habilita este panel. Si Apps Script todavía usa una versión
+anterior, el panel permanece deshabilitado con un enlace a
+`actualizar-desafios.html`; los demás apartados siguen funcionando. Esa página
+permite copiar `Code-Apps-Script.txt`, que debe ser idéntico a
+`google-apps-script/Code.gs`, y actualizar la implementación existente sin
+cambiar su URL ni reiniciar datos.
+
+`reglamento.html` permite leer y compartir las reglas desde cualquier navegador;
+`docs/Reglamento-Chiquimafia-2026.docx` contiene la versión Word. El enlace
+Reglamento aparece en el menú principal.

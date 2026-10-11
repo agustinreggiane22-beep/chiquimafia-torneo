@@ -10,6 +10,7 @@ const HISTORY_SHEET_NAME = 'Historial Torneos Web';
 const FUND_SHEET_NAME = 'Caja Web';
 const MATCH_RECORDS_SHEET_NAME = 'Registro Partido Web';
 const MVP_VOTES_SHEET_NAME = 'Votos MVP Web';
+const DUELS_SHEET_NAME = 'Desafios Web';
 
 function doPost(e) {
   try {
@@ -31,6 +32,9 @@ function doPost(e) {
     if (body.action === 'listLineups') return json_({ ok:true, items:listRows_(LINEUP_SHEET_NAME,['matchNumber','date','white','black','updatedAt']) });
     if (body.action === 'saveLineup') { requirePin_(body.pin); return json_({ok:true,item:saveVotingLineup_(body.item)}); }
     if (body.action === 'listResults') return json_({ok:true,items:listResults_()});
+    if (body.action === 'listDuels') return json_({ok:true,items:listDuels_()});
+    if (body.action === 'saveDuel') { requirePin_(body.pin); return json_({ok:true,item:saveDuel_(body.item)}); }
+    if (body.action === 'deleteDuel') { requirePin_(body.pin); locked_(()=>deleteDuel_(body.matchNumber)); return json_({ok:true}); }
     if (body.action === 'saveResult') { requirePin_(body.pin); return json_({ok:true,item:saveOfficialMatch_(body.item)}); }
     if (body.action === 'listSanctions') return json_({ok:true,items:listRows_(SANCTION_SHEET_NAME,['id','player','points','reason','createdAt'])});
     if (body.action === 'addSanction') { requirePin_(body.pin); return json_({ok:true,item:addSanction_(body.item)}); }
@@ -75,14 +79,15 @@ function tournamentState_() {
   closeMvpVoting();
   return {
     ok: true,
-    version: '2026-10-09-mvp-v3',
-    capabilities: {matchVotingV2:true,voteProgress:true},
+    version: '2026-10-11-desafios-v1',
+    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true},
     automationReady: automationReady_(),
     serverNow: new Date().toISOString(),
     matchRecords: listMatchRecords_(),
     players: listWebPlayers_(),
     lineups: listRows_(LINEUP_SHEET_NAME,['matchNumber','date','white','black','updatedAt']),
     results: listResults_(),
+    duels: listDuels_(),
     mvps: listMvp_(),
     sanctions: listRows_(SANCTION_SHEET_NAME,['id','player','points','reason','createdAt']),
     deletedDates: listRows_(DELETED_DATES_SHEET_NAME,['matchNumber','deletedAt']),
@@ -324,7 +329,7 @@ function setWebPlayer_(name,status) {
 
 function deleteDate_(matchNumber) {
   const number = String(matchNumber);
-  [LINEUP_SHEET_NAME,RESULTS_SHEET_NAME,MVP_SHEET_NAME,MATCH_RECORDS_SHEET_NAME,MVP_VOTES_SHEET_NAME].forEach(name => {
+  [LINEUP_SHEET_NAME,RESULTS_SHEET_NAME,MVP_SHEET_NAME,MATCH_RECORDS_SHEET_NAME,MVP_VOTES_SHEET_NAME,DUELS_SHEET_NAME].forEach(name => {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
     if (!sheet) return;
     const values = sheet.getDataRange().getValues();
@@ -349,7 +354,7 @@ function savePlayoff_(item) {
 function resetSeason_(seasonName) {
   const book = SpreadsheetApp.getActiveSpreadsheet(), label = String(seasonName || 'Temporada').trim().slice(0,35);
   saveSeasonHistory_(label);
-  const names = [SHEET_NAME,MVP_SHEET_NAME,LINEUP_SHEET_NAME,SANCTION_SHEET_NAME,RESULTS_SHEET_NAME,PLAYOFF_SHEET_NAME,DELETED_DATES_SHEET_NAME,MATCH_RECORDS_SHEET_NAME,MVP_VOTES_SHEET_NAME];
+  const names = [SHEET_NAME,MVP_SHEET_NAME,LINEUP_SHEET_NAME,SANCTION_SHEET_NAME,RESULTS_SHEET_NAME,PLAYOFF_SHEET_NAME,DELETED_DATES_SHEET_NAME,MATCH_RECORDS_SHEET_NAME,MVP_VOTES_SHEET_NAME,DUELS_SHEET_NAME];
   names.forEach(name => {
     const sheet = book.getSheetByName(name);
     if (!sheet) return;
@@ -391,6 +396,7 @@ function saveSeasonHistory_(season) {
   records.forEach(record=>{record.scorers.forEach(item=>{const row=add(item.player);if(row)row.goals+=item.goals});if(Number(record.matchNumber)<=18)record.scorerAwards.forEach(award=>{const row=add(award.player);if(row)row.points+=award.points})});
   list_().filter(item=>item.status==='approved'&&!managed.has(Number(item.matchNumber))).forEach(item=>{const row=add(item.player);if(row)row.goals+=Number(item.goals||0)});
   listRows_(SANCTION_SHEET_NAME,['id','player','points','reason','createdAt']).forEach(item=>{const row=add(item.player);if(row)row.points+=Number(item.points||0)});
+  listDuels_().filter(item=>Number(item.matchNumber)<=18).forEach(item=>item.awards.forEach(award=>{const row=add(award.player);if(row)row.points+=award.points}));
   const ranking=[...rows.values()].filter(row=>row.attendance||row.goals||row.mvps),playoffs=listRows_(PLAYOFF_SHEET_NAME,['key','round','slot','player1','player2','score1','score2','winner','updatedAt']),final=playoffs.find(x=>x.key==='final-1'),third=playoffs.find(x=>x.key==='third-1');
   const champion=final?.winner||[...ranking].sort((a,b)=>b.points-a.points)[0]?.player||'',runner=final?(final.winner===final.player1?final.player2:final.player1):'';
   const sheet=genericSheet_(HISTORY_SHEET_NAME,['season','player','champion','points','goals','attendance','mvps','placement','archivedAt']),stamp=new Date().toISOString();
@@ -499,9 +505,9 @@ function saveOfficialMatch_(item) {
   return locked_(()=>{
     const number=Number(item&&item.matchNumber),whiteGoals=Number(item&&item.whiteGoals),blackGoals=Number(item&&item.blackGoals);
     if(!Number.isInteger(number)||number<1||![whiteGoals,blackGoals].every(n=>Number.isInteger(n)&&n>=0&&n<=999))throw new Error('Completá una fecha y un marcador válidos.');
-    const lineup=matchLineup_(number),existing=findMatchRecord_(number),oldResult=listResults_().find(x=>Number(x.matchNumber)===number);
+    const lineup=matchLineup_(number),existing=findMatchRecord_(number),oldResult=listResults_().find(x=>Number(x.matchNumber)===number),duel=rawDuels_().find(row=>Number(row.matchNumber)===number),alignedDuel=duel?duelInLineup_(duel,lineup):null;
     // Manual historical corrections preserve historical goals/MVP. A new match requires its scorer ledger.
-    if(!Array.isArray(item.scorers)&&oldResult&&!existing)return saveResult_(item);
+    if(!Array.isArray(item.scorers)&&oldResult&&!existing){const saved=saveResult_(item);if(alignedDuel)writeDuel_(alignedDuel);return saved}
     let scorers;
     if(Array.isArray(item.scorers))scorers=validateScorers_(item.scorers,lineup,whiteGoals,blackGoals);
     else if(existing)scorers=validateScorers_(existing.scorers,lineup,whiteGoals,blackGoals);
@@ -511,7 +517,7 @@ function saveOfficialMatch_(item) {
     const legacyAwards=!existing&&oldResult?listLegacyMvp_().filter(a=>Number(a.matchNumber)===number):[];
     const initial=legacyAwards.length?{...window,closed:true,closedAt:legacyAwards[0].confirmedAt,mvpAwards:legacyAwards.map(a=>({player:a.player,points:Number(a.points??1)})),voteCount:0,legacyMvp:true}:{...window,closed:false,mvpAwards:[],voteCount:0};
     const record={...(existing||{}),matchNumber:number,matchDate:String(lineup.date),scorers,scorerAwards:splitAward_(scorers,0.5,x=>x.goals),...(existing?{}:initial)};
-    const saved=saveResult_(item);writeMatchRecord_(record);SpreadsheetApp.flush();
+    const saved=saveResult_(item);writeMatchRecord_(record);if(alignedDuel)writeDuel_(alignedDuel);SpreadsheetApp.flush();
     if(automationReady_())scheduleVotingClose_(record);
     return {...saved,scorers};
   });
@@ -570,11 +576,64 @@ function setupTournamentAutomation() {
 
 function saveVotingLineup_(item) {
   return locked_(()=>{
+    const duel=rawDuels_().find(row=>Number(row.matchNumber)===Number(item.matchNumber));
+    const aligned=duel?duelInLineup_(duel,item):null;
     const existing=findMatchRecord_(item.matchNumber);
     if(existing){
       const previous=matchLineup_(item.matchNumber),changed=String(previous.date)!==String(item.date)||JSON.stringify(previous.white)!==JSON.stringify(item.white)||JSON.stringify(previous.black)!==JSON.stringify(item.black);
       if(changed)throw new Error('Esta fecha ya está publicada con goles oficiales. Conservá sus equipos y día; para otro partido, usá una fecha nueva.');
     }
-    return saveLineup_(item);
+    const saved=saveLineup_(item);if(aligned)writeDuel_(aligned);return saved;
   });
+}
+
+// Duel points are derived from the current official score. Corrections replace the
+// transfer instead of appending points, and never change MVP votes or deadlines.
+function rawDuels_(){return listRows_(DUELS_SHEET_NAME,['matchNumber','whitePlayer','blackPlayer','challengedPlayer','updatedAt'])}
+function listDuels_(){
+  const results=new Map(listResults_().map(result=>[Number(result.matchNumber),result]));
+  return rawDuels_().map(duel=>{
+    const result=results.get(Number(duel.matchNumber)),played=result&&String(result.played)!=='false',winner=played?result.winner:'',awards=[];
+    if(winner==='white'||winner==='black'){
+      awards.push({player:duel.whitePlayer,points:winner==='white'?0.5:-0.5},{player:duel.blackPlayer,points:winner==='black'?0.5:-0.5});
+    }
+    return {...duel,winner,status:!played?'pending':winner==='draw'?'draw':'finished',awards};
+  });
+}
+function saveDuel_(item){
+  return locked_(()=>{
+    item=item||{};const number=Number(item.matchNumber);
+    if(!Number.isInteger(number)||number<1||number>18)throw new Error('Los desafíos pertenecen a las fechas 1 a 18 de la fase regular.');
+    if(item.confirmed!==true)throw new Error('Confirmá que el desafío fue aceptado en el grupo.');
+    const active=listWebPlayers_().filter(player=>player.status!=='deleted').map(player=>player.name),challenger=active.find(name=>participantKey_(name)===participantKey_(item.challenger)),challenged=active.find(name=>participantKey_(name)===participantKey_(item.challenged));
+    if(!challenger||!challenged)throw new Error('Los duelistas deben pertenecer al plantel del torneo. Los invitados no apuestan puntos de asistencia.');
+    if(participantKey_(challenger)===participantKey_(challenged))throw new Error('Elegí dos capitanes distintos.');
+    let whitePlayer=challenger,blackPlayer=challenged;
+    const result=listResults_().find(row=>Number(row.matchNumber)===number);
+    if(result&&String(result.played)!=='false'){const aligned=duelInLineup_({whitePlayer,blackPlayer},matchLineup_(number));whitePlayer=aligned.whitePlayer;blackPlayer=aligned.blackPlayer}
+    const players=new Set([participantKey_(whitePlayer),participantKey_(blackPlayer)]),previous=rawDuels_().find(row=>Number(row.matchNumber)===number-1);
+    if(previous&&[previous.whitePlayer,previous.blackPlayer].some(name=>players.has(participantKey_(name))))throw new Error('Quien participa de un desafío debe descansar de los duelos en la fecha siguiente.');
+    const results=new Map(listResults_().map(result=>[Number(result.matchNumber),result]));
+    rawDuels_().filter(row=>Number(row.matchNumber)<number).forEach(row=>{
+      const result=results.get(Number(row.matchNumber));if(!result||Math.abs(Number(result.whiteGoals)-Number(result.blackGoals))<5)return;
+      const loser=result.winner==='white'?row.blackPlayer:result.winner==='black'?row.whitePlayer:'';
+      if(participantKey_(loser)===participantKey_(row.challengedPlayer)&&players.has(participantKey_(loser)))throw new Error(loser+' perdió un duelo por 5 goles o más y no puede volver a desafiar en esta temporada.');
+    });
+    writeDuel_({matchNumber:number,whitePlayer,blackPlayer,challengedPlayer:challenged});
+    return listDuels_().find(duel=>Number(duel.matchNumber)===number);
+  });
+}
+function deleteDuel_(number){
+  const sheet=genericSheet_(DUELS_SHEET_NAME,['matchNumber','whitePlayer','blackPlayer','challengedPlayer','updatedAt']),values=sheet.getDataRange().getValues();
+  for(let i=values.length-1;i>0;i--)if(Number(values[i][0])===Number(number))sheet.deleteRow(i+1);
+}
+
+function duelInLineup_(duel,lineup){
+  const captains=[duel.whitePlayer,duel.blackPlayer],whitePlayer=(lineup.white||[]).find(name=>captains.some(captain=>participantKey_(captain)===participantKey_(name))),blackPlayer=(lineup.black||[]).find(name=>captains.some(captain=>participantKey_(captain)===participantKey_(name)));
+  if(!whitePlayer||!blackPlayer||participantKey_(whitePlayer)===participantKey_(blackPlayer))throw new Error('Los dos capitanes del desafío deben estar en equipos opuestos. Corregí los equipos o eliminá el desafío si ya no se juega.');
+  return {...duel,whitePlayer,blackPlayer};
+}
+function writeDuel_(duel){
+  const sheet=genericSheet_(DUELS_SHEET_NAME,['matchNumber','whitePlayer','blackPlayer','challengedPlayer','updatedAt']),values=sheet.getDataRange().getValues(),index=values.findIndex((row,i)=>i>0&&Number(row[0])===Number(duel.matchNumber)),row=[Number(duel.matchNumber),duel.whitePlayer,duel.blackPlayer,duel.challengedPlayer,new Date().toISOString()];
+  if(index>=0)sheet.getRange(index+1,1,1,row.length).setValues([row]);else sheet.appendRow(row);
 }

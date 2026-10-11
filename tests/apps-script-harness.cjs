@@ -12,7 +12,7 @@ function createBackend(initial={},time='2026-10-03T23:00:00Z'){
  class Sheet{
   constructor(name,rows=[]){this.name=name;this.rows=rows}
   getName(){return this.name}getDataRange(){return new Range(this)}getRange(...args){return new Range(this,...args)}getLastRow(){return this.rows.length}getLastColumn(){return Math.max(0,...this.rows.map(r=>r.length))}
-  appendRow(row){if(this.name==='Votos MVP Web'&&!locked)throw Error('Vote written without server lock');if(this.name==='Registro Partido Web'&&failNextRecord){failNextRecord=false;throw Error('Fallo simulado de guardado')}this.rows.push([...row]);return this}
+  appendRow(row){if(this.name==='Votos MVP Web'&&row[0]!=='matchNumber'&&!locked)throw Error('Vote written without server lock');if(this.name==='Registro Partido Web'&&failNextRecord){failNextRecord=false;throw Error('Fallo simulado de guardado')}this.rows.push([...row]);return this}
   setFrozenRows(){}insertColumnAfter(col){this.rows.forEach(row=>row.splice(col,0,''))}deleteRow(index){this.rows.splice(index-1,1)}deleteRows(index,count){this.rows.splice(index-1,count)}
   copyTo(){const copy=new Sheet('Copy '+this.name,structuredClone(this.rows));sheets.set(copy.name,copy);return copy}setName(name){sheets.delete(this.name);this.name=name;sheets.set(name,this);return this}
  }

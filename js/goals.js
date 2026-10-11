@@ -7,14 +7,15 @@
   const localRead=()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}};
   const localWrite=items=>localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
   // Reuse one snapshot during rendering; fetch fresh data after any successful write.
-  const READ_FIELDS={listWebPlayers:'players',listLineups:'lineups',listResults:'results',listMvp:'mvps',listSanctions:'sanctions',listDeletedDates:'deletedDates',listPlayoffs:'playoffs',list:'submissions',listMatchRecords:'matchRecords'};
+  const READ_FIELDS={listWebPlayers:'players',listLineups:'lineups',listResults:'results',listMvp:'mvps',listSanctions:'sanctions',listDeletedDates:'deletedDates',listPlayoffs:'playoffs',list:'submissions',listMatchRecords:'matchRecords',listDuels:'duels'};
   const READ_TTL=30000,readCache=new Map(),pendingReads=new Map();
-  let readGeneration=0,capabilities={},serverOffset=0,latestMatchRecords=[],automationReady=false;
+  let readGeneration=0,capabilities={},serverOffset=0,latestMatchRecords=[],latestDuels=[],automationReady=false;
   const copy=value=>JSON.parse(JSON.stringify(value));
   function clearReadCache(){readGeneration+=1;readCache.clear();pendingReads.clear()}
   function seedState(state){
     clearReadCache();
     capabilities=state.capabilities||{};automationReady=Boolean(state.automationReady);serverOffset=Date.parse(state.serverNow||'')-Date.now()||0;latestMatchRecords=copy(state.matchRecords||[]);
+    latestDuels=copy(state.duels||[]);
     const now=Date.now();
     Object.entries(READ_FIELDS).forEach(([action,field])=>{
       if(Array.isArray(state[field]))readCache.set(action,{value:{ok:true,items:copy(state[field])},at:now});
@@ -64,6 +65,11 @@
   async function voteMvp(item){if(!capabilities.matchVotingV2)throw new Error('La nueva votación necesita actualizar Apps Script.');return (await request('voteMvp',{item})).item}
   async function mvpVotes(pin){if(!capabilities.matchVotingV2)return [];return (await request('listMvpVotes',{pin})).items||[]}
   function supportsVoting(){return Boolean(capabilities.matchVotingV2)}
+  function supportsDuels(){return Boolean(capabilities.duelsV1)}
+  async function duels(){if(!supportsDuels())return [];const remote=await request('listDuels');latestDuels=remote.items||[];return copy(latestDuels)}
+  function duelPoints(player,rounds=18){const key=name=>window.ChiquiSheets?.key?ChiquiSheets.key(name):String(name).trim().toLowerCase();return latestDuels.filter(duel=>Number(duel.matchNumber)<=rounds).flatMap(duel=>duel.awards||[]).filter(award=>key(award.player)===key(player)).reduce((sum,award)=>sum+Number(award.points||0),0)}
+  async function saveDuel(item,pin){if(!supportsDuels())throw new Error('Actualizá Apps Script para activar los desafíos.');return (await request('saveDuel',{item,pin})).item}
+  async function deleteDuel(matchNumber,pin){if(!supportsDuels())throw new Error('Actualizá Apps Script para activar los desafíos.');await request('deleteDuel',{matchNumber,pin})}
   function serverTime(){return Date.now()+serverOffset}
   async function mvpAwards(){const remote=await request('listMvp').catch(()=>null);if(remote)return remote.items||[];try{return JSON.parse(localStorage.getItem(MVP_KEY)||'[]')}catch{return[]}}
   async function confirmMvp(matchNumber,player,pin){const remote=await request('confirmMvp',{matchNumber,player,pin});if(remote)return remote.item;const items=await mvpAwards(),existing=items.find(x=>String(x.matchNumber)===String(matchNumber));if(existing)existing.player=player;else items.push({matchNumber,player,confirmedAt:new Date().toISOString()});localStorage.setItem(MVP_KEY,JSON.stringify(items));return items.find(x=>String(x.matchNumber)===String(matchNumber))}
@@ -90,5 +96,5 @@
   async function addHistoricalChampion(item,pin){const remote=await request('addHistoricalChampion',{item,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.');return remote.item}
   async function deleteHistoricalChampion(season,player,pin){const remote=await request('deleteHistoricalChampion',{season,player,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.')}
   async function saveFund(amount,pin){const remote=await request('saveFund',{amount,pin});if(!remote)throw new Error('No se pudo guardar la caja.');return remote.item}
-  window.ChiquiGoals={savedScorers:matchNumber=>copy(latestMatchRecords.find(r=>Number(r.matchNumber)===Number(matchNumber))?.scorers||null),automationReady:()=>automationReady,supportsVoting,matchRecords,scorerPoints,voteMvp,mvpVotes,serverTime,seedState,list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,results,saveResult,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,addHistoricalChampion,deleteHistoricalChampion,saveFund,isShared:()=>Boolean(API())};
+  window.ChiquiGoals={savedScorers:matchNumber=>copy(latestMatchRecords.find(r=>Number(r.matchNumber)===Number(matchNumber))?.scorers||null),automationReady:()=>automationReady,supportsDuels,duels,duelForMatch:number=>copy(latestDuels.find(duel=>Number(duel.matchNumber)===Number(number))||null),duelPoints,saveDuel,deleteDuel,supportsVoting,matchRecords,scorerPoints,voteMvp,mvpVotes,serverTime,seedState,list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,results,saveResult,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,addHistoricalChampion,deleteHistoricalChampion,saveFund,isShared:()=>Boolean(API())};
 })();
