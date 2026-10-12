@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="css/sports-panels.css?v=2026100942">
   <link rel="stylesheet" href="css/page-background.css?v=2026100949">
   <link rel="stylesheet" href="css/duels.css?v=2026101101">
+  <link rel="stylesheet" href="css/team-levels.css?v=2026101201">
 </head>
 <body>
   <div class="page-background" aria-hidden="true"></div>
@@ -123,7 +124,7 @@
               <details id="duelTools" class="admin-subtool"><summary>⚔️ Desafío y capitanes</summary><div class="admin-subtool-content"><h4>Elegir los capitanes antes de armar los equipos</h4><p class="admin-help">Guardá el desafío aceptado en el grupo antes de armar los equipos. Los duelistas son los capitanes y eligen a sus jugadores; vos cargás los ocho de cada lado. Al publicar el resultado, la asistencia queda en 1,5 para el ganador y 0,5 para el perdedor. Si empatan, queda en 1 para cada uno.</p><p id="duelSetupNotice" class="admin-help" hidden>Para activar los desafíos, <a href="actualizar-desafios.html" target="_blank" rel="noopener">actualizá Apps Script con el código completo</a>. Tus datos actuales se conservan.</p><form id="duelForm"><label>Fecha<select id="duelMatch" required></select></label><div class="compact-fields"><label>Jugador que desafía<select id="duelChallenger" required></select></label><label>Jugador que acepta<select id="duelChallenged" required></select></label></div><label class="duel-confirmation"><input id="duelConfirmed" type="checkbox" required>Confirmo que el desafío fue aceptado en el grupo y cumple el reglamento.</label><div class="generator-actions"><button type="submit">Guardar desafío</button><button id="deleteDuel" class="danger-admin-button" type="button" hidden>Eliminar desafío</button></div></form><p id="duelMessage" class="form-message" role="status"></p><div id="duelStatus" class="admin-help" aria-live="polite"></div></div></details>
               <button id="loadGeneratedTeams" class="secondary-admin-button" type="button">Cargar equipos guardados</button>
               <label class="team-mode-label">Cómo armar los equipos<select id="teamBuildMode"><option value="balanced">Generar equipos parejos</option><option value="manual">Elegir jugadores manualmente</option></select></label>
-              <div id="balancedTeamFields"><p class="admin-help">Marcá quiénes juegan y elegí posición y nivel para equilibrar los equipos. Los niveles no aparecen en la imagen.</p><div class="guest-adder"><input id="generatorGuest" maxlength="50" placeholder="Nombre de invitado"><button id="addGeneratorGuest" type="button">Agregar invitado</button></div><div id="generatorRoster" class="generator-roster"></div><button id="balanceTeams" type="button">⚖️ Generar equipos parejos</button></div>
+              <div id="balancedTeamFields"><p class="admin-help">Marcá quiénes juegan y elegí su posición y nivel: Malo, Bueno o Excelente. Se recuerda en este dispositivo y no aparece en la imagen.</p><div class="guest-adder"><input id="generatorGuest" maxlength="50" placeholder="Nombre de invitado"><button id="addGeneratorGuest" type="button">Agregar invitado</button></div><div id="generatorRoster" class="generator-roster"></div><button id="balanceTeams" type="button">⚖️ Generar equipos parejos</button></div>
               <div id="manualTeamFields" hidden><p class="admin-help">Elegí jugadores registrados o escribí nombres de invitados. Los invitados aparecen en el partido, pero no suman en la clasificación.</p><div class="lineup-columns"><div><h4>⚪ Equipo Claro</h4><p id="whiteCaptainBadge" class="captain-badge" hidden></p><div id="whiteSelectors"></div></div><div><h4>⚫ Equipo Oscuro</h4><p id="blackCaptainBadge" class="captain-badge" hidden></p><div id="blackSelectors"></div></div></div></div>
               <div id="generatedTeams" class="generated-teams" hidden><div><h4>⚪ Equipo Claro <small id="whiteStrength"></small></h4><div id="generatedWhite"></div></div><div><h4>⚫ Equipo Oscuro <small id="blackStrength"></small></h4><div id="generatedBlack"></div></div></div>
               <div class="generator-actions"><button id="publishGeneratedTeams" type="button">Guardar y publicar equipos</button></div><p id="generatorMessage" class="form-message"></p>
@@ -174,7 +175,7 @@
   <script src="js/live-score.js?v=2026100932"></script>
   <script src="js/mvp-voting.js?v=2026100936"></script>
   <script src="js/app.js?v=2026101101"></script>
-  <script src="js/team-generator.js?v=2026101101"></script>
+  <script src="js/team-generator.js?v=2026101201"></script>
 </body>
 </html>
 

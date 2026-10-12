@@ -1,0 +1,19 @@
+/* Nombres, posiciones y niveles legibles en el editor de equipos. */
+.generator-roster { max-height:520px; gap:12px; }
+.generator-player { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px 16px; padding:16px; background:#f5fafe; }
+.generator-player-name { grid-column:1/-1; display:flex!important; align-items:center; gap:12px; margin:0!important; cursor:pointer; }
+.generator-player-name .generator-check { width:22px; height:22px; margin:0; flex:0 0 22px; }
+.generator-player-name strong { white-space:normal; overflow-wrap:anywhere; font-size:15px; }
+.generator-position,.generator-skill { min-width:0; margin:0!important; }
+.generator-position>span,.generator-skill>span { display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:800; margin-bottom:8px; }
+.generator-position select { width:100%; font-size:13px; }
+.generator-skill .generator-level { width:100%; font-size:13px; font-weight:800; }
+.generator-level[data-level="1"] { background:#fff0ef; color:#9c3030; border-color:#e4b2ac; }
+.generator-level[data-level="3"] { background:#eaf6fc; color:#0d4b7b; border-color:#a7cde0; }
+.generator-level[data-level="5"] { background:#fff6d8; color:#765600; border-color:#d9bd65; }
+.generated-teams h4 { flex-wrap:wrap; gap:8px; }
+.generated-teams h4 small { font-size:11px; }
+.generated-player>span { min-width:0; }
+.generated-player b,.generated-player small { display:block; overflow-wrap:anywhere; }
+.generated-player small { margin-top:4px; }
+.generator-player:has(.generator-check:checked) { border-color:#3198c0; background:#eaf6fc; }

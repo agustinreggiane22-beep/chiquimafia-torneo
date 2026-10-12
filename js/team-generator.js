@@ -5,13 +5,28 @@
   const $=selector=>document.querySelector(selector);
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
   const roles={goalkeeper:'Arquero',defender:'Defensor',midfielder:'Volante',forward:'Delantero',utility:'Polifuncional'};
+  const levelLabels={1:'Malo',3:'Bueno',5:'Excelente'};
+  const categoryLevel=value=>Number(value)<=2?1:Number(value)>=4?5:3;
   let profiles={},guests=[],teams={white:[],black:[]};
 
   function readProfiles(){try{return JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}')}catch{return{}}}
   function writeProfiles(){localStorage.setItem(PROFILE_KEY,JSON.stringify(profiles))}
   function names(){return[...new Set([...document.querySelectorAll('#playerOptions option')].map(option=>option.value).filter(Boolean).concat(guests))].sort((a,b)=>a.localeCompare(b))}
-  function playerData(name){const row=$(`.generator-player[data-name="${CSS.escape(name)}"]`);return{name,role:row?.querySelector('.generator-role').value||profiles[name]?.role||'utility',level:Number(row?.querySelector('.generator-level').value||profiles[name]?.level||3)}}
-  function renderRoster(){const roster=$('#generatorRoster');if(!roster)return;roster.innerHTML=names().map(name=>{const saved=profiles[name]||{role:'utility',level:3};return`<label class="generator-player" data-name="${esc(name)}"><input class="generator-check" type="checkbox"><strong>${esc(name)}</strong><select class="generator-role">${Object.entries(roles).map(([value,label])=>`<option value="${value}"${saved.role===value?' selected':''}>${label}</option>`).join('')}</select><select class="generator-level" aria-label="Nivel de ${esc(name)}">${[1,2,3,4,5].map(level=>`<option value="${level}"${Number(saved.level)===level?' selected':''}>Nivel ${level}</option>`).join('')}</select></label>`}).join('');roster.onchange=event=>{const row=event.target.closest('.generator-player');if(!row||(!event.target.matches('.generator-role')&&!event.target.matches('.generator-level')))return;profiles[row.dataset.name]={role:row.querySelector('.generator-role').value,level:Number(row.querySelector('.generator-level').value)};writeProfiles()}}
+  function playerData(name){const row=$(`.generator-player[data-name="${CSS.escape(name)}"]`);return{name,role:row?.querySelector('.generator-role').value||profiles[name]?.role||'utility',level:categoryLevel(row?.querySelector('.generator-level').value||profiles[name]?.level||3)}}
+  function renderRoster(){
+    const roster=$('#generatorRoster');if(!roster)return;
+    roster.innerHTML=names().map((name,index)=>{
+      const saved=profiles[name]||{role:'utility',level:3},level=categoryLevel(saved.level);
+      return `<article class="generator-player" data-name="${esc(name)}"><label class="generator-player-name"><input class="generator-check" type="checkbox"><strong>${esc(name)}</strong></label><label class="generator-position"><span>Posición</span><select class="generator-role" aria-label="Posición de ${esc(name)}">${Object.entries(roles).map(([value,label])=>`<option value="${value}"${saved.role===value?' selected':''}>${label}</option>`).join('')}</select></label><label class="generator-skill"><span>Nivel</span><select class="generator-level" aria-label="Nivel de ${esc(name)}" data-level="${level}">${[1,3,5].map(value=>`<option value="${value}"${level===value?' selected':''}>${levelLabels[value]}</option>`).join('')}</select></label></article>`;
+    }).join('');
+    const update=event=>{
+      const row=event.target.closest('.generator-player');if(!row||(!event.target.matches('.generator-role')&&!event.target.matches('.generator-level')))return;
+      const input=row.querySelector('.generator-level'),level=Number(input.value);
+      input.dataset.level=String(level);
+      profiles[row.dataset.name]={role:row.querySelector('.generator-role').value,level};writeProfiles();
+    };
+    roster.oninput=update;roster.onchange=update;
+  }
   function teamScore(team){const total=team.reduce((sum,p)=>sum+p.level,0),counts={};team.forEach(p=>counts[p.role]=(counts[p.role]||0)+1);return{total,counts}}
   function cost(white,black){const a=teamScore(white),b=teamScore(black);let value=Math.abs(a.total-b.total)*12+Math.abs(white.length-black.length)*50;for(const role of Object.keys(roles))value+=Math.abs((a.counts[role]||0)-(b.counts[role]||0))*(role==='goalkeeper'?18:5);return value}
   function shuffle(items){const copy=[...items];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
@@ -26,7 +41,7 @@
     teams={white:[playerData(duel.whitePlayer),...other(teams.white)],black:[playerData(duel.blackPlayer),...other(teams.black)]};$('#teamBuildMode').value='manual';$('#balancedTeamFields').hidden=true;$('#manualTeamFields').hidden=false;copyToLineup();renderTeams();captainBadges();$('#generatorMessage').textContent='⚔️ Capitanes preparados en equipos opuestos. Cargá los jugadores que eligió cada uno y guardá los equipos.';
   }
   window.ChiquiTeamGenerator={useCaptains};
-  function renderTeams(){hideImageActions();captainBadges();const wrap=$('#generatedTeams');wrap.hidden=$('#teamBuildMode').value==='manual';const render=(team,target,side)=>{$(target).innerHTML=team.map((p,index)=>`<div class="generated-player"><span><b>${esc(p.name)}${isCaptain(p.name)?' ⚔️':''}</b> <small>${roles[p.role]} · N${p.level}</small></span><button type="button" data-swap="${side}" data-index="${index}" title="Cambiar de equipo">↔</button></div>`).join('')};render(teams.white,'#generatedWhite','white');render(teams.black,'#generatedBlack','black');$('#whiteStrength').textContent=`Nivel ${teamScore(teams.white).total}`;$('#blackStrength').textContent=`Nivel ${teamScore(teams.black).total}`;$('#generatorMessage').textContent=`Diferencia de nivel: ${Math.abs(teamScore(teams.white).total-teamScore(teams.black).total)}.`}
+  function renderTeams(){hideImageActions();captainBadges();const wrap=$('#generatedTeams');wrap.hidden=$('#teamBuildMode').value==='manual';const render=(team,target,side)=>{$(target).innerHTML=team.map((p,index)=>`<div class="generated-player"><span><b>${esc(p.name)}${isCaptain(p.name)?' ⚔️':''}</b> <small>${roles[p.role]} · ${levelLabels[categoryLevel(p.level)]}</small></span><button type="button" data-swap="${side}" data-index="${index}" title="Cambiar de equipo">↔</button></div>`).join('')};render(teams.white,'#generatedWhite','white');render(teams.black,'#generatedBlack','black');$('#whiteStrength').textContent=`Nivel: ${levelLabels[categoryLevel(teamScore(teams.white).total/(teams.white.length||1))]}`;$('#blackStrength').textContent=`Nivel: ${levelLabels[categoryLevel(teamScore(teams.black).total/(teams.black.length||1))]}`;$('#generatorMessage').textContent=Math.abs(teamScore(teams.white).total-teamScore(teams.black).total)<=2?'Equipos parejos por nivel y posición.':'Equipos generados. Revisá el reparto de niveles y posiciones antes de guardar.'}
   function loadSavedTeams(match){
     const selected=[...match.white,...match.black];
     guests=[...new Set(guests.concat(selected.filter(name=>!names().includes(name))))];
