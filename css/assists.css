@@ -20,7 +20,10 @@
 #liveGoalHistory button[data-assist-event] { border:0; border-radius:8px; background:#243d50; color:#bce3f4; padding:10px; min-height:40px; font-size:11px; cursor:pointer; }
 @media(max-width:600px) { .home-highlights { gap:4px; } .home-highlight { padding:8px 4px; }.home-highlight strong { font-size:16px; }.home-highlight small { font-size:9px; } }
 
-.stat-box:nth-child(5) { background:linear-gradient(145deg,#c7ebf7,#78cde7); color:#11243a; }
-.stat-box:nth-child(5)>span { padding-right:40px; }
+.stat-box:nth-child(4) { background:linear-gradient(145deg,#c7ebf7,#78cde7); color:#11243a; }
+.stat-box:nth-child(5) { background:linear-gradient(145deg,#0c483e,#19765b); color:#fff; }
+.stat-box:nth-child(4)>span { padding-right:40px; }
 @media(min-width:1100px) { .stat-highlights { grid-template-columns:repeat(5,minmax(0,1fr)); } .stat-box strong { font-size:27px; } }
 @media(min-width:321px) and (max-width:800px) { .stat-box:nth-child(5) { grid-column:1/-1; width:calc((100% - 15px)/2); justify-self:center; } }
+
+#assistsRankingCard { grid-column:1; grid-row:2; }
