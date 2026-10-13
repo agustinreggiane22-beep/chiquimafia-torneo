@@ -106,7 +106,7 @@
       <section id="estadisticas" class="page-section content-section">
         <header class="section-header"><div><span class="eyebrow">LOS DESTACADOS</span><h2>Estadísticas</h2></div></header>
         <div id="statHighlights" class="stat-highlights"></div>
-        <div class="ranking-grid"><article class="card ranking-card"><h3>⚽ Goles</h3><div id="goalsRanking"></div></article><article class="card ranking-card"><h3>⭐ MVP</h3><div id="mvpRanking"></div></article><article class="card ranking-card"><h3>🔥 Racha de victorias</h3><div id="streakRanking"></div></article><article class="card ranking-card" id="assistsRankingCard"><h3>↗ ASISTENCIAS DE GOL</h3><div id="assistsRanking"></div></article></div>
+        <div class="ranking-grid"><article class="card ranking-card"><h3>⚽ Goles</h3><div id="goalsRanking"></div></article><article class="card ranking-card"><h3>⭐ MVP</h3><div id="mvpRanking"></div></article><article class="card ranking-card"><h3>🔥 Racha de victorias</h3><div id="streakRanking"></div></article><article class="card ranking-card" id="assistsRankingCard"><h3>↗ ASISTENCIAS</h3><div id="assistsRanking"></div></article></div>
       </section>
 
       <section id="historia" class="page-section content-section">
@@ -117,7 +117,7 @@
       <section id="administracion" class="page-section content-section">
         <header class="section-header"><div><span class="eyebrow">ACCESO PROTEGIDO</span><h2>Administración</h2></div></header>
         <article id="adminLogin" class="card admin-login"><h3>Ingresar como administrador</h3><p>Usá el PIN para revisar las declaraciones de goles.</p><form id="adminLoginForm"><input id="adminPin" type="password" inputmode="text" autocapitalize="none" spellcheck="false" autocomplete="current-password" placeholder="PIN" required><button type="submit">Ingresar</button></form><p id="adminLoginMessage" class="form-message"></p></article>
-        <div id="adminPanel" hidden><datalist id="playerOptions"></datalist><div class="admin-toolbar"><div><strong>Panel del torneo</strong><span id="pendingCount">0 solicitudes</span></div><div class="admin-toolbar-actions"><button id="openLiveScore" type="button" disabled>⚽ Marcador en vivo</button><button id="adminLogout">Cerrar sesión</button></div></div><p id="votingSetupNotice" class="admin-help" hidden>La nueva votación de MVP y los goles oficiales están preparados. Falta actualizar Apps Script. <a href="actualizar-votacion.html" target="_blank" rel="noopener">Abrir código completo e instrucciones</a></p><p id="assistsSetupNotice" class="admin-help" hidden>Para publicar las asistencias de gol y sumar su premio, <a href="actualizar-asistencias.html" target="_blank" rel="noopener">actualizá Apps Script</a>.</p><p id="liveScoreAvailability" class="admin-help">Primero guardá los equipos de un partido para usar el marcador.</p>
+        <div id="adminPanel" hidden><datalist id="playerOptions"></datalist><div class="admin-toolbar"><div><strong>Panel del torneo</strong><span id="pendingCount">0 solicitudes</span></div><div class="admin-toolbar-actions"><button id="openLiveScore" type="button" disabled>⚽ Marcador en vivo</button><button id="adminLogout">Cerrar sesión</button></div></div><p id="votingSetupNotice" class="admin-help" hidden>La nueva votación de MVP y los goles oficiales están preparados. Falta actualizar Apps Script. <a href="actualizar-votacion.html" target="_blank" rel="noopener">Abrir código completo e instrucciones</a></p><p id="assistsSetupNotice" class="admin-help" hidden>Para publicar las asistencias y sumar su premio, <a href="actualizar-asistencias.html" target="_blank" rel="noopener">actualizá Apps Script</a>.</p><p id="liveScoreAvailability" class="admin-help">Primero guardá los equipos de un partido para usar el marcador.</p>
           <div class="admin-grid">
             <article class="card admin-tool team-generator-card">
               <span class="eyebrow">EQUIPOS DEL PARTIDO</span><h3>Armar y editar equipos</h3>
@@ -174,9 +174,9 @@
   <script src="js/config.js?v=2026072707"></script>
   <script src="js/sheets.js?v=2026101301"></script>
   <script src="js/goals.js?v=2026101301"></script>
-  <script src="js/live-score.js?v=2026101301"></script>
+  <script src="js/live-score.js?v=2026101302"></script>
   <script src="js/mvp-voting.js?v=2026100936"></script>
-  <script src="js/app.js?v=2026101301"></script>
+  <script src="js/app.js?v=2026101302"></script>
   <script src="js/team-generator.js?v=2026101201"></script>
 </body>
 </html>

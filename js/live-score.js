@@ -87,7 +87,7 @@
  }
  function renderReview(saved){
   const totals=score(saved),goals=saved.events.reduce((map,e)=>{const id=e.team+'\u0000'+e.player;const row=map.get(id)||{team:e.team,player:e.player,count:0};row.count++;map.set(id,row);return map},new Map());
-  $('#liveScoreReview').hidden=false;$('#liveScoreReview p').textContent=ChiquiGoals.supportsVoting()?'Al publicar se actualizan los goles'+(ChiquiGoals.supportsAssists()?' y las asistencias de gol. Los máximos goleadores y asistidores reciben cada uno un premio total de 0,5, dividido si hay empate. Los pases pendientes no cuentan.':'. El goleador recibe 0,5, dividido si hay empate.')+' Los jugadores solo votan al MVP.':'Estas anotaciones se guardan en este celular. Los goles de las estadísticas y los votos MVP se revisan en las declaraciones del partido.';
+  $('#liveScoreReview').hidden=false;$('#liveScoreReview p').textContent=ChiquiGoals.supportsVoting()?'Al publicar se actualizan los goles'+(ChiquiGoals.supportsAssists()?' y las asistencias. Los máximos goleadores y asistidores reciben cada uno un premio total de 0,5, dividido si hay empate. Los pases pendientes no cuentan.':'. El goleador recibe 0,5, dividido si hay empate.')+' Los jugadores solo votan al MVP.':'Estas anotaciones se guardan en este celular. Los goles de las estadísticas y los votos MVP se revisan en las declaraciones del partido.';
   $('#liveScoreReviewTitle').textContent=`Anotaciones de la fecha ${saved.number} · Claro ${totals.white}–${totals.black} Oscuro`;
   $('#liveScoreReviewPlayers').innerHTML=[...goals.values()].map(row=>`<li><span>${esc(row.player||'Sin identificar')} · ${row.team==='white'?'Claro':'Oscuro'}</span><b>${row.count}</b></li>`).join('')||'<li>Sin goles anotados.</li>';
  }
