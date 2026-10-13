@@ -143,6 +143,4 @@ permite copiar `Code-Apps-Script.txt`, que debe ser idéntico a
 `google-apps-script/Code.gs`, y actualizar la implementación existente sin
 cambiar su URL ni reiniciar datos.
 
-`reglamento.html` permite leer y compartir las reglas desde cualquier navegador;
-`docs/Reglamento-Chiquimafia-2026.docx` contiene la versión Word. El enlace
-Reglamento aparece en el menú principal.
+`reglamento.html` permite consultar y compartir las reglas desde el menú principal, en cualquier navegador. No se publica un archivo Word descargable. Los criterios de pases de gol distinguen las jugadas individuales y los registros pendientes de la asistencia al partido.
