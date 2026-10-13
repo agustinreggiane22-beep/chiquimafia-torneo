@@ -1,0 +1,21 @@
+/* Compact summary and one-tap pass entry. */
+.home-highlights { grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:-8px; }
+.home-highlight { min-width:0; text-align:center; padding:9px 6px; background:#10283bbf; border-radius:10px; border-top:3px solid var(--highlight); }
+.home-highlight.mvp { --highlight:#dbb747; }.home-highlight.goals { --highlight:#d85860; }.home-highlight.assists { --highlight:#77cde9; }.home-highlight.streak { --highlight:#5fca98; }
+.home-highlight-icon svg { color:var(--highlight); }
+.home-highlight-icon { display:block; font-size:18px; line-height:1; margin-bottom:5px; }
+.home-highlight-label { display:block; font-size:9px; letter-spacing:.04em; font-weight:900; text-transform:uppercase; color:var(--highlight); }
+.home-highlight-names { max-height:58px; overflow:auto; margin:6px 0 3px; }
+.home-highlight strong { display:block; font:900 20px/1.1 'Barlow Condensed',sans-serif; color:#fff; overflow-wrap:anywhere; }
+.home-highlight small { display:block; color:#d1e0eb; font-size:10px; line-height:1.3; }
+#featuredMatch .compact-awards>span:has(strong) { display:none; }
+.live-assist-panel { border-radius:12px; background:#edf7fd; color:#11243a; padding:12px; margin:12px 0; }
+.live-assist-panel h3 { font-size:14px; margin:0 0 10px; }
+#liveAssistChoices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+#liveAssistChoices button,.live-assist-actions button { min-height:44px; border:1px solid #afcddd; border-radius:9px; background:#d8edf8; color:#153e59; padding:7px; font:800 11px Inter,sans-serif; cursor:pointer; overflow-wrap:anywhere; }
+.live-assist-actions { display:flex; gap:6px; margin-top:9px; }
+.live-assist-actions button { flex:1; background:#fff; }
+#liveGoalHistory li { flex-wrap:wrap; align-items:center; }
+#liveGoalHistory small { display:block; color:#9bd1e8; margin-top:4px; }
+#liveGoalHistory button[data-assist-event] { border:0; border-radius:8px; background:#243d50; color:#bce3f4; padding:10px; min-height:40px; font-size:11px; cursor:pointer; }
+@media(max-width:600px) { .home-highlights { gap:4px; } .home-highlight { padding:8px 4px; }.home-highlight strong { font-size:16px; }.home-highlight small { font-size:9px; } }

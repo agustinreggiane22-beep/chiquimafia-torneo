@@ -79,8 +79,8 @@ function tournamentState_() {
   closeMvpVoting();
   return {
     ok: true,
-    version: '2026-10-11-desafios-v1',
-    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true},
+    version: '2026-10-13-pases-v1',
+    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true},
     automationReady: automationReady_(),
     serverNow: new Date().toISOString(),
     matchRecords: listMatchRecords_(),
@@ -385,7 +385,7 @@ function deleteHistoricalChampion_(season,player){
 function saveSeasonHistory_(season) {
   closeMvpVoting();
   const lineups=listRows_(LINEUP_SHEET_NAME,['matchNumber','date','white','black','updatedAt']),results=new Map(listResults_().map(x=>[Number(x.matchNumber),x])),records=rawMatchRecords_(),managed=new Set(records.map(r=>Number(r.matchNumber))),rows=new Map();
-  const add=name=>{const id=participantKey_(name);if(!id)return null;if(!rows.has(id))rows.set(id,{player:String(name).trim(),points:0,goals:0,attendance:0,mvps:0});return rows.get(id)};
+  const add=name=>{const id=participantKey_(name);if(!id)return null;if(!rows.has(id))rows.set(id,{player:String(name).trim(),points:0,goals:0,assists:0,attendance:0,mvps:0});return rows.get(id)};
   listWebPlayers_().filter(x=>x.status!=='deleted').forEach(x=>add(x.name));
   lineups.filter(match=>Number(match.matchNumber)<=18).forEach(match=>{
     const result=results.get(Number(match.matchNumber));if(!result||String(result.played)==='false')return;
@@ -393,14 +393,15 @@ function saveSeasonHistory_(season) {
     [[parse(match.white),'white'],[parse(match.black),'black']].forEach(([names,team])=>names.forEach(name=>{const row=add(name);row.attendance++;row.points+=result.winner==='draw'?2:result.winner===team?3:1}));
   });
   listMvp_().forEach(item=>{const row=add(item.player),points=Number(item.points??1);if(row){row.mvps+=points;if(Number(item.matchNumber)<=18)row.points+=points}});
-  records.forEach(record=>{record.scorers.forEach(item=>{const row=add(item.player);if(row)row.goals+=item.goals});if(Number(record.matchNumber)<=18)record.scorerAwards.forEach(award=>{const row=add(award.player);if(row)row.points+=award.points})});
+  records.forEach(record=>{record.scorers.forEach(item=>{const row=add(item.player);if(row)row.goals+=item.goals});(record.assists||[]).forEach(item=>{const row=add(item.player);if(row)row.assists+=item.assists});if(Number(record.matchNumber)<=18)[...record.scorerAwards,...(record.assistAwards||[])].forEach(award=>{const row=add(award.player);if(row)row.points+=award.points})});
   list_().filter(item=>item.status==='approved'&&!managed.has(Number(item.matchNumber))).forEach(item=>{const row=add(item.player);if(row)row.goals+=Number(item.goals||0)});
   listRows_(SANCTION_SHEET_NAME,['id','player','points','reason','createdAt']).forEach(item=>{const row=add(item.player);if(row)row.points+=Number(item.points||0)});
   listDuels_().filter(item=>Number(item.matchNumber)<=18).forEach(item=>item.awards.forEach(award=>{const row=add(award.player);if(row)row.points+=award.points}));
   const ranking=[...rows.values()].filter(row=>row.attendance||row.goals||row.mvps),playoffs=listRows_(PLAYOFF_SHEET_NAME,['key','round','slot','player1','player2','score1','score2','winner','updatedAt']),final=playoffs.find(x=>x.key==='final-1'),third=playoffs.find(x=>x.key==='third-1');
   const champion=final?.winner||[...ranking].sort((a,b)=>b.points-a.points)[0]?.player||'',runner=final?(final.winner===final.player1?final.player2:final.player1):'';
   const sheet=genericSheet_(HISTORY_SHEET_NAME,['season','player','champion','points','goals','attendance','mvps','placement','archivedAt']),stamp=new Date().toISOString();
-  ranking.forEach(row=>sheet.appendRow([season,row.player,participantKey_(row.player)===participantKey_(champion),row.points,row.goals,row.attendance,row.mvps,participantKey_(row.player)===participantKey_(champion)?1:participantKey_(row.player)===participantKey_(runner)?2:participantKey_(row.player)===participantKey_(third?.winner)?3:'',stamp]));
+  const headers=sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];let assistCol=headers.indexOf('assists');if(assistCol<0){assistCol=headers.length;sheet.getRange(1,assistCol+1).setValue('assists')}
+  ranking.forEach(row=>{const values=[season,row.player,participantKey_(row.player)===participantKey_(champion),row.points,row.goals,row.attendance,row.mvps,participantKey_(row.player)===participantKey_(champion)?1:participantKey_(row.player)===participantKey_(runner)?2:participantKey_(row.player)===participantKey_(third?.winner)?3:'',stamp];values[assistCol]=row.assists;sheet.appendRow(values)});
 }
 
 
@@ -496,6 +497,28 @@ function validateScorers_(items,lineup,whiteGoals,blackGoals) {
   if(totals.white!==whiteGoals||totals.black!==blackGoals)throw new Error('Los goles individuales no coinciden con el marcador. Revisá las anotaciones antes de publicar.');
   return scorers;
 }
+function validateGoalEvents_(items,lineup,scorers,whiteGoals,blackGoals) {
+  if(!Array.isArray(items))throw new Error('Revisá los pases de gol desde el marcador en vivo.');
+  const seen=new Set(),counts=new Map(),totals={white:0,black:0};
+  const events=items.map(item=>{
+    if(!item||!['white','black'].includes(item.team)||typeof item.id!=='string'||!item.id||seen.has(item.id))throw new Error('Hay una anotación de gol inválida o repetida.');
+    seen.add(item.id);
+    const player=lineup[item.team].find(name=>participantKey_(name)===participantKey_(item.player));
+    if(!player)throw new Error('Cada gol debe pertenecer a un jugador de su equipo.');
+    let assist=null;
+    if(item.assist!=null&&item.assist!==''){
+      assist=lineup[item.team].find(name=>participantKey_(name)===participantKey_(item.assist));
+      if(!assist||participantKey_(assist)===participantKey_(player))throw new Error('El pase de gol debe ser de un compañero del mismo equipo, distinto del goleador.');
+    }
+    const id=participantKey_(player);counts.set(id,(counts.get(id)||0)+1);totals[item.team]++;
+    return {id:item.id,team:item.team,player,assist,assistDecision:assist?'assigned':item.assistDecision==='none'?'none':'pending'};
+  });
+  if(totals.white!==whiteGoals||totals.black!==blackGoals||scorers.some(row=>(counts.get(participantKey_(row.player))||0)!==row.goals))throw new Error('Los goles y sus pases no coinciden con los goleadores o el marcador.');
+  return events;
+}
+function assistTotals_(events){
+  const rows=new Map();(events||[]).forEach(event=>{if(!event.assist)return;const id=participantKey_(event.assist),row=rows.get(id)||{player:event.assist,team:event.team,assists:0};row.assists++;rows.set(id,row)});return [...rows.values()];
+}
 function splitAward_(items,budget,valueOf) {
   const best=Math.max(0,...items.map(valueOf));if(!best)return [];
   const winners=items.filter(item=>valueOf(item)===best);
@@ -512,11 +535,15 @@ function saveOfficialMatch_(item) {
     if(Array.isArray(item.scorers))scorers=validateScorers_(item.scorers,lineup,whiteGoals,blackGoals);
     else if(existing)scorers=validateScorers_(existing.scorers,lineup,whiteGoals,blackGoals);
     else throw new Error('Anotá los goles desde Marcador en vivo y tocá Revisar resultado.');
+    let goalEvents;
+    if(Array.isArray(item.goalEvents))goalEvents=validateGoalEvents_(item.goalEvents,lineup,scorers,whiteGoals,blackGoals);
+    else if(Array.isArray(existing?.goalEvents))goalEvents=validateGoalEvents_(existing.goalEvents,lineup,scorers,whiteGoals,blackGoals);
+    const assists=assistTotals_(goalEvents);
     const window=votingWindow_(lineup.date),hasVotes=listMvpVotes_().some(v=>Number(v.matchNumber)===number);
     if(existing&&existing.matchDate!==String(lineup.date)&&hasVotes)throw new Error('Esta fecha ya tiene votos. No se puede cambiar su día al publicar.');
     const legacyAwards=!existing&&oldResult?listLegacyMvp_().filter(a=>Number(a.matchNumber)===number):[];
     const initial=legacyAwards.length?{...window,closed:true,closedAt:legacyAwards[0].confirmedAt,mvpAwards:legacyAwards.map(a=>({player:a.player,points:Number(a.points??1)})),voteCount:0,legacyMvp:true}:{...window,closed:false,mvpAwards:[],voteCount:0};
-    const record={...(existing||{}),matchNumber:number,matchDate:String(lineup.date),scorers,scorerAwards:splitAward_(scorers,0.5,x=>x.goals),...(existing?{}:initial)};
+    const record={...(existing||{}),matchNumber:number,matchDate:String(lineup.date),scorers,scorerAwards:splitAward_(scorers,0.5,x=>x.goals),...(goalEvents?{goalEvents,assists,assistAwards:splitAward_(assists,0.5,x=>x.assists)}:{}),...(existing?{}:initial)};
     const saved=saveResult_(item);writeMatchRecord_(record);if(alignedDuel)writeDuel_(alignedDuel);SpreadsheetApp.flush();
     if(automationReady_())scheduleVotingClose_(record);
     return {...saved,scorers};

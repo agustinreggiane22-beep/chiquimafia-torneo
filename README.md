@@ -144,3 +144,29 @@ permite copiar `Code-Apps-Script.txt`, que debe ser idéntico a
 cambiar su URL ni reiniciar datos.
 
 `reglamento.html` permite consultar y compartir las reglas desde el menú principal, en cualquier navegador. No se publica un archivo Word descargable. Los criterios de pases de gol distinguen las jugadas individuales y los registros pendientes de la asistencia al partido.
+
+
+## Asistencias de gol y resumen del inicio
+
+Apps Script `2026-10-13-pases-v1` expone `assistsV1`. El marcador oficial
+guarda un evento por gol con goleador, equipo y asistidor opcional. Un toque
+en el compañero guarda el pase; «Sin asistencia / Jugada individual» y
+«Completar después» distinguen goles sin pase de datos pendientes. El registro
+se guarda localmente sin conexión una vez abierto el marcador, y se publica
+al confirmar el resultado. No existe un modo de prueba en el marcador oficial.
+
+El servidor comprueba los eventos contra goleadores, marcador y equipos, impide
+pases propios o rivales y asigna un premio total de 0,5 al máximo asistidor,
+dividido en empates. Las correcciones sustituyen el registro y recalculan ambos
+premios sin reabrir ni borrar el MVP. La presencia por jugar sigue valiendo 1.
+Los partidos anteriores conservan sus datos sin inventar asistencias.
+
+El archivo de temporada conserva cantidades de pases en una columna `assists`
+y sus premios en puntos, además de copiar el registro completo de goles.
+El inicio muestra una franja compacta de MVP, goleadores, asistencias y racha;
+las estadísticas muestran Top 5 de pases de gol.
+
+`actualizar-asistencias.html` permite copiar el código completo y actualizar la
+implementación existente sin cambiar URL ni reiniciar la temporada. La captura
+de pases se habilita solo al reconocer `assistsV1`; antes, los goles siguen
+funcionando y el administrador ve la instrucción de actualización.
