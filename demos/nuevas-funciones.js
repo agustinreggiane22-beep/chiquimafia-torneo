@@ -2,7 +2,7 @@
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const white=['LORIA','DIEGO','FRANCO','MATU','VALEN','DARIO','BILLO','JOACOREGGI'],black=['LUCAS','PABLO','GONZA','AUGUSTO','LIHUEL','AGUS','LAUTY','KEVIN'];
 const players=[{name:'JOACOREGGI',points:6.25,goals:4,assists:2,mvp:1,form:['Victoria','Victoria'],badge:'👑 Nuevo líder',color:'gold'},{name:'FRANCO',points:6,goals:4,assists:1,mvp:1,form:['Victoria','Victoria'],badge:'↑ Subió 3 puestos',color:''},{name:'LORIA',points:4.25,goals:3,assists:3,mvp:0,form:['Empate','Victoria'],badge:'🔥 Mejor racha',color:'green'},{name:'DIEGO',points:4,goals:3,assists:2,mvp:0,form:['Victoria','Derrota']},{name:'LUCAS',points:3,goals:4,assists:0,mvp:0,form:['Empate','Derrota']}];
-const storageKey='chiquimafia-demo-features-goals-v1';let events=[],pending=null,summaryFromDraft=false,mvpClosed=false,posterBlob=null,posterUrl='',storageAvailable=true;
+const storageKey='chiquimafia-demo-features-goals-v1';let events=[],pending=null,storageAvailable=true;
 try{const saved=JSON.parse(localStorage.getItem(storageKey)||'[]');if(Array.isArray(saved))events=saved.filter(e=>['white','black'].includes(e.team)&&(e.team==='white'?white:black).includes(e.player)&&(!e.assist||(e.team==='white'?white:black).includes(e.assist)&&e.assist!==e.player)).map(e=>({...e,assist:e.assist||null}))}catch{storageAvailable=false}
 const number=v=>Number(v).toLocaleString('es-AR',{maximumFractionDigits:2});
 function persist(){try{localStorage.setItem(storageKey,JSON.stringify(events));storageAvailable=true}catch{storageAvailable=false}updateStatus()}
@@ -24,25 +24,7 @@ $('#teamLists').addEventListener('click',e=>{const b=e.target.closest('[data-sco
 function assist(player){const event=events.find(e=>e.id===pending);if(!event)return;event.assist=player;event.decision=player?'assigned':'solo';pending=null;persist();renderScore()}
 $('#assistChoices').addEventListener('click',e=>{const b=e.target.closest('[data-assister]');if(b)assist(b.dataset.assister)});$('#soloGoal').onclick=()=>assist(null);
 $('#undoGoal').onclick=()=>{events.pop();pending=null;persist();renderScore()};
-$('#resetDemo').onclick=()=>{events=[];pending=null;persist();renderScore();if(summaryFromDraft)renderPoster();$('#draftStatus').textContent='Se borraron únicamente los goles de esta prueba.'};
-$('#useScore').onclick=()=>{if(events.some(e=>e.decision==='pending')){$('#scoreStatus').textContent='Elegí una asistencia o «Sin asistencia» para el gol pendiente.';return}summaryFromDraft=true;mvpClosed=false;$('#scoreDialog').close();renderPoster();$('.share-card').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'})};
-$('#toggleMvp').onclick=()=>{mvpClosed=!mvpClosed;renderPoster()};
-function top(items,field){const counts={};items.forEach(e=>{const name=e[field];if(name)counts[name]=(counts[name]||0)+1});const max=Math.max(0,...Object.values(counts));return max?Object.entries(counts).filter(([,v])=>v===max).map(([p])=>p).join(' Y '):'Sin registrar'}
-let posterGeneration=0;
-async function renderPoster(){
- const generation=++posterGeneration;await document.fonts.ready;const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1080;const ctx=canvas.getContext('2d');
- const bg=ctx.createLinearGradient(0,0,1080,1080);bg.addColorStop(0,'#06182f');bg.addColorStop(1,'#154e73');ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1080);
- ctx.strokeStyle='#77cde921';ctx.lineWidth=64;for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(930,0,650+i*95,800+i*95,.3,0,Math.PI*2);ctx.stroke()}
- ctx.strokeStyle='#d9b85a';ctx.lineWidth=3;ctx.strokeRect(25,25,1030,1030);ctx.textAlign='center';ctx.fillStyle='#e4d18c';ctx.font='900 48px "Barlow Condensed"';ctx.fillText('CHIQUIMAFIA TORNEO',540,116);ctx.fillStyle='#bedfec';ctx.font='700 30px Inter';ctx.fillText('FECHA '+(summaryFromDraft?'3':'2')+' · EJEMPLO',540,172);
- ctx.fillStyle='#fff';ctx.font='900 160px "Barlow Condensed"';const whiteScore=summaryFromDraft?events.filter(e=>e.team==='white').length:14,blackScore=summaryFromDraft?events.filter(e=>e.team==='black').length:7;ctx.fillText(`${whiteScore} — ${blackScore}`,540,372);ctx.font='700 27px Inter';ctx.fillStyle='#b5d8ec';ctx.fillText('EQUIPO CLARO                        EQUIPO OSCURO',540,424);
- const winners=summaryFromDraft?top(events,'player'):'FRANCO Y JOACOREGGI',assistants=summaryFromDraft?top(events,'assist'):'LORIA',mvp=mvpClosed?(summaryFromDraft?(events[0]?.player||'LORIA'):'FRANCO Y JOACOREGGI'):'Votación en curso';
- function line(label,text,y){ctx.fillStyle='#e1c46d';ctx.font='800 25px Inter';ctx.fillText(label,540,y);ctx.fillStyle='#fff';ctx.font='900 '+(text.length>75?24:text.length>40?32:43)+'px "Barlow Condensed"';const words=text.split(' '),rows=[];let row='';for(const word of words){const candidate=row?row+' '+word:word;if(ctx.measureText(candidate).width>940&&row){rows.push(row);row=word}else row=candidate}rows.push(row);rows.forEach((r,i)=>ctx.fillText(r,540,y+54+i*42));return y+54+(rows.length-1)*42}
- line('GOLEADOR'+(winners.includes(' Y ')?'ES':''),winners,535);line('ASISTENCIAS',assistants,690);line('MVP',mvp,845);
- ctx.fillStyle='#bedfec';ctx.font='500 23px Inter';ctx.fillText('VISTA DE PRUEBA · NO ES UN RESULTADO OFICIAL',540,1012);
- const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(generation!==posterGeneration||!blob)return;posterBlob=blob;if(posterUrl)URL.revokeObjectURL(posterUrl);posterUrl=URL.createObjectURL(blob);$('#posterPreview').src=posterUrl;$('#posterPreview').alt=`Resumen de prueba, fecha ${summaryFromDraft?3:2}: Claro ${whiteScore}, Oscuro ${blackScore}. Goleadores: ${winners}. Asistencias: ${assistants}. MVP: ${mvp}.`;$('#mvpState').textContent=mvpClosed?'⭐ MVP de ejemplo publicado':'⭐ MVP de ejemplo en votación';$('#toggleMvp').textContent=mvpClosed?'Volver a votación abierta':'Simular cierre de votación';
-}
-function download(){if(!posterBlob){$('#shareStatus').textContent='Esperá un momento mientras se prepara la imagen.';return}const a=document.createElement('a');a.href=posterUrl;a.download='chiquimafia-resumen-PRUEBA.png';document.body.append(a);a.click();a.remove();$('#shareStatus').textContent='Si no aparece la descarga, mantené presionada la imagen para guardarla.'}
-$('#downloadPoster').onclick=download;
-$('#sharePoster').onclick=async()=>{if(!posterBlob)return;const file=new File([posterBlob],'chiquimafia-resumen-PRUEBA.png',{type:'image/png'});try{if(navigator.canShare?.({files:[file]})&&navigator.share){await navigator.share({files:[file],title:'Chiquimafia · resumen de prueba'});$('#shareStatus').textContent='Resumen compartido.'}else{download();$('#shareStatus').textContent='Este navegador no permite compartir archivos directamente. Guardá la imagen y adjuntala en WhatsApp.'}}catch(e){$('#shareStatus').textContent=e.name==='AbortError'?'Se canceló el envío. Podés intentarlo otra vez.':'Podés descargar la imagen o mantenerla presionada para guardarla.'}};
-renderScore();renderPoster();
+$('#resetDemo').onclick=()=>{events=[];pending=null;persist();renderScore();$('#draftStatus').textContent='Se borraron únicamente los goles de esta prueba.'};
+$('#doneScore').onclick=()=>$('#scoreDialog').close();
+renderScore();
 })();
