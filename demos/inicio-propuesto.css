@@ -29,3 +29,6 @@ html{scroll-behavior:smooth;scroll-padding-top:15px}main{max-width:820px}.previe
 #demoClassification .inline-player-news{margin-top:2px}
 #demoClassification .inline-player-news span{color:#87691b;font-size:10px;font-weight:600}
 .snapshot-icons{font-size:22px;white-space:nowrap}
+
+#demoClassification .inline-player-news span{color:#317795}
+#demoClassification .inline-player-news span+span{color:#87691b}
