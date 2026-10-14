@@ -6,7 +6,9 @@
   <meta name="theme-color" content="#10151a">
   <meta name="description" content="Sitio oficial de CHIQUIMAFIA TORNEO: clasificación, fechas, estadísticas, historia y playoffs.">
   <title>CHIQUIMAFIA TORNEO</title>
-  <link rel="stylesheet" href="css/fonts.css?v=2026100959">
+  <link rel="preload" href="assets/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/barlow-condensed-900.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/fonts.css?v=2026101422">
   <link rel="stylesheet" href="css/styles.css?v=2026072115">
   <link rel="stylesheet" href="css/enhancements.css?v=2026072115">
   <link rel="stylesheet" href="css/corrections.css?v=2026101102">
@@ -20,7 +22,7 @@
   <link rel="stylesheet" href="css/duels.css?v=2026101101">
   <link rel="stylesheet" href="css/team-levels.css?v=2026101201">
   <link rel="stylesheet" href="css/assists.css?v=2026101415">
-  <link rel="stylesheet" href="css/player-experience.css?v=2026101421">
+  <link rel="stylesheet" href="css/player-experience.css?v=2026101422">
 </head>
 <body>
   <div class="page-background" aria-hidden="true"></div>
@@ -52,7 +54,7 @@
           <div class="season-progress-meta"><span id="roundLabel">Actualizando…</span><span id="progressLabel">0%</span></div>
           <div class="progress-track"><span id="progressBar"></span></div>
         </article>
-        <article id="featuredMatch" class="featured-match" aria-live="polite"></article>
+        <article id="featuredMatch" class="featured-match" aria-live="polite"><div class="loading-shell" role="status"><span class="loading-line short"></span><span class="loading-line score"></span><span class="loading-line"></span><small>Cargando el último partido…</small></div></article>
         <div class="home-info-grid"><article class="next-match-card"><span>⏱ PRÓXIMO PARTIDO</span><strong id="nextMatchDate">Calculando…</strong><small id="nextMatchCountdown">Se juega cada 7 días</small></article><article class="fund-card"><span>🐷 CAJA DEL TORNEO</span><strong id="fundAmount">$0</strong><small>Disponible para los próximos partidos</small></article></div>
         <div id="homeAdminQuick" hidden><span><b>⚽ Tu marcador</b><small id="quickMatchLabel"></small></span><button id="quickOpenLiveScore" type="button" disabled>Anotar partido</button></div>
         <article id="homeChampionBanner" class="home-champion-banner" hidden></article>
@@ -66,7 +68,7 @@
       <section id="clasificacion" class="page-section content-section">
         <header class="section-header sports-heading"><div><span class="eyebrow">TEMPORADA ACTUAL</span><h2>Clasificación</h2></div><span class="live-badge" id="syncStatus">Conectando</span></header>
         <p class="player-profile-hint">Tocá un nombre para ver su ficha y sus últimos partidos.</p>
-        <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"></tbody></table></div></div>
+        <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"><tr><td colspan="10"><div class="loading-shell" role="status"><span class="loading-line"></span><span class="loading-line"></span><span class="loading-line"></span><small>Cargando clasificación…</small></div></td></tr></tbody></table></div></div>
       </section>
 
       <section id="playoffs" class="page-section content-section playoffs-section" hidden>
@@ -107,7 +109,7 @@
 
       <section id="estadisticas" class="page-section content-section">
         <header class="section-header"><div><span class="eyebrow">LOS DESTACADOS · TOP 1</span><h2>Estadísticas</h2></div></header>
-        <div id="statHighlights" class="stat-highlights"></div>
+        <div id="statHighlights" class="stat-highlights"><div class="loading-shell stats-loading" role="status"><span class="loading-line"></span><span class="loading-line"></span><small>Cargando estadísticas…</small></div></div>
         <header class="statistics-lists-header"><span class="eyebrow">LOS RANKINGS COMPLETOS</span><h3>Top 5</h3></header><div class="ranking-grid top5-grid"><article class="card ranking-card" id="goalsTop5Card"><h3>⚽ Goles · Top 5</h3><div id="goalsRanking"></div></article><article class="card ranking-card" id="mvpTop5Card"><h3>⭐ MVP · Top 5</h3><div id="mvpRanking"></div></article><article class="card ranking-card" id="assistsTop5Card"><h3>🤝 Asistencias · Top 5</h3><div id="assistsRanking"></div></article><article class="card ranking-card" id="streakTop5Card"><h3>🔥 Racha · Top 5</h3><div id="streakRanking"></div></article></div>
 
       </section>
@@ -181,7 +183,7 @@
   <script src="js/live-score.js?v=2026101302"></script>
   <script src="js/mvp-voting.js?v=2026100936"></script>
   <script src="js/player-experience.js?v=2026101415"></script>
-  <script src="js/app.js?v=2026101420"></script>
+  <script src="js/app.js?v=2026101422"></script>
   <script src="js/team-generator.js?v=2026101201"></script>
 </body>
 </html>
