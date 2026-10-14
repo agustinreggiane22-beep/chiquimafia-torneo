@@ -40,7 +40,7 @@
 #inicio .last-match-awards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #dce7ee;padding-top:9px;gap:12px}
 #inicio .match-award{display:grid;align-content:start;gap:3px;text-decoration:none;color:#173e58;min-width:0}
 #inicio .match-award>span,#inicio .match-award>strong{font:800 14px/1.2 Inter,sans-serif}
-#inicio .match-award>strong{overflow-wrap:anywhere;max-height:58px;overflow:auto}
+#inicio .match-award>strong{text-transform:lowercase;overflow-wrap:anywhere;max-height:58px;overflow:auto}
 #inicio .match-award>small{font-size:10px;color:#587589}
 #inicio .featured-compact .featured-button{grid-column:1/-1;grid-row:3;justify-self:end;min-width:115px;width:auto;margin-top:2px}
 .match-awards-date{grid-column:1/-1;font-size:10px;color:#587589}
