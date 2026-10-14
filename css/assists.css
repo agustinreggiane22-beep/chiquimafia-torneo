@@ -1,10 +1,7 @@
 /* Compact summary and one-tap pass entry. */
 .home-highlights { grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:-8px; }
 .home-highlight { min-width:0; text-align:center; padding:9px 6px; box-shadow:0 8px 22px #0002; border-radius:14px; border:0; }
-.home-highlight.mvp { --highlight:#dbb747; background:linear-gradient(145deg,#c8971d,#efc95d); color:#18232c; }
-.home-highlight.goals { --highlight:#d85860; background:linear-gradient(145deg,#861f32,#c43b48); color:#fff; }
-.home-highlight.assists { --highlight:#77cde9; background:linear-gradient(145deg,#c7ebf7,#78cde7); color:#11243a; }
-.home-highlight.leader { --highlight:#2577b4; background:linear-gradient(145deg,#071e3e,#155a8c); color:#fff; }
+.home-highlight.mvp,.home-highlight.goals,.home-highlight.assists,.home-highlight.leader { --highlight:#77cde9; background:linear-gradient(145deg,#e7f5fc,#f8fafc); color:#11243a; }
 .home-highlight-icon svg { color:var(--highlight); }
 .home-highlight-icon { display:block; font-size:18px; line-height:1; margin-bottom:5px; }
 .home-highlight-label { display:block; font-size:9px; letter-spacing:.04em; font-weight:900; text-transform:uppercase; color:inherit; }
@@ -55,7 +52,7 @@
 
 /* Inicio fijo: conserva enlaces y colores, sin animaciones. */
 .home-highlight,.home-highlight-icon,.home-highlight::before,.home-highlight::after { animation:none!important; }
-.home-highlight::before { display:block; inset:auto -28px auto auto; top:-46px; width:100px; height:100px; border-radius:50%; background:#ffffff12; box-shadow:0 0 0 17px #ffffff08; transform:none; opacity:1; }
+.home-highlight::before { display:block; inset:auto -28px auto auto; top:-46px; width:100px; height:100px; border-radius:50%; background:#77cde912; box-shadow:0 0 0 17px #77cde908; transform:none; opacity:1; }
 .home-highlight::after { display:block; inset:auto 0 0; width:100%; height:3px; background:linear-gradient(90deg,transparent,#f3d77e99,transparent); box-shadow:none; transform:none; opacity:1; }
 
 .statistics-lists-header { margin:32px 0 18px; }
