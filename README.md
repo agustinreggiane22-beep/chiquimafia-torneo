@@ -164,11 +164,11 @@ Los partidos anteriores conservan sus datos sin inventar asistencias.
 El archivo de temporada conserva cantidades de pases en una columna `assists`
 y sus premios en puntos, además de copiar el registro completo de goles.
 El inicio muestra una franja compacta de MVP, goleadores, asistencias y líder;
-las estadísticas muestran Top 10 de pases de gol.
+las estadísticas muestran Top 5 de pases de gol.
 
 `actualizar-asistencias.html` permite copiar el código completo y actualizar la
 implementación existente sin cambiar URL ni reiniciar la temporada. La captura
 de pases se habilita solo al reconocer `assistsV1`; antes, los goles siguen
 funcionando y el administrador ve la instrucción de actualización.
 
-El inicio usa tarjetas claras fijas que enlazan a los rankings y a clasificación. Estadísticas muestra cuatro destacados Top 1 en una cuadrícula de dos columnas y recupera los cuatro listados Top 10 debajo, con un resumen de clasificación debajo y acceso a la tabla completa. El símbolo 🤝 identifica a todos los líderes de asistencias, sin marcar jugadores cuando el máximo es cero.
+El inicio usa tarjetas claras fijas que enlazan a los rankings y a clasificación. Estadísticas muestra cuatro destacados Top 1 con el diseño deportivo animado en dos columnas: goles, MVP, asistencias y racha. Debajo se muestra el líder a todo el ancho, con acceso a la clasificación completa. Los cuatro listados Top 5 se conservan más abajo con desplazamiento interno para limitar la altura. El símbolo 🤝 identifica a todos los líderes de asistencias, sin marcar jugadores cuando el máximo es cero.
