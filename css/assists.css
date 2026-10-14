@@ -49,3 +49,25 @@
 @keyframes home-edge-shine { 0% { left:-35%; } 100% { left:110%; } }
 @keyframes home-card-sheen { 0%,55% { transform:translateX(-160%) skewX(-20deg); opacity:0; } 65% { opacity:1; } 90%,100% { transform:translateX(350%) skewX(-20deg); opacity:0; } }
 @media(prefers-reduced-motion:reduce) { .home-highlight,.home-highlight-icon,.home-highlight::before,.home-highlight::after { animation:none!important; } }
+
+/* Inicio fijo: conserva enlaces y colores, sin animaciones. */
+.home-highlight,.home-highlight-icon,.home-highlight::before,.home-highlight::after { animation:none!important; }
+.home-highlight::before,.home-highlight::after { display:none; }
+
+.statistics-lists-header { margin:32px 0 18px; }
+.statistics-lists-header h3 { font:900 32px 'Barlow Condensed',sans-serif; margin:0; color:#edf4fa; }
+#goalsTop10Card { grid-column:1; grid-row:1; border-top:5px solid #c23c4a; }
+#mvpTop10Card { grid-column:2; grid-row:1; border-top:5px solid #d5ad28; }
+#assistsTop10Card { grid-column:1; grid-row:2; border-top:5px solid #38a9d3; }
+#streakTop10Card { grid-column:2; grid-row:2; border-top:5px solid #15905f; }
+#estadisticas .top10-grid .rank-position { display:grid; }
+#estadisticas .top10-grid .rank-track { display:block; margin-top:7px; }
+#estadisticas .top10-grid .rank-row-pro { grid-template-columns:32px minmax(0,1fr) auto; border-radius:10px; gap:8px; }
+#estadisticas .top10-grid .rank-person>b { font-size:13px; }
+@media(max-width:600px) { #estadisticas .top10-grid { grid-template-columns:minmax(0,1fr); } #goalsTop10Card { grid-column:1; grid-row:1; } #assistsTop10Card { grid-column:1; grid-row:2; } #mvpTop10Card { grid-column:1; grid-row:3; } #streakTop10Card { grid-column:1; grid-row:4; } #estadisticas .top10-grid .rank-person>b { font:800 18px 'Barlow Condensed',sans-serif; } #estadisticas .top10-grid .rank-value small { display:inline; font-size:11px; } }
+#estadisticas .ranking-grid:not(.top10-grid) .rank-row-pro { display:flex; flex-direction:column; gap:6px; text-align:center; }
+#estadisticas .ranking-grid:not(.top10-grid) .rank-person { width:100%; }
+#estadisticas .ranking-grid:not(.top10-grid) .rank-person>b { font:900 27px 'Barlow Condensed',sans-serif; }
+#estadisticas .ranking-grid:not(.top10-grid) .rank-value { font-size:16px; }
+#estadisticas .ranking-grid:not(.top10-grid) .rank-value small { display:inline; font-size:13px; }
+@media(max-width:600px) { #estadisticas .ranking-grid:not(.top10-grid) .rank-person>b { font-size:24px; } }
