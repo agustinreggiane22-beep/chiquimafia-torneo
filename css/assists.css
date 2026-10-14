@@ -118,7 +118,7 @@
 .evolution-slide svg { display:block; width:100%; height:auto; background:linear-gradient(145deg,#e8f6fd,#f8fbfd); border:1px solid #d5eaf4; border-radius:14px; }
 .evolution-heading { display:flex; justify-content:space-between; align-items:center; color:#175878; margin:0 2px 2px; }
 .evolution-heading strong { font:900 20px 'Barlow Condensed',sans-serif; letter-spacing:.04em; }
-.evolution-heading span { font-size:22px; font-weight:900; color:#c39a25; }
+.evolution-slide .evolution-trend-icon { width:22px; height:22px; color:#c39a25; background:none; border:0; border-radius:0; }
 .evolution-caption { margin:0 0 3px; font-size:11px; font-weight:700; }
 .evolution-legend { list-style:none; padding:0; margin:2px 0 8px; display:grid; gap:4px; }
 .evolution-legend li { display:flex; align-items:center; gap:6px; font-size:11px; padding:5px 8px; border-radius:8px; background:#edf5fa; }
