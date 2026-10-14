@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><meta name="theme-color" content="#071e3e"><title>Inicio propuesto · Chiquimafia</title><link rel="stylesheet" href="../css/fonts.css"><link rel="stylesheet" href="nuevas-funciones.css?v=2"><link rel="stylesheet" href="inicio-propuesto.css?v=1"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><meta name="theme-color" content="#071e3e"><title>Inicio propuesto · Chiquimafia</title><link rel="stylesheet" href="../css/fonts.css"><link rel="stylesheet" href="nuevas-funciones.css?v=2"><link rel="stylesheet" href="inicio-propuesto.css?v=2"></head>
 <body>
 <header class="site-header"><img src="../assets/tournament-crest.webp" alt="Escudo del torneo"><strong>CHIQUIMAFIA TORNEO</strong><a href="../">Volver al torneo</a></header>
 <main id="inicio">
@@ -14,7 +14,7 @@
 <div class="admin-preview-toggle"><span>Ahora ves el inicio como jugador.</span><button type="button" id="toggleAdminPreview">Ver vista de admin</button></div>
 <section class="card admin" id="demoAdminQuick" hidden><div class="section-title"><span>SOLO PARA VOS · ADMIN</span><h2>TU MARCADOR</h2></div><div class="match-line"><span>Fecha 3 · 8 contra 8</span><b class="pill">Equipos confirmados</b></div><p>Entrá directamente al partido y probá anotar un gol con su asistencia.</p><button class="primary large" id="openScore">⚽ ANOTAR PARTIDO</button><p id="draftStatus" class="hint" role="status"></p><button class="text-button" id="resetDemo">Borrar los goles de esta prueba</button></section>
 <div class="demo-grid">
-<section class="card classification" id="demoClassification"><div class="section-title"><span>TU LUGAR EN EL TORNEO</span><h2>CLASIFICACIÓN</h2></div><p class="hint">Tocá un nombre para ver su ficha.</p><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th></tr></thead><tbody id="demoStandings"></tbody></table><p class="hint">Las etiquetas muestran ejemplos de cómo se verían los cambios de cada fecha.</p></section>
+<section class="card classification" id="demoClassification"><div class="section-title"><span>TU LUGAR EN EL TORNEO</span><h2>CLASIFICACIÓN</h2></div><p class="hint">Tocá un nombre para ver su ficha.</p><div class="original-table-scroll" tabindex="0" role="region" aria-label="Clasificación completa; desplazá hacia los costados para ver todas las columnas"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="demoStandings"></tbody></table></div><p class="hint">Deslizá la tabla para ver todas las columnas. Las etiquetas son ejemplos y quedan debajo del nombre.</p></section>
 
 </div>
 <section class="card" id="demoTeams"><div class="section-title"><span>PRÓXIMO PARTIDO · EJEMPLO</span><h2>FECHA 3 · EQUIPOS</h2></div><div class="sample-teams"><div><h3>⚪ Claro</h3><p>LORIA · DIEGO · FRANCO · MATU · VALEN · DARIO · BILLO · JOACOREGGI</p></div><div><h3>⚫ Oscuro</h3><p>LUCAS · PABLO · GONZA · AUGUSTO · LIHUEL · AGUS · LAUTY · KEVIN</p></div></div></section>
@@ -25,5 +25,5 @@
 </main>
 <dialog id="playerDialog" class="profile-dialog"><button class="close" aria-label="Cerrar ficha">×</button><div id="profileContent"></div><button class="secondary full close-profile">Volver a clasificación</button></dialog>
 <dialog id="scoreDialog" class="score-dialog"><div class="score-head"><div><span class="eyebrow">MARCADOR DE PRUEBA</span><h2>FECHA 3</h2></div><button class="close" aria-label="Cerrar marcador">×</button></div><div class="live-total"><span>⚪ CLARO</span><strong id="scoreValue">0 — 0</strong><span>OSCURO ⚫</span></div><div id="assistPanel" class="assist-panel" hidden><h3 id="assistTitle"></h3><p>Tocá quién dio el pase. Se guarda y volvés al marcador.</p><div id="assistChoices"></div><button class="secondary full" id="soloGoal">Sin asistencia · lo hizo solo</button></div><div id="teamLists" class="team-lists"></div><p id="scoreStatus" role="status" class="hint"></p><div class="score-actions"><button class="secondary" id="undoGoal">↶ Deshacer gol</button><button class="primary" id="doneScore">Volver a la prueba</button></div><details class="goal-history"><summary>Ver goles anotados</summary><ol id="goalHistory"></ol></details></dialog>
-<script src="nuevas-funciones.js?v=2"></script><script src="inicio-propuesto.js?v=1"></script>
+<script src="nuevas-funciones.js?v=2"></script><script src="inicio-propuesto.js?v=2"></script>
 </body></html>
