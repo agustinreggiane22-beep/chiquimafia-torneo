@@ -86,3 +86,19 @@
 .stat-leader-link { color:#c0eaff; font-size:11px; font-weight:700; display:inline-block; margin-left:16px; position:relative; z-index:1; }
 #estadisticas .top5-grid>article>div { max-height:300px; overflow-y:auto; scrollbar-width:thin; padding-right:4px; overscroll-behavior:contain; }
 @media(max-width:600px) { #estadisticas .stat-highlights { gap:12px; } #estadisticas .stat-box { padding:17px; min-height:145px; border-radius:22px; } #estadisticas .stat-box>strong { font-size:25px; } #estadisticas .stat-box>span { font-size:10px; } #estadisticas .stat-leader { min-height:115px; } }
+/* Alineación y tipografía uniforme de los destacados. */
+.home-highlight { display:grid; grid-template-rows:20px 16px minmax(24px,1fr) minmax(24px,auto); align-items:center; justify-items:center; gap:3px; padding:8px 4px; }
+.home-highlight-icon { margin:0; }
+.home-highlight-label { font:900 15px/1 'Barlow Condensed',sans-serif; letter-spacing:.02em; }
+.home-highlight-names { width:100%; margin:0; text-align:center; }
+.home-highlight strong { font:900 20px/1.05 'Barlow Condensed',sans-serif; }
+.home-highlight small { margin:0; text-align:center; font-weight:700; }
+#estadisticas .stat-box { padding:14px 12px; min-height:128px; text-align:center; }
+#estadisticas .stat-box .stat-sticker { position:static; display:block; margin:0 auto 6px; font-size:24px; }
+#estadisticas .stat-box>span { padding:0; font:900 16px/1.1 'Barlow Condensed',sans-serif; letter-spacing:.03em; }
+#estadisticas .stat-box>strong { padding:0; margin:6px 0 3px; font:900 27px/1.05 'Barlow Condensed',sans-serif; }
+#estadisticas .stat-box>small { font-size:12px; }
+#estadisticas .stat-leader { min-height:110px; }
+#estadisticas .stat-leader .stat-sticker { position:absolute; right:18px; top:14px; font-size:28px; }
+#estadisticas .stat-leader .stat-leader-link { display:block; margin:6px 0 0; }
+@media(max-width:600px) { .home-highlight strong { font-size:18px; } .home-highlight-label { font-size:14px; } #estadisticas .stat-box>strong { font-size:24px; } #estadisticas .stat-box>span { font-size:15px; } }
