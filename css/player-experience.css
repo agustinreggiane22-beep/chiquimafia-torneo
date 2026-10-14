@@ -1,0 +1,33 @@
+/* Existing table names stay unchanged; player news fits inside each row. */
+.player-profile-link{font:inherit;color:inherit;background:none;border:0;padding:0;text-align:inherit;cursor:pointer;line-height:inherit;max-width:100%;overflow-wrap:anywhere}
+.player-profile-link:focus-visible{outline:2px solid #38a9d3;outline-offset:3px;border-radius:3px}
+.player-profile-link:hover{text-decoration:underline;text-decoration-color:#77cde9;text-underline-offset:3px}
+#standingsBody .player-cell{width:190px;display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:3px 10px}
+#standingsBody .player-cell>span:nth-child(2){display:block;min-width:0}
+.standing-news{grid-column:2/4;display:flex;flex-wrap:wrap;gap:3px 7px;margin-top:4px;font:600 10px/1.4 Inter,sans-serif;max-width:146px;text-align:left}
+.news-up{color:#28799b}.news-down,.news-flat{color:#778899}.news-award{color:#88671b}
+.player-profile-hint{font-size:11px;color:#c0dce9;margin:0 0 12px}
+#playerProfileDialog{position:fixed;inset:0;margin:auto;border:1px solid #b5ddeb;border-radius:18px;background:linear-gradient(145deg,#fff,#eef8ff);color:#122d43;padding:24px 20px;width:min(450px,calc(100% - 24px));max-height:calc(100dvh - 28px);overflow:auto;box-shadow:0 20px 65px #0007;text-align:center}
+#playerProfileDialog::backdrop{background:#030e20cb}
+.profile-close{position:absolute;right:10px;top:8px;border:0;background:transparent;width:40px;height:40px;color:#254c66;font-size:28px;cursor:pointer}
+.profile-eyebrow{display:block;font-size:10px;color:#4885a3;font-weight:800;letter-spacing:.15em;padding:10px 30px 0}
+#playerProfileTitle{font:900 36px/1.05 'Barlow Condensed',sans-serif;margin:10px 20px 5px;overflow-wrap:anywhere}
+.profile-position{font-size:12px;color:#587386;margin:0}
+.profile-score{font:900 52px 'Barlow Condensed',sans-serif;margin:12px 0}
+.profile-score small{display:block;font:500 12px Inter,sans-serif}
+.profile-awards{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:10px}
+.profile-awards span{background:#fff0c6;color:#795c16;border-radius:7px;padding:5px 8px}
+.profile-metrics{display:grid;grid-template-columns:1fr 1fr;border:1px solid #c5dfed;border-radius:10px;margin:18px 0}
+.profile-metrics>div{padding:12px;display:flex;align-items:center;justify-content:center;gap:8px}
+.profile-metrics>div:nth-child(odd){border-right:1px solid #c5dfed}.profile-metrics>div:nth-child(-n+2){border-bottom:1px solid #c5dfed}
+.profile-metrics span{font-size:23px}.profile-metrics strong{font-size:19px}.profile-metrics small{display:block;font-size:11px;font-weight:500}
+.profile-form h3{font:900 22px 'Barlow Condensed',sans-serif;margin:12px 0}
+.profile-form>div{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}.profile-form>p{font-size:12px;color:#587386}
+.profile-form span{background:#d7f0e2;color:#196344;font-size:10px;padding:5px 8px;border-radius:8px}.profile-form small{display:block;font-size:9px;opacity:.8}
+.profile-form .form-draw{background:#e4eef5;color:#315a75}.profile-form .form-loss{background:#f9e2e4;color:#96343f}
+.profile-points-detail{margin:18px 0;font-size:11px;text-align:left;color:#587386;line-height:1.6}.profile-points-detail summary{cursor:pointer;font-weight:700;color:#1d597a}
+.profile-back{width:100%;min-height:44px;border:1px solid #bfdbe9;border-radius:10px;background:#e4f2fb;color:#163e58;font:700 12px Inter,sans-serif;cursor:pointer}
+#homeAdminQuick{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f3faff;color:#173e58;border:1px solid #b8dce9;border-radius:12px;padding:12px 14px}
+#homeAdminQuick[hidden]{display:none!important}#homeAdminQuick span{min-width:0}#homeAdminQuick b{display:block;font:900 22px 'Barlow Condensed',sans-serif}#homeAdminQuick small{display:block;font-size:10px;margin-top:3px}
+#quickOpenLiveScore{border:0;border-radius:9px;min-height:44px;padding:10px 14px;background:#0d4b7b;color:#fff;font:800 12px Inter,sans-serif;cursor:pointer;white-space:nowrap}#quickOpenLiveScore:disabled{opacity:.55;cursor:default}
+@media(max-width:400px){#homeAdminQuick{padding:10px}#quickOpenLiveScore{padding:10px;font-size:11px}#playerProfileTitle{font-size:32px}}

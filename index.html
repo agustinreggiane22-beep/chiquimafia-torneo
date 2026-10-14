@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/duels.css?v=2026101101">
   <link rel="stylesheet" href="css/team-levels.css?v=2026101201">
   <link rel="stylesheet" href="css/assists.css?v=2026101412">
+  <link rel="stylesheet" href="css/player-experience.css?v=2026101414">
 </head>
 <body>
   <div class="page-background" aria-hidden="true"></div>
@@ -54,6 +55,7 @@
         <article id="featuredMatch" class="featured-match" aria-live="polite"></article>
         <div id="homeHighlights" class="home-highlights" aria-label="Protagonistas del último partido" aria-live="polite"></div>
         <div class="home-info-grid"><article class="next-match-card"><span>⏱ PRÓXIMO PARTIDO</span><strong id="nextMatchDate">Calculando…</strong><small id="nextMatchCountdown">Se juega cada 7 días</small></article><article class="fund-card"><span>🐷 CAJA DEL TORNEO</span><strong id="fundAmount">$0</strong><small>Disponible para los próximos partidos</small></article></div>
+        <div id="homeAdminQuick" hidden><span><b>⚽ Tu marcador</b><small id="quickMatchLabel"></small></span><button id="quickOpenLiveScore" type="button" disabled>Anotar partido</button></div>
         <article id="homeChampionBanner" class="home-champion-banner" hidden></article>
       </section>
 
@@ -64,6 +66,7 @@
 
       <section id="clasificacion" class="page-section content-section">
         <header class="section-header sports-heading"><div><span class="eyebrow">TEMPORADA ACTUAL</span><h2>Clasificación</h2></div><span class="live-badge" id="syncStatus">Conectando</span></header>
+        <p class="player-profile-hint">Tocá un nombre para ver su ficha y sus últimos partidos.</p>
         <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"></tbody></table></div></div>
       </section>
 
@@ -172,12 +175,14 @@
     </div>
     <footer class="live-score-footer"><p id="liveScoreMessage" role="status"></p><div class="live-score-actions"><button id="liveUndo" type="button" disabled>↶ Deshacer gol</button><button id="liveReview" type="button">Revisar resultado</button></div></footer>
   </dialog>
+  <dialog id="playerProfileDialog" aria-labelledby="playerProfileTitle"><button class="profile-close" type="button" aria-label="Cerrar ficha">×</button><div id="playerProfileContent"></div><button id="closePlayerProfile" class="profile-back" type="button">Volver al torneo</button></dialog>
   <script src="js/config.js?v=2026072707"></script>
   <script src="js/sheets.js?v=2026101301"></script>
   <script src="js/goals.js?v=2026101301"></script>
   <script src="js/live-score.js?v=2026101302"></script>
   <script src="js/mvp-voting.js?v=2026100936"></script>
-  <script src="js/app.js?v=2026101411"></script>
+  <script src="js/player-experience.js?v=2026101414"></script>
+  <script src="js/app.js?v=2026101414"></script>
   <script src="js/team-generator.js?v=2026101201"></script>
 </body>
 </html>
