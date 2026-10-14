@@ -1,15 +1,4 @@
-/* Compact summary and one-tap pass entry. */
-.home-highlights { grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; margin-top:-8px; padding:6px 0; background:linear-gradient(145deg,#e7f5fc,#f8fafc); border:1px solid #b8dfef; border-radius:16px; box-shadow:0 8px 22px #0002; }
-.home-highlight { min-width:0; text-align:center; padding:4px; box-shadow:none; border-radius:0; border:0; }
-.home-highlight+.home-highlight { border-left:1px solid #c6e4f1; }
-.home-highlight.mvp,.home-highlight.goals,.home-highlight.assists,.home-highlight.leader { --highlight:#77cde9; background:transparent; color:#11243a; }
-.home-highlight-icon svg { color:var(--highlight); }
-.home-highlight-icon { display:block; font-size:18px; line-height:1; margin-bottom:5px; }
-.home-highlight-label { display:block; font-size:9px; letter-spacing:.04em; font-weight:900; text-transform:uppercase; color:inherit; }
-.home-highlight-names { max-height:58px; overflow:auto; margin:6px 0 3px; }
-.home-highlight strong { display:block; font:900 20px/1.1 'Barlow Condensed',sans-serif; color:inherit; overflow-wrap:anywhere; }
-.home-highlight small { display:block; color:inherit; font-size:10px; line-height:1.3; }
-#featuredMatch .compact-awards>span:has(strong) { display:none; }
+/* One-tap pass entry. */
 .live-assist-panel { border-radius:12px; background:#edf7fd; color:#11243a; padding:12px; margin:12px 0; }
 .live-assist-panel h3 { font-size:14px; margin:0 0 10px; }
 #liveAssistChoices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
@@ -19,7 +8,6 @@
 #liveGoalHistory li { flex-wrap:wrap; align-items:center; }
 #liveGoalHistory small { display:block; color:#9bd1e8; margin-top:4px; }
 #liveGoalHistory button[data-assist-event] { border:0; border-radius:8px; background:#243d50; color:#bce3f4; padding:10px; min-height:40px; font-size:11px; cursor:pointer; }
-@media(max-width:600px) { .home-highlights { gap:0; } .home-highlight { padding:8px 4px; }.home-highlight strong { font-size:16px; }.home-highlight small { font-size:9px; } }
 
 #estadisticas .ranking-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
 #goalsRankingCard { grid-column:1; grid-row:1; border-top:5px solid #c23c4a; }
@@ -39,21 +27,6 @@
 @media(max-width:600px) { #estadisticas .ranking-grid { gap:10px; } #estadisticas .ranking-card { padding:14px 12px; border-radius:16px; } #estadisticas .ranking-card h3 { font-size:21px; margin-bottom:14px; } #estadisticas .rank-row-pro { gap:5px; padding:12px 0; } #estadisticas .rank-person>b { font:800 16px 'Barlow Condensed',sans-serif; } #estadisticas .rank-value { font-size:12px; } #estadisticas .rank-value small { display:block; font-size:9px; } }
 
 .ranking-card { scroll-margin-top:100px; }
-.home-highlight { position:relative; overflow:hidden; text-decoration:none; animation:home-card-float 4s ease-in-out infinite; animation-delay:var(--home-delay); }
-.home-highlight-icon { animation:home-icon-bounce 2.2s ease-in-out infinite; animation-delay:var(--home-delay); }
-.home-highlight::before { content:""; position:absolute; top:0; left:-35%; width:32%; height:3px; background:linear-gradient(90deg,transparent,#fff,transparent); box-shadow:0 0 8px var(--highlight); animation:home-edge-shine 4s linear infinite; animation-delay:var(--home-delay); pointer-events:none; }
-.home-highlight::after { content:""; position:absolute; top:0; bottom:0; left:0; width:38%; background:linear-gradient(90deg,transparent,#ffffff99,transparent); animation:home-card-sheen 6s ease-in-out infinite; animation-delay:var(--home-delay); pointer-events:none; }
-.home-highlight>span,.home-highlight>.home-highlight-names,.home-highlight>small { position:relative; z-index:1; }
-.home-highlight:focus-visible { outline:3px solid #38a9d3; outline-offset:-3px; border-radius:6px; }
-@keyframes home-card-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
-@keyframes home-icon-bounce { 0%,100% { transform:translateY(0) rotate(-5deg); } 50% { transform:translateY(-7px) rotate(6deg); } }
-@keyframes home-edge-shine { 0% { left:-35%; } 100% { left:110%; } }
-@keyframes home-card-sheen { 0%,55% { transform:translateX(-160%) skewX(-20deg); opacity:0; } 65% { opacity:1; } 90%,100% { transform:translateX(350%) skewX(-20deg); opacity:0; } }
-@media(prefers-reduced-motion:reduce) { .home-highlight,.home-highlight-icon,.home-highlight::before,.home-highlight::after { animation:none!important; } }
-
-/* Inicio fijo: conserva enlaces y colores, sin animaciones. */
-.home-highlight,.home-highlight-icon,.home-highlight::before,.home-highlight::after { animation:none!important; }
-.home-highlight::before,.home-highlight::after { display:none; }
 
 .statistics-lists-header { margin:32px 0 18px; }
 .statistics-lists-header h3 { font:900 32px 'Barlow Condensed',sans-serif; margin:0; color:#edf4fa; }
@@ -88,12 +61,6 @@
 #estadisticas .top5-grid>article>div { max-height:300px; overflow-y:auto; scrollbar-width:thin; padding-right:4px; overscroll-behavior:contain; }
 @media(max-width:600px) { #estadisticas .stat-highlights { gap:12px; } #estadisticas .stat-box { padding:17px; min-height:145px; border-radius:22px; } #estadisticas .stat-box>strong { font-size:25px; } #estadisticas .stat-box>span { font-size:10px; } #estadisticas .stat-leader { min-height:115px; } }
 /* Alineación y tipografía uniforme de los destacados. */
-.home-highlight { display:grid; grid-template-rows:20px 16px minmax(24px,1fr) minmax(24px,auto); align-items:center; justify-items:center; gap:3px; padding:4px; }
-.home-highlight-icon { margin:0; }
-.home-highlight-label { font:900 15px/1 'Barlow Condensed',sans-serif; letter-spacing:.02em; }
-.home-highlight-names { width:100%; margin:0; text-align:center; }
-.home-highlight strong { font:900 20px/1.05 'Barlow Condensed',sans-serif; }
-.home-highlight small { margin:0; text-align:center; font-weight:700; }
 #estadisticas .stat-box { padding:14px 12px; min-height:128px; text-align:center; }
 #estadisticas .stat-box .stat-sticker { position:static; display:block; margin:0 auto 6px; font-size:24px; }
 #estadisticas .stat-box>span { padding:0; font:900 16px/1.1 'Barlow Condensed',sans-serif; letter-spacing:.03em; }
@@ -102,4 +69,4 @@
 #estadisticas .stat-leader { min-height:110px; }
 #estadisticas .stat-leader .stat-sticker { position:absolute; right:18px; top:14px; font-size:28px; }
 #estadisticas .stat-leader .stat-leader-link { display:block; margin:6px 0 0; }
-@media(max-width:600px) { .home-highlight strong { font-size:18px; } .home-highlight-label { font-size:14px; } #estadisticas .stat-box>strong { font-size:24px; } #estadisticas .stat-box>span { font-size:15px; } }
+@media(max-width:600px) { #estadisticas .stat-box>strong { font-size:24px; } #estadisticas .stat-box>span { font-size:15px; } }

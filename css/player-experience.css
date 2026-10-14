@@ -2,9 +2,9 @@
 .player-profile-link{font:inherit;color:inherit;background:none;border:0;padding:0;text-align:inherit;cursor:pointer;line-height:inherit;max-width:100%;overflow-wrap:anywhere}
 .player-profile-link:focus-visible{outline:2px solid #38a9d3;outline-offset:3px;border-radius:3px}
 .player-profile-link:hover{text-decoration:underline;text-decoration-color:#77cde9;text-underline-offset:3px}
-#standingsBody .player-cell{width:190px;display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:3px 10px}
+#standingsBody .player-cell{display:flex;align-items:center;gap:7px;white-space:nowrap}
 #standingsBody .player-cell>span:nth-child(2){display:block;min-width:0}
-.standing-news{grid-column:2/4;display:flex;flex-wrap:wrap;gap:3px 7px;margin-top:4px;font:600 10px/1.4 Inter,sans-serif;max-width:146px;text-align:left}
+.standing-news{display:inline-flex;flex-shrink:0;margin:0;font:700 11px/1 Inter,sans-serif;white-space:nowrap}
 .news-up{color:#28799b}.news-down,.news-flat{color:#778899}.news-award{color:#88671b}
 .player-profile-hint{font-size:11px;color:#c0dce9;margin:0 0 12px}
 #playerProfileDialog{position:fixed;inset:0;margin:auto;border:1px solid #b5ddeb;border-radius:18px;background:linear-gradient(145deg,#fff,#eef8ff);color:#122d43;padding:24px 20px;width:min(450px,calc(100% - 24px));max-height:calc(100dvh - 28px);overflow:auto;box-shadow:0 20px 65px #0007;text-align:center}
@@ -31,3 +31,17 @@
 #homeAdminQuick[hidden]{display:none!important}#homeAdminQuick span{min-width:0}#homeAdminQuick b{display:block;font:900 22px 'Barlow Condensed',sans-serif}#homeAdminQuick small{display:block;font-size:10px;margin-top:3px}
 #quickOpenLiveScore{border:0;border-radius:9px;min-height:44px;padding:10px 14px;background:#0d4b7b;color:#fff;font:800 12px Inter,sans-serif;cursor:pointer;white-space:nowrap}#quickOpenLiveScore:disabled{opacity:.55;cursor:default}
 @media(max-width:400px){#homeAdminQuick{padding:10px}#quickOpenLiveScore{padding:10px;font-size:11px}#playerProfileTitle{font-size:32px}}
+
+/* Awards stay inside the last-match card. */
+#inicio .featured-compact{grid-template-columns:minmax(0,1fr) auto;gap:8px 14px}
+#inicio .featured-compact>div:first-child{grid-column:1;grid-row:1}
+#inicio .compact-result{grid-column:2;grid-row:1}
+#inicio .compact-awards{grid-column:1/-1;grid-row:2;align-items:stretch;text-align:left;gap:8px}
+#inicio .last-match-awards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #dce7ee;padding-top:9px;gap:12px}
+#inicio .match-award{display:grid;align-content:start;gap:3px;text-decoration:none;color:#173e58;min-width:0}
+#inicio .match-award>span{font-size:10px;font-weight:800}
+#inicio .match-award>strong{font:800 16px/1.2 Inter,sans-serif;overflow-wrap:anywhere;max-height:58px;overflow:auto}
+#inicio .match-award>small{font-size:10px;color:#587589}
+#inicio .featured-compact .featured-button{grid-column:1/-1;grid-row:3;justify-self:end;min-width:115px;width:auto;margin-top:2px}
+.match-awards-date{grid-column:1/-1;font-size:10px;color:#587589}
+@media(max-width:600px){#inicio .last-match-awards{grid-template-columns:minmax(0,1fr);gap:7px}#inicio .match-award{grid-template-columns:90px minmax(0,1fr);gap:2px 8px;align-items:center}#inicio .match-award>span{grid-column:1;grid-row:1}#inicio .match-award>strong{grid-column:2;grid-row:1;font-size:13px}#inicio .match-award>small{grid-column:2;grid-row:2}#inicio .featured-compact .featured-button{width:100%;justify-self:stretch}}

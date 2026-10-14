@@ -15,14 +15,14 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),{cre
   assert(b.call('saveResult',{pin:'test-pin',item:{matchNumber:1,whiteGoals:16,blackGoals:8,scorers,goalEvents}}).ok);
   for(const [player,candidate] of [['LORIA','DIEGO'],['LUCAS','FRANCO'],['MATU','VALEN']])assert(b.call('voteMvp',{item:{matchNumber:1,player,candidate}}).ok);
   b.setTime('2026-10-06T00:00:00Z');await load();
-  assert.deepEqual(await page.locator('.home-highlight-label').allTextContents(),['MVP','Goles','Asistencias','Líder']);
+  assert.equal(await page.locator('#homeHighlights,.home-highlight').count(),0);assert.equal(await page.locator('#featuredMatch .match-award').count(),3);assert((await page.locator('#featuredMatch .match-award.mvp strong').textContent()).includes('DIEGO'));assert((await page.locator('#featuredMatch .match-award.mvp strong').textContent()).includes('FRANCO'));assert((await page.locator('#featuredMatch .match-award.mvp strong').textContent()).includes('VALEN'));
   assert.equal(await page.locator('#statHighlights .stat-box').count(),5);assert.equal(await page.locator('.stat-box.stat-leader').count(),1);
   assert.deepEqual(await page.locator('#statHighlights>.stat-box>span').allTextContents(),['Más goles','Más MVP','Más asistencias','Mejor racha','Líder']);
   for(const id of ['goalsRanking','mvpRanking','assistsRanking','streakRanking'])assert.equal(await page.locator('#'+id+' .rank-row').count(),5,id);
   const names=await page.locator('#standingsBody tr').filter({has:page.locator('[title="Líder en asistencias"]')}).locator('.player-cell>span:nth-child(2)').allTextContents();assert.deepEqual([...names].sort(),['DIEGO','FRANCO']);
-  const leader=await page.locator('#standingsBody tr').first().locator('.player-cell>span:nth-child(2)').textContent();assert.equal(await page.locator('.stat-leader strong').textContent(),leader);assert.equal(await page.locator('.home-highlight.leader strong').textContent(),leader);
-  assert.equal(await page.locator('.home-highlight').first().evaluate(e=>getComputedStyle(e).animationName),'none');assert.equal(await page.locator('.stat-box').first().evaluate(e=>getComputedStyle(e).animationName),'chiqui-float');
-  for(const [index,hash] of [[0,'#mvpRankingCard'],[1,'#goalsRankingCard'],[2,'#assistsRankingCard'],[3,'#clasificacion']]){const tile=page.locator('.home-highlight').nth(index);await tile.click();await page.waitForURL(url=>url.hash===hash)}
+  const leader=await page.locator('#standingsBody tr').first().locator('.player-cell>span:nth-child(2)').textContent();assert.equal(await page.locator('.stat-leader strong').textContent(),leader);
+  assert.equal(await page.locator('.stat-box').first().evaluate(e=>getComputedStyle(e).animationName),'chiqui-float');
+  for(const [type,hash] of [['mvp','#mvpRankingCard'],['goals','#goalsRankingCard'],['assists','#assistsRankingCard']]){await page.locator('#featuredMatch .match-award.'+type).click();await page.waitForURL(url=>url.hash===hash)}await page.locator('#featuredMatch .featured-button').click();await page.waitForURL(url=>url.hash==='#fechas');assert.equal(await page.locator('#matchFilter').inputValue(),'played');
   await page.emulateMedia({reducedMotion:'reduce'});assert.equal(await page.locator('.stat-box').first().evaluate(e=>getComputedStyle(e).animationName),'none');
   for(const width of [360,390,768,1440]){
    await page.setViewportSize({width,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
@@ -34,6 +34,6 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),{cre
    assert(await page.locator('#goalsRanking').evaluate(e=>e.clientHeight<=300&&getComputedStyle(e).overflowY==='auto'));
   }
   await page.setViewportSize({width:390,height:844});await page.locator('#statHighlights').screenshot({path:'/tmp/chiqui-restored-stat-cards.png'});assert.deepEqual(errors,[]);
-  console.log('PASS: original animated colored cards in 2x2 order, full-width leader, Top 5 scrollable lists, fixed linked home, real points and tied assist badges, reduced motion and four screens. All data simulated.');
+  console.log('PASS: original animated colored cards in 2x2 order, full-width leader, Top 5 scrollable lists, awards inside last-match card with links, real points and tied assist badges, reduced motion and four screens. All data simulated.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});
