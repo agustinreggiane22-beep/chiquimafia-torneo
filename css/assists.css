@@ -121,7 +121,11 @@
 .evolution-slide .evolution-trend-icon { width:22px; height:22px; color:#c39a25; background:none; border:0; border-radius:0; }
 .evolution-caption { margin:0 0 3px; font-size:11px; font-weight:700; }
 .evolution-legend { list-style:none; padding:0; margin:2px 0 8px; display:grid; gap:4px; }
-.evolution-legend li { display:flex; align-items:center; gap:6px; font-size:11px; padding:5px 8px; border-radius:8px; background:#edf5fa; }
+.evolution-legend li { margin:0; }
+.evolution-legend button { display:flex; align-items:center; gap:6px; width:100%; min-height:32px; border:0; font:inherit; font-size:11px; color:#11243a; padding:5px 8px; border-radius:8px; background:#edf5fa; cursor:pointer; text-align:left; }
+.evolution-legend button[aria-pressed="false"] { opacity:.45; background:#f4f6f8; }
+.evolution-legend button:focus-visible { outline:2px solid #38a9d3; outline-offset:1px; }
+.evolution-select-hint { display:block; font-size:10px; color:#52687b; margin:6px 0; }
 .evolution-legend i { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 .evolution-legend b { overflow-wrap:anywhere; }
 .evolution-legend span { margin-left:auto; font-weight:700; }

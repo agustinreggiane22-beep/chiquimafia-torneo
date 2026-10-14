@@ -14,3 +14,9 @@ test('Best streak does not decrease on defeat; missed matches do not reset it',(
  const games=[{number:1,played:true,white:['A'],black:['B'],winner:'white'},{number:2,played:true,white:['C'],black:['B'],winner:'white'},{number:3,played:true,white:['A'],black:['B'],winner:'white'},{number:4,played:true,white:['A'],black:['B'],winner:'draw'}];
  assert.deepEqual(series('streak',players,games,[],[],[]).lines[0].values,[0,1,1,2,2]);
 });
+test('Evolution includes whole roster, including zero totals, with colors beyond Top 5',()=>{
+ const roster=Array.from({length:24},(_,i)=>({player:'Jugador '+i}));
+ const model=series('goals',roster,matches,[],[],[]);
+ assert.equal(model.lines.length,24);assert(model.lines.every(l=>l.color&&l.values.every(v=>v===0)));
+ assert.equal(new Set(model.lines.map(l=>l.color)).size,24);
+});
