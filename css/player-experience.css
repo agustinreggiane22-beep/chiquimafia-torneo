@@ -37,9 +37,9 @@
 #inicio #featuredMatch:after{display:none}
 #inicio .featured-compact{display:block;text-align:left}
 #inicio .match-top-zone{display:grid;gap:10px;padding:16px 18px 34px;background:linear-gradient(180deg,#fff,#eaf9ff);color:#11243a}
-#inicio .match-bottom-zone{display:grid;gap:14px;padding:0 18px 16px;background:linear-gradient(180deg,#eaf9ff,#86cbe6);color:#173e58}
-#inicio .winner-black .match-top-zone{background:linear-gradient(180deg,#080d15 0%,#173149 55%,#213f58 calc(100% - 32px),#aacfe9 100%);color:#fff}
-#inicio .winner-black .match-bottom-zone{background:linear-gradient(180deg,#aacfe9,#f8fbff)}
+#inicio .match-bottom-zone{display:grid;gap:14px;padding:0 18px 16px;background:linear-gradient(180deg,#eaf9ff,#b4eafa);color:#173e58}
+#inicio .winner-black .match-top-zone{background:linear-gradient(180deg,#080d15 0%,#173149 55%,#213f58 calc(100% - 32px),#c9e7fa 100%);color:#fff}
+#inicio .winner-black .match-bottom-zone{background:linear-gradient(180deg,#c9e7fa,#f8fbff)}
 #inicio .winner-draw .match-top-zone,#inicio .winner-pending .match-top-zone{background:linear-gradient(180deg,#fff,#edf5fa)}
 #inicio .winner-draw .match-bottom-zone,#inicio .winner-pending .match-bottom-zone{background:linear-gradient(180deg,#edf5fa,#f8fbff)}
 #inicio .match-summary-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #87a9bc66;padding-bottom:12px}
