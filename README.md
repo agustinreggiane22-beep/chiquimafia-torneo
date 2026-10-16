@@ -172,3 +172,7 @@ de pases se habilita solo al reconocer `assistsV1`; antes, los goles siguen
 funcionando y el administrador ve la instrucción de actualización.
 
 El inicio usa tarjetas claras fijas que enlazan a los rankings y a clasificación. Estadísticas muestra cuatro destacados Top 1 con el diseño deportivo animado en dos columnas: goles, MVP, asistencias y racha. Debajo se muestra el líder a todo el ancho, con acceso a la clasificación completa. Los cuatro listados Top 5 se conservan más abajo con desplazamiento interno para limitar la altura. El símbolo 🤝 identifica a todos los líderes de asistencias, sin marcar jugadores cuando el máximo es cero.
+
+### Actualizar estilos
+
+Después de editar un archivo fuente en `css/`, ejecutá `node scripts/build-styles.cjs`. La página carga el archivo generado `css/site.css`, que conserva el orden de los estilos y sus rutas. Al publicarlo, cambiá su versión en `index.html` para renovar la caché.
