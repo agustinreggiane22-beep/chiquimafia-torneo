@@ -7,7 +7,7 @@
   const roles={goalkeeper:'Arquero',defender:'Defensor',midfielder:'Volante',forward:'Delantero',utility:'Polifuncional'};
   const levelLabels={1:'Malo',3:'Bueno',5:'Excelente'};
   const categoryLevel=value=>Number(value)<=2?1:Number(value)>=4?5:3;
-  let profiles={},guests=[],teams={white:[],black:[]};
+  let profiles={},guests=[],teams={white:[],black:[]},pickerTarget=null;
 
   function readProfiles(){try{return JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}')}catch{return{}}}
   function writeProfiles(){localStorage.setItem(PROFILE_KEY,JSON.stringify(profiles))}
@@ -58,22 +58,53 @@
     $('#generatorMessage').className='form-message success';
     $('#generatorMessage').textContent=`Fecha ${match.number} cargada. Tocá «Editar nombres de los equipos» para cambiar un jugador, o prepará la imagen.`;
   }
+  function refreshChoiceButtons(){
+    document.querySelectorAll('.lineup-player-row').forEach(row=>{const input=row.querySelector('.lineup-player'),button=row.querySelector('.choose-lineup-player');if(!input||!button)return;button.textContent=input.value.trim()?'Cambiar':'Elegir';button.setAttribute('aria-label',input.value.trim()?'Cambiar a '+input.value.trim():`Elegir jugador ${Number(button.dataset.chooseIndex)+1} del Equipo ${button.dataset.chooseSide==='white'?'Claro':'Oscuro'}`)});
+  }
   function copyToLineup(){
-    const fill=(selector,players)=>{const container=$(selector);while(container.children.length<players.length){const input=container.firstElementChild.cloneNode();input.placeholder=`Jugador ${container.children.length+1} o invitado`;input.setAttribute('aria-label',`Jugador ${container.children.length+1} del Equipo ${selector==='#whiteSelectors'?'Claro':'Oscuro'}`);container.appendChild(input)}[...container.querySelectorAll('.lineup-player')].forEach((input,index)=>input.value=players[index]?.name||'')};
-    fill('#whiteSelectors',teams.white);fill('#blackSelectors',teams.black);
+    const fill=(selector,players)=>{const container=$(selector),side=selector==='#whiteSelectors'?'white':'black',label=side==='white'?'Claro':'Oscuro';while(container.children.length<players.length){const row=container.firstElementChild.cloneNode(true),index=container.children.length,input=row.querySelector('.lineup-player'),button=row.querySelector('.choose-lineup-player');input.placeholder=`Jugador ${index+1} o invitado`;input.setAttribute('aria-label',`Jugador ${index+1} del Equipo ${label}`);button.dataset.chooseIndex=String(index);button.dataset.chooseSide=side;container.appendChild(row)}[...container.querySelectorAll('.lineup-player')].forEach((input,index)=>input.value=players[index]?.name||'')};
+    fill('#whiteSelectors',teams.white);fill('#blackSelectors',teams.black);refreshChoiceButtons();
+  }
+  function pickerChoices(){
+    if(!pickerTarget)return[];const occupied=new Set([...document.querySelectorAll('#manualTeamFields .lineup-player')].filter(input=>input!==pickerTarget.input).map(input=>ChiquiSheets.key(input.value)).filter(Boolean));
+    return [...new Map(names().filter(name=>!occupied.has(ChiquiSheets.key(name))&&ChiquiSheets.key(name)!==ChiquiSheets.key(pickerTarget.input.value)).map(name=>[ChiquiSheets.key(name),name])).values()];
+  }
+  function renderPickerChoices(){
+    const query=$('#teamPickerSearch').value.trim().toLocaleLowerCase('es'),choices=pickerChoices().filter(name=>name.toLocaleLowerCase('es').includes(query));
+    $('#teamPickerChoices').innerHTML=choices.map(name=>`<button type="button" data-picker-name="${esc(name)}">${esc(name)}</button>`).join('')||'<p class="admin-help">No hay jugadores disponibles con ese nombre. Podés agregar un invitado abajo.</p>';
+  }
+  function openPlayerPicker(side,index){
+    if($('#teamBuildMode').value!=='manual')copyToLineup();
+    const input=document.querySelectorAll(`${side==='white'?'#whiteSelectors':'#blackSelectors'} .lineup-player`)[index];if(!input)return;
+    pickerTarget={side,index,input,match:$('#generatorMatch').value};
+    $('#teamPickerTitle').textContent=input.value.trim()?'Reemplazar a '+input.value.trim():'Elegir jugador';
+    $('#teamPickerSide').textContent=`Equipo ${side==='white'?'Claro':'Oscuro'} · Elegí con un toque. Se muestran jugadores que no están en los otros lugares.`;
+    $('#teamPickerSearch').value='';$('#teamPickerGuest').value='';$('#teamPickerMessage').textContent='';$('#teamPickerGuestDetails').open=false;renderPickerChoices();$('#teamPlayerPicker').showModal();
+  }
+  function chooseReplacement(name){
+    if(!pickerTarget)return;name=String(name||'').trim();if(!name)return;
+    const key=ChiquiSheets.key(name),message=$('#teamPickerMessage');
+    if(pickerTarget.match!==$('#generatorMatch').value){message.textContent='La fecha cambió. Cerrá y volvé a elegir el jugador.';return}
+    const other=[...document.querySelectorAll('#manualTeamFields .lineup-player')].some(input=>input!==pickerTarget.input&&ChiquiSheets.key(input.value)===key);
+    if(other){message.textContent='Ese jugador ya está en uno de los equipos. Elegí otro.';return}
+    const canonical=names().find(player=>ChiquiSheets.key(player)===key)||name,previous=pickerTarget.input.value.trim();
+    if(!names().some(player=>ChiquiSheets.key(player)===key)){guests.push(canonical);renderRoster()}
+    pickerTarget.input.value=canonical;readManualTeams();refreshChoiceButtons();
+    const msg=$('#generatorMessage');msg.className='form-message success';msg.textContent=previous?`${canonical} reemplaza a ${previous}. Tocá «Guardar y publicar equipos» para confirmar.`:`${canonical} agregado. Tocá «Guardar y publicar equipos» para confirmar.`;
+    $('#teamPlayerPicker').close();
   }
   function readManualTeams(){
     const read=selector=>[...document.querySelectorAll(`${selector} .lineup-player`)].map(input=>input.value.trim()).filter(Boolean).map(playerData);
-    teams={white:read('#whiteSelectors'),black:read('#blackSelectors')};renderTeams();
+    teams={white:read('#whiteSelectors'),black:read('#blackSelectors')};renderTeams();refreshChoiceButtons();
   }
   function changeBuildMode(){const manual=$('#teamBuildMode').value==='manual';$('#manualTeamFields').hidden=!manual;$('#balancedTeamFields').hidden=manual;if(manual){copyToLineup();readManualTeams()}else{const selected=teams.white.concat(teams.black).map(p=>p.name);guests=[...new Set(guests.concat(selected.filter(name=>!names().includes(name))))];renderRoster();document.querySelectorAll('.generator-player').forEach(row=>{row.querySelector('.generator-check').checked=selected.includes(row.dataset.name)});renderTeams()}$('#generatorMessage').textContent=manual?'Elegí los jugadores de cada equipo y guardá el partido.':'Marcá los jugadores para generar equipos parejos.'}
   function editTeams(side='white',index=0){
     if(!teams.white.length&&!teams.black.length)return;
     $('#teamBuildMode').value='manual';changeBuildMode();
     const input=document.querySelectorAll(`${side==='white'?'#whiteSelectors':'#blackSelectors'} .lineup-player`)[index];
-    if(input){input.scrollIntoView({behavior:'smooth',block:'center'});input.focus({preventScroll:true});input.select()}
+    if(input){const button=input.closest('.lineup-player-row')?.querySelector('.choose-lineup-player');input.scrollIntoView({behavior:'smooth',block:'center'});button?.focus({preventScroll:true})}
     $('#generatorMessage').className='form-message';
-    $('#generatorMessage').textContent='Cambiá el nombre del jugador que se bajó por el reemplazo y tocá «Guardar y publicar equipos». Se conserva el resto del equipo.';
+    $('#generatorMessage').textContent='Tocá «Cambiar» al lado del jugador, elegí el reemplazo y tocá «Guardar y publicar equipos».';
   }
   async function publish(){
     if($('#teamBuildMode').value==='manual')readManualTeams();
@@ -149,7 +180,7 @@
       if(download)downloadPreparedImage();
     }catch(error){message.className='form-message error';message.textContent='No se pudo preparar la imagen. '+error.message}finally{button.disabled=false}
   }
-  function init(){if(!$('#generatorRoster'))return;if(!document.querySelector('#playerOptions option')){setTimeout(init,500);return}profiles=readProfiles();renderRoster();if(currentDuel()?.status==='pending')useCaptains(Number($('#generatorMatch').value)).catch(error=>$('#generatorMessage').textContent=error.message);$('#teamBuildMode').onchange=changeBuildMode;$('#manualTeamFields').addEventListener('input',readManualTeams);$('#addGeneratorGuest').onclick=()=>{const input=$('#generatorGuest'),name=input.value.trim();if(!name)return;if(!guests.some(x=>x.toLowerCase()===name.toLowerCase()))guests.push(name);input.value='';renderRoster();const row=[...document.querySelectorAll('.generator-player')].find(x=>x.dataset.name===name);if(row)row.querySelector('.generator-check').checked=true};$('#balanceTeams').onclick=()=>{const selected=[...document.querySelectorAll('.generator-player')].filter(row=>row.querySelector('.generator-check').checked).map(row=>playerData(row.dataset.name));if(selected.length>16){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí hasta 16 jugadores para armar los equipos de 8 contra 8.';return}if(selected.length<2){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí por lo menos dos jugadores.';return}teams=balance(selected);copyToLineup();renderTeams()};$('#editGeneratedTeams').onclick=()=>editTeams();$('#generatedTeams').onclick=event=>{const edit=event.target.closest('[data-edit-side]');if(edit){editTeams(edit.dataset.editSide,Number(edit.dataset.editIndex));return}const button=event.target.closest('[data-swap]');if(!button)return;const from=button.dataset.swap,to=from==='white'?'black':'white',index=Number(button.dataset.index);teams[to].push(teams[from].splice(index,1)[0]);copyToLineup();renderTeams()};$('#publishGeneratedTeams').onclick=publish;restoreImageDetails();$('#generatorMatch').addEventListener('change',()=>{restoreImageDetails();captainBadges()});window.addEventListener('chiqui:duels-updated',()=>{captainBadges();if(preparedImage&&preparedImage.signature!==imageSignature())hideImageActions()});$('#generatorTime').addEventListener('change',saveImageDetails);$('#generatorVenue').addEventListener('change',saveImageDetails);$('#previewTeamsImage').onclick=()=>shareImage(false);$('#downloadTeamsImage').onclick=()=>{if(preparedImage&&preparedImage.signature===imageSignature())downloadPreparedImage();else shareImage(true)};$('#shareTeamsImage').onclick=sharePreparedImage;['#generatorMatch','#generatorDate','#generatorTime','#generatorVenue'].forEach(selector=>$(selector).addEventListener('input',hideImageActions))}
+  function init(){if(!$('#generatorRoster'))return;if(!document.querySelector('#playerOptions option')){setTimeout(init,500);return}profiles=readProfiles();renderRoster();if(currentDuel()?.status==='pending')useCaptains(Number($('#generatorMatch').value)).catch(error=>$('#generatorMessage').textContent=error.message);$('#teamPickerChoices').onclick=event=>{const button=event.target.closest('[data-picker-name]');if(button)chooseReplacement(button.dataset.pickerName)};$('#teamPickerSearch').oninput=renderPickerChoices;$('#teamPickerGuestForm').onsubmit=event=>{event.preventDefault();chooseReplacement($('#teamPickerGuest').value)};$('#closeTeamPicker').onclick=()=>$('#teamPlayerPicker').close();$('#cancelTeamPicker').onclick=()=>$('#teamPlayerPicker').close();$('#teamPlayerPicker').addEventListener('close',()=>{pickerTarget=null});$('#manualTeamFields').addEventListener('click',event=>{const button=event.target.closest('[data-choose-side]');if(button)openPlayerPicker(button.dataset.chooseSide,Number(button.dataset.chooseIndex))});$('#teamBuildMode').onchange=changeBuildMode;$('#manualTeamFields').addEventListener('input',readManualTeams);$('#addGeneratorGuest').onclick=()=>{const input=$('#generatorGuest'),name=input.value.trim();if(!name)return;if(!guests.some(x=>x.toLowerCase()===name.toLowerCase()))guests.push(name);input.value='';renderRoster();const row=[...document.querySelectorAll('.generator-player')].find(x=>x.dataset.name===name);if(row)row.querySelector('.generator-check').checked=true};$('#balanceTeams').onclick=()=>{const selected=[...document.querySelectorAll('.generator-player')].filter(row=>row.querySelector('.generator-check').checked).map(row=>playerData(row.dataset.name));if(selected.length>16){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí hasta 16 jugadores para armar los equipos de 8 contra 8.';return}if(selected.length<2){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí por lo menos dos jugadores.';return}teams=balance(selected);copyToLineup();renderTeams()};$('#editGeneratedTeams').onclick=()=>editTeams();$('#generatedTeams').onclick=event=>{const edit=event.target.closest('[data-edit-side]');if(edit){openPlayerPicker(edit.dataset.editSide,Number(edit.dataset.editIndex));return}const button=event.target.closest('[data-swap]');if(!button)return;const from=button.dataset.swap,to=from==='white'?'black':'white',index=Number(button.dataset.index);teams[to].push(teams[from].splice(index,1)[0]);copyToLineup();renderTeams()};$('#publishGeneratedTeams').onclick=publish;restoreImageDetails();$('#generatorMatch').addEventListener('change',()=>{restoreImageDetails();captainBadges()});window.addEventListener('chiqui:duels-updated',()=>{captainBadges();if(preparedImage&&preparedImage.signature!==imageSignature())hideImageActions()});$('#generatorTime').addEventListener('change',saveImageDetails);$('#generatorVenue').addEventListener('change',saveImageDetails);$('#previewTeamsImage').onclick=()=>shareImage(false);$('#downloadTeamsImage').onclick=()=>{if(preparedImage&&preparedImage.signature===imageSignature())downloadPreparedImage();else shareImage(true)};$('#shareTeamsImage').onclick=sharePreparedImage;['#generatorMatch','#generatorDate','#generatorTime','#generatorVenue'].forEach(selector=>$(selector).addEventListener('input',hideImageActions))}
   window.addEventListener('chiqui:load-generator-lineup',event=>loadSavedTeams(event.detail));
   window.addEventListener('chiqui:players-changed',()=>{renderRoster()});
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();

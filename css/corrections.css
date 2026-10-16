@@ -23,6 +23,27 @@
 #generatedTeams .edit-generated-name b { display:inline; }
 #editGeneratedTeams { margin:8px 0; }
 #editGeneratedTeams[hidden] { display:none; }
+.lineup-player-row { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:8px; margin-bottom:10px; }
+#manualTeamFields .lineup-player-row .lineup-player { margin:0; min-width:0; width:100%; }
+.choose-lineup-player { min-height:44px; padding:10px 12px; font-size:13px; }
+#teamPlayerPicker { width:min(480px,calc(100vw - 24px)); max-height:calc(100dvh - 32px); box-sizing:border-box; overflow:auto; padding:18px; border:1px solid #c3dce9; border-radius:20px; background:#f7fbfe; color:#11243a; box-shadow:0 18px 60px #0005; }
+#teamPlayerPicker::backdrop { background:#061427b3; }
+.team-picker-header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.team-picker-header h3 { margin:0; font-size:24px; overflow-wrap:anywhere; }
+#closeTeamPicker { flex:0 0 40px; width:40px; min-height:40px; padding:5px; font-size:25px; background:#0d3654; color:#fff; border:0; border-radius:10px; cursor:pointer; }
+#teamPickerSearch,#teamPickerGuest { min-height:44px; padding:11px 12px; border:1px solid #bcd3e1; border-radius:10px; background:#fff; color:#11243a; font:16px Inter,system-ui,sans-serif; }
+#teamPickerSearch { width:100%; box-sizing:border-box; margin:0 0 12px; }
+.team-picker-choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; max-height:38dvh; overflow:auto; padding:2px; }
+.team-picker-choices button { min-width:0; min-height:46px; padding:12px 8px; background:#e6f3fa; border:1px solid #bbd8e7; border-radius:10px; color:#143f5a; font-weight:800; overflow-wrap:anywhere; }
+.team-picker-choices button:hover,.team-picker-choices button:focus-visible { background:#cde9f7; border-color:#3486ac; }
+.team-picker-choices>p { grid-column:1/-1; }
+#teamPickerGuestDetails { margin-top:16px; border-top:1px solid #dce7ef; padding-top:12px; }
+#teamPickerGuestDetails summary { cursor:pointer; font-weight:700; padding:8px 0; }
+#teamPickerGuestForm { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+#teamPickerGuest { flex:1 1 180px; min-width:0; }
+#teamPickerGuestForm button { min-height:44px; padding:10px 14px; border:0; border-radius:10px; background:#0d3654; color:white; font-weight:800; cursor:pointer; }
+#teamPickerMessage:empty { display:none; }
+#cancelTeamPicker { margin-top:16px; width:100%; min-height:44px; border:1px solid #c0dce9; border-radius:10px; background:#e6f3fa; color:#143f5a; font-weight:800; cursor:pointer; }
 @media(max-width:720px){.generator-roster{grid-template-columns:1fr}.generator-player{grid-template-columns:25px minmax(80px,1fr) 105px 78px}.generated-teams{grid-template-columns:1fr}.generator-actions>*{flex:1 1 100%}}
 
 .teams-share-preview { display:block; width:min(100%,540px); height:auto; margin:20px auto 0; border-radius:18px; box-shadow:0 14px 40px #08294b33; }

@@ -8,7 +8,7 @@
   <title>CHIQUIMAFIA TORNEO</title>
   <link rel="preload" href="assets/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/barlow-condensed-900.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/site.css?v=2026101603">
+  <link rel="stylesheet" href="css/site.css?v=2026101604">
 </head>
 <body>
   <div class="page-background" aria-hidden="true"></div>
@@ -118,7 +118,7 @@
               <button id="loadGeneratedTeams" class="secondary-admin-button" type="button">Cargar equipos guardados</button>
               <label class="team-mode-label">Cómo armar los equipos<select id="teamBuildMode"><option value="balanced">Generar equipos parejos</option><option value="manual">Elegir jugadores manualmente</option></select></label>
               <div id="balancedTeamFields"><p class="admin-help">Marcá quiénes juegan y elegí su posición y nivel: Malo, Bueno o Excelente. Se recuerda en este dispositivo y no aparece en la imagen.</p><div class="guest-adder"><input id="generatorGuest" maxlength="50" placeholder="Nombre de invitado"><button id="addGeneratorGuest" type="button">Agregar invitado</button></div><div id="generatorRoster" class="generator-roster"></div><button id="balanceTeams" type="button">⚖️ Generar equipos parejos</button></div>
-              <div id="manualTeamFields" hidden><p class="admin-help">Si alguien se baja, cambiá su nombre por el reemplazo y guardá. Podés elegir un jugador registrado o escribir un invitado. El resto de los equipos se mantiene. Los invitados no suman en la clasificación.</p><div class="lineup-columns"><div><h4>⚪ Equipo Claro</h4><p id="whiteCaptainBadge" class="captain-badge" hidden></p><div id="whiteSelectors"></div></div><div><h4>⚫ Equipo Oscuro</h4><p id="blackCaptainBadge" class="captain-badge" hidden></p><div id="blackSelectors"></div></div></div></div>
+              <div id="manualTeamFields" hidden><p class="admin-help">Si alguien se baja, tocá «Cambiar» junto a su nombre y elegí el reemplazo de la lista. Después guardá los equipos. Los invitados no suman en la clasificación.</p><div class="lineup-columns"><div><h4>⚪ Equipo Claro</h4><p id="whiteCaptainBadge" class="captain-badge" hidden></p><div id="whiteSelectors"></div></div><div><h4>⚫ Equipo Oscuro</h4><p id="blackCaptainBadge" class="captain-badge" hidden></p><div id="blackSelectors"></div></div></div></div>
               <div id="generatedTeams" class="generated-teams" hidden><div><h4>⚪ Equipo Claro <small id="whiteStrength"></small></h4><div id="generatedWhite"></div></div><div><h4>⚫ Equipo Oscuro <small id="blackStrength"></small></h4><div id="generatedBlack"></div></div></div>
               <button id="editGeneratedTeams" class="secondary-admin-button" type="button" hidden>✏️ Editar nombres de los equipos</button>
               <div class="generator-actions"><button id="publishGeneratedTeams" type="button">Guardar y publicar equipos</button></div><p id="generatorMessage" class="form-message"></p>
@@ -164,14 +164,15 @@
     <footer class="live-score-footer"><p id="liveScoreMessage" role="status"></p><div class="live-score-actions"><button id="liveUndo" type="button" disabled>↶ Deshacer gol</button><button id="liveReview" type="button">Revisar resultado</button></div></footer>
   </dialog>
   <dialog id="playerProfileDialog" aria-labelledby="playerProfileTitle"><button class="profile-close" type="button" aria-label="Cerrar ficha">×</button><div id="playerProfileContent"></div><button id="closePlayerProfile" class="profile-back" type="button">Volver al torneo</button></dialog>
+  <dialog id="teamPlayerPicker" aria-labelledby="teamPickerTitle"><header class="team-picker-header"><h3 id="teamPickerTitle">Elegir jugador</h3><button id="closeTeamPicker" type="button" aria-label="Cerrar lista de jugadores">×</button></header><p id="teamPickerSide" class="admin-help"></p><input id="teamPickerSearch" type="search" placeholder="Buscar jugador" aria-label="Buscar jugador" autocomplete="off"><div id="teamPickerChoices" class="team-picker-choices"></div><details id="teamPickerGuestDetails"><summary>Agregar un invitado</summary><form id="teamPickerGuestForm"><input id="teamPickerGuest" maxlength="50" placeholder="Nombre del invitado" aria-label="Nombre del invitado" required><button type="submit">Elegir invitado</button></form></details><p id="teamPickerMessage" class="form-message error" role="status"></p><button id="cancelTeamPicker" class="secondary-admin-button" type="button">Cancelar</button></dialog>
   <script src="js/config.js?v=2026072707"></script>
   <script src="js/sheets.js?v=2026101601"></script>
   <script src="js/goals.js?v=2026101601"></script>
   <script src="js/live-score.js?v=2026101302"></script>
   <script src="js/mvp-voting.js?v=2026100936"></script>
   <script src="js/player-experience.js?v=2026101415"></script>
-  <script src="js/app.js?v=2026101602"></script>
-  <script src="js/team-generator.js?v=2026101602"></script>
+  <script src="js/app.js?v=2026101604"></script>
+  <script src="js/team-generator.js?v=2026101604"></script>
 </body>
 </html>
 
