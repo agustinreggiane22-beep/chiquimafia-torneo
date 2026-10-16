@@ -79,8 +79,8 @@ function tournamentState_() {
   closeMvpVoting();
   return {
     ok: true,
-    version: '2026-10-13-pases-v1',
-    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true},
+    version: '2026-10-16-suplentes-v1',
+    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true,substitutesV1:true},
     automationReady: automationReady_(),
     serverNow: new Date().toISOString(),
     matchRecords: listMatchRecords_(),
@@ -266,9 +266,20 @@ function saveLineup_(item) {
   if(!item.matchNumber||white.length===0||black.length===0)throw new Error('Completá ambos equipos.');
   if(new Set([...white,...black].map(normalize_)).size!==white.length+black.length)throw new Error('Un jugador no puede estar en los dos equipos.');
   const sheet=genericSheet_(LINEUP_SHEET_NAME,['matchNumber','date','white','black','updatedAt']),values=sheet.getDataRange().getValues();
-  const row=[item.matchNumber,item.date||'',JSON.stringify(white),JSON.stringify(black),new Date().toISOString()];
   const index=values.findIndex((r,i)=>i>0&&String(r[0])===String(item.matchNumber));
-  if(index>=0)sheet.getRange(index+1,1,1,row.length).setValues([row]);else sheet.appendRow(row); return item;
+  const headers=values[0],column=headers.indexOf('substitutes');
+  let substitutes=[];
+  if(Object.prototype.hasOwnProperty.call(item,'substitutes')){
+    if(!Array.isArray(item.substitutes))throw new Error('La lista de suplentes no es válida.');
+    substitutes=item.substitutes.map(name=>String(name||'').trim()).filter(Boolean);
+  }else if(index>=0&&column>=0){try{substitutes=JSON.parse(values[index][column]||'[]')}catch{}}
+  if(new Set([...white,...black,...substitutes].map(participantKey_)).size!==white.length+black.length+substitutes.length)throw new Error('Cada jugador debe aparecer una sola vez, en un equipo o como suplente.');
+  // Append the column to existing sheets without moving or deleting historical data.
+  if(column<0){headers.push('substitutes');sheet.getRange(1,headers.length).setValue('substitutes')}
+  const saved={...item,white,black,substitutes,updatedAt:new Date().toISOString()};
+  const fields={matchNumber:saved.matchNumber,date:saved.date||'',white:JSON.stringify(white),black:JSON.stringify(black),updatedAt:saved.updatedAt,substitutes:JSON.stringify(substitutes)};
+  const row=headers.map((header,i)=>Object.prototype.hasOwnProperty.call(fields,header)?fields[header]:index>=0?values[index][i]:'');
+  if(index>=0)sheet.getRange(index+1,1,1,row.length).setValues([row]);else sheet.appendRow(row); return saved;
 }
 
 function addSanction_(item) {

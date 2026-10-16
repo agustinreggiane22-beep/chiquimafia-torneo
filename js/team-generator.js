@@ -7,7 +7,9 @@
   const roles={goalkeeper:'Arquero',defender:'Defensor',midfielder:'Volante',forward:'Delantero',utility:'Polifuncional'};
   const levelLabels={1:'Malo',3:'Bueno',5:'Excelente'};
   const categoryLevel=value=>Number(value)<=2?1:Number(value)>=4?5:3;
-  let profiles={},guests=[],teams={white:[],black:[]};
+  let profiles={},guests=[],teams={white:[],black:[]},substitutes=[],substitutesMatch='';
+  const playerKey=name=>ChiquiSheets.key(name);
+  const isPlaying=name=>teams.white.concat(teams.black).some(p=>playerKey(p.name)===playerKey(name));
 
   function readProfiles(){try{return JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}')}catch{return{}}}
   function writeProfiles(){localStorage.setItem(PROFILE_KEY,JSON.stringify(profiles))}
@@ -15,17 +17,47 @@
   function playerData(name){const row=$(`.generator-player[data-name="${CSS.escape(name)}"]`);return{name,role:row?.querySelector('.generator-role').value||profiles[name]?.role||'utility',level:categoryLevel(row?.querySelector('.generator-level').value||profiles[name]?.level||3)}}
   function renderRoster(){
     const roster=$('#generatorRoster');if(!roster)return;
+    const checked=new Set([...roster.querySelectorAll('.generator-player')].filter(row=>row.querySelector('.generator-check').checked).map(row=>playerKey(row.dataset.name)));
     roster.innerHTML=names().map((name,index)=>{
       const saved=profiles[name]||{role:'utility',level:3},level=categoryLevel(saved.level);
-      return `<article class="generator-player" data-name="${esc(name)}"><label class="generator-player-name"><input class="generator-check" type="checkbox"><strong>${esc(name)}</strong></label><label class="generator-position"><span>Posición</span><select class="generator-role" aria-label="Posición de ${esc(name)}">${Object.entries(roles).map(([value,label])=>`<option value="${value}"${saved.role===value?' selected':''}>${label}</option>`).join('')}</select></label><label class="generator-skill"><span>Nivel</span><select class="generator-level" aria-label="Nivel de ${esc(name)}" data-level="${level}">${[1,3,5].map(value=>`<option value="${value}"${level===value?' selected':''}>${levelLabels[value]}</option>`).join('')}</select></label></article>`;
+      return `<article class="generator-player" data-name="${esc(name)}"><label class="generator-player-name"><input class="generator-check" type="checkbox"${checked.has(playerKey(name))?' checked':''}><strong>${esc(name)}</strong></label><label class="generator-position"><span>Posición</span><select class="generator-role" aria-label="Posición de ${esc(name)}">${Object.entries(roles).map(([value,label])=>`<option value="${value}"${saved.role===value?' selected':''}>${label}</option>`).join('')}</select></label><label class="generator-skill"><span>Nivel</span><select class="generator-level" aria-label="Nivel de ${esc(name)}" data-level="${level}">${[1,3,5].map(value=>`<option value="${value}"${level===value?' selected':''}>${levelLabels[value]}</option>`).join('')}</select></label></article>`;
     }).join('');
     const update=event=>{
-      const row=event.target.closest('.generator-player');if(!row||(!event.target.matches('.generator-role')&&!event.target.matches('.generator-level')))return;
+      const row=event.target.closest('.generator-player');if(row&&event.target.matches('.generator-check')){if(event.target.checked)substitutes=substitutes.filter(name=>playerKey(name)!==playerKey(row.dataset.name));renderSubstitutes();hideImageActions();return}if(!row||(!event.target.matches('.generator-role')&&!event.target.matches('.generator-level')))return;
       const input=row.querySelector('.generator-level'),level=Number(input.value);
       input.dataset.level=String(level);
       profiles[row.dataset.name]={role:row.querySelector('.generator-role').value,level};writeProfiles();
     };
     roster.oninput=update;roster.onchange=update;
+  }
+  function renderSubstitutes(){
+    const list=$('#substituteRoster');if(!list)return;
+    substitutes=substitutes.filter(name=>!isPlaying(name));
+    $('#substitutesSetupNotice').hidden=ChiquiGoals.supportsSubstitutes();
+    $('#substitutesCount').textContent=String(substitutes.length);
+    const available=[...new Map(names().concat(substitutes).filter(name=>!isPlaying(name)).map(name=>[playerKey(name),name])).values()].sort((a,b)=>a.localeCompare(b));
+    list.innerHTML=available.map(name=>`<label class="substitute-option"><input type="checkbox" data-substitute="${esc(name)}"${substitutes.some(p=>playerKey(p)===playerKey(name))?' checked':''}><span>${esc(name)}</span></label>`).join('')||'<p class="admin-help">Todos los jugadores están en los equipos. Podés agregar un invitado como suplente.</p>';
+    const choices=teams.white.concat(teams.black).filter(p=>!isCaptain(p.name));
+    $('#selectedSubstitutes').innerHTML=substitutes.map((name,i)=>`<div class="substitute-row"><strong>${esc(name)}</strong><label><span>Si alguien se baja</span><select data-substitute-target="${i}" aria-label="Jugador a reemplazar por ${esc(name)}"><option value="">Elegí a quién reemplaza</option>${choices.map(p=>`<option value="${esc(p.name)}">${esc(p.name)} · ${teams.white.includes(p)?'Claro':'Oscuro'}</option>`).join('')}</select></label><button type="button" data-replace-substitute="${i}">Reemplazar</button><button class="secondary-admin-button" type="button" data-remove-substitute="${i}" aria-label="Quitar a ${esc(name)} de suplentes">Quitar</button></div>`).join('');
+  }
+  function addSubstitute(name){
+    name=String(name||'').trim();if(!name)return;
+    const message=$('#substituteMessage');
+    if(isPlaying(name)){message.className='form-message error';message.textContent='Ese jugador ya está en un equipo.';return}
+    if(!substitutes.some(p=>playerKey(p)===playerKey(name)))substitutes.push(names().find(p=>playerKey(p)===playerKey(name))||name);
+    document.querySelectorAll('.generator-player').forEach(row=>{if(playerKey(row.dataset.name)===playerKey(name))row.querySelector('.generator-check').checked=false});
+    message.textContent='';renderSubstitutes();hideImageActions();
+  }
+  function replaceWithSubstitute(index){
+    const incoming=substitutes[index],outgoing=$(`[data-substitute-target="${index}"]`)?.value,message=$('#substituteMessage');
+    if(!incoming||!outgoing){message.className='form-message error';message.textContent='Elegí al jugador que se baja.';return}
+    if(isCaptain(outgoing)){message.className='form-message error';message.textContent='Primero revisá el desafío: ese jugador es un capitán.';return}
+    const side=['white','black'].find(side=>teams[side].some(p=>playerKey(p.name)===playerKey(outgoing)));if(!side)return;
+    const position=teams[side].findIndex(p=>playerKey(p.name)===playerKey(outgoing));
+    teams[side][position]=playerData(incoming);substitutes.splice(index,1);
+    if(!names().some(name=>playerKey(name)===playerKey(incoming)))guests.push(incoming);
+    renderRoster();document.querySelectorAll('.generator-player').forEach(row=>{row.querySelector('.generator-check').checked=isPlaying(row.dataset.name)});
+    copyToLineup();renderTeams();message.className='form-message success';message.textContent=`${incoming} entra por ${outgoing}. Tocá «Guardar y publicar equipos» para confirmar el cambio.`;
   }
   function teamScore(team){const total=team.reduce((sum,p)=>sum+p.level,0),counts={};team.forEach(p=>counts[p.role]=(counts[p.role]||0)+1);return{total,counts}}
   function cost(white,black){const a=teamScore(white),b=teamScore(black);let value=Math.abs(a.total-b.total)*12+Math.abs(white.length-black.length)*50;for(const role of Object.keys(roles))value+=Math.abs((a.counts[role]||0)-(b.counts[role]||0))*(role==='goalkeeper'?18:5);return value}
@@ -35,14 +67,15 @@
   function isCaptain(name){const duel=currentDuel();return Boolean(duel&&[duel.whitePlayer,duel.blackPlayer].some(player=>ChiquiSheets.key(player)===ChiquiSheets.key(name)))}
   function captainBadges(){const duel=currentDuel();for(const [side,player] of [['white',duel?.whitePlayer],['black',duel?.blackPlayer]]){const badge=$('#'+side+'CaptainBadge');if(badge){badge.hidden=!player;badge.textContent=player?'⚔️ Capitán: '+player:''}}document.querySelectorAll('.lineup-player').forEach(input=>{input.dataset.captain=String(isCaptain(input.value));input.title=isCaptain(input.value)?'Capitán del desafío':''})}
   async function useCaptains(number){
-    const duel=window.ChiquiGoals?.duelForMatch(number);if(!duel||duel.status!=='pending')return;const lineup=(await ChiquiGoals.lineups()).find(item=>Number(item.matchNumber)===number);if(lineup&&(Number($('#generatorMatch').value)!==number||!teams.white.length&&!teams.black.length)){const parse=value=>Array.isArray(value)?value:JSON.parse(value||'[]');loadSavedTeams({number,date:lineup.date,white:parse(lineup.white),black:parse(lineup.black)})}
+    const duel=window.ChiquiGoals?.duelForMatch(number);if(!duel||duel.status!=='pending')return;const lineup=(await ChiquiGoals.lineups()).find(item=>Number(item.matchNumber)===number);if(lineup&&(Number($('#generatorMatch').value)!==number||!teams.white.length&&!teams.black.length)){const parse=value=>Array.isArray(value)?value:JSON.parse(value||'[]');loadSavedTeams({number,date:lineup.date,white:parse(lineup.white),black:parse(lineup.black),substitutes:parse(lineup.substitutes)})}
     if(Number($('#generatorMatch').value)!==number){teams={white:[],black:[]};$('#generatorMatch').value=number}else if($('#teamBuildMode').value==='manual')readManualTeams();
     const captains=[duel.whitePlayer,duel.blackPlayer],other=team=>team.filter(p=>!captains.some(name=>ChiquiSheets.key(name)===ChiquiSheets.key(p.name)));
     teams={white:[playerData(duel.whitePlayer),...other(teams.white)],black:[playerData(duel.blackPlayer),...other(teams.black)]};$('#teamBuildMode').value='manual';$('#balancedTeamFields').hidden=true;$('#manualTeamFields').hidden=false;copyToLineup();renderTeams();captainBadges();$('#generatorMessage').textContent='⚔️ Capitanes preparados en equipos opuestos. Cargá los jugadores que eligió cada uno y guardá los equipos.';
   }
   window.ChiquiTeamGenerator={useCaptains};
-  function renderTeams(){hideImageActions();captainBadges();const wrap=$('#generatedTeams');wrap.hidden=$('#teamBuildMode').value==='manual';const render=(team,target,side)=>{$(target).innerHTML=team.map((p,index)=>`<div class="generated-player"><span><b>${esc(p.name)}${isCaptain(p.name)?' ⚔️':''}</b> <small>${roles[p.role]} · ${levelLabels[categoryLevel(p.level)]}</small></span><button type="button" data-swap="${side}" data-index="${index}" title="Cambiar de equipo">↔</button></div>`).join('')};render(teams.white,'#generatedWhite','white');render(teams.black,'#generatedBlack','black');$('#whiteStrength').textContent=`Nivel: ${levelLabels[categoryLevel(teamScore(teams.white).total/(teams.white.length||1))]}`;$('#blackStrength').textContent=`Nivel: ${levelLabels[categoryLevel(teamScore(teams.black).total/(teams.black.length||1))]}`;$('#generatorMessage').textContent=Math.abs(teamScore(teams.white).total-teamScore(teams.black).total)<=2?'Equipos parejos por nivel y posición.':'Equipos generados. Revisá el reparto de niveles y posiciones antes de guardar.'}
+  function renderTeams(){hideImageActions();captainBadges();renderSubstitutes();const wrap=$('#generatedTeams');wrap.hidden=$('#teamBuildMode').value==='manual';const render=(team,target,side)=>{$(target).innerHTML=team.map((p,index)=>`<div class="generated-player"><span><b>${esc(p.name)}${isCaptain(p.name)?' ⚔️':''}</b> <small>${roles[p.role]} · ${levelLabels[categoryLevel(p.level)]}</small></span><button type="button" data-swap="${side}" data-index="${index}" title="Cambiar de equipo">↔</button></div>`).join('')};render(teams.white,'#generatedWhite','white');render(teams.black,'#generatedBlack','black');$('#whiteStrength').textContent=`Nivel: ${levelLabels[categoryLevel(teamScore(teams.white).total/(teams.white.length||1))]}`;$('#blackStrength').textContent=`Nivel: ${levelLabels[categoryLevel(teamScore(teams.black).total/(teams.black.length||1))]}`;$('#generatorMessage').textContent=Math.abs(teamScore(teams.white).total-teamScore(teams.black).total)<=2?'Equipos parejos por nivel y posición.':'Equipos generados. Revisá el reparto de niveles y posiciones antes de guardar.'}
   function loadSavedTeams(match){
+    let saved=match.substitutes||[];try{if(typeof saved==='string')saved=JSON.parse(saved)}catch{saved=[]}substitutes=Array.isArray(saved)?saved:[];substitutesMatch=String(match.number);$('#substituteMessage').textContent='';
     const selected=[...match.white,...match.black];
     guests=[...new Set(guests.concat(selected.filter(name=>!names().includes(name))))];
     renderRoster();
@@ -73,14 +106,15 @@
     if(!teams.white.length||!teams.black.length){fail('Completá ambos equipos antes de guardar.');return}
     if(!Number.isInteger(matchNumber)||matchNumber<1||!date){fail('Completá un número de partido válido y el día.');return}
     const names=teams.white.concat(teams.black).map(p=>ChiquiSheets.key(p.name));if(new Set(names).size!==names.length){fail('Hay un jugador repetido. Cada jugador debe aparecer una sola vez.');return}
+    if(substitutes.length&&!ChiquiGoals.supportsSubstitutes()){fail('Actualizá Apps Script desde el enlace de Suplentes disponibles para guardarlos sin perderlos.');return}
     button.disabled=true;
-    try{await ChiquiGoals.saveLineup({matchNumber,date,white:teams.white.map(p=>p.name),black:teams.black.map(p=>p.name)},pin);copyToLineup();msg.className='form-message success';msg.textContent='✓ Equipos guardados y publicados. Ya podés compartir la imagen.'}catch(error){fail(error.message)}finally{button.disabled=false}
+    try{await ChiquiGoals.saveLineup({matchNumber,date,white:teams.white.map(p=>p.name),black:teams.black.map(p=>p.name),...(ChiquiGoals.supportsSubstitutes()?{substitutes:[...substitutes]}:{})},pin);copyToLineup();msg.className='form-message success';msg.textContent='✓ Equipos guardados y publicados. Ya podés compartir la imagen.'}catch(error){fail(error.message)}finally{button.disabled=false}
   }
   function imageDetails(){try{return JSON.parse(localStorage.getItem(DETAILS_KEY)||'{}')}catch{return{}}}
   function restoreImageDetails(){const details=imageDetails()[$('#generatorMatch').value]||{};$('#generatorTime').value=details.time??'18:00';$('#generatorVenue').value=details.venue??'El Más Grande'}
   function saveImageDetails(){const details=imageDetails();details[$('#generatorMatch').value]={time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()};try{localStorage.setItem(DETAILS_KEY,JSON.stringify(details))}catch{}}
   function loadBackground(){if(!backgroundPromise)backgroundPromise=new Promise(resolve=>{const image=new Image(),timer=setTimeout(()=>resolve(null),12000);image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);resolve(null)};image.src='assets/match-red-background.webp'});return backgroundPromise}
-  function imageSignature(){return JSON.stringify({teams,number:$('#generatorMatch').value,duel:currentDuel()?[currentDuel().whitePlayer,currentDuel().blackPlayer]:null,date:$('#generatorDate').value,time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()})}
+  function imageSignature(){return JSON.stringify({teams,substitutes,number:$('#generatorMatch').value,duel:currentDuel()?[currentDuel().whitePlayer,currentDuel().blackPlayer]:null,date:$('#generatorDate').value,time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()})}
   function hideImageActions(){$('#imageExportActions').hidden=true;$('#teamsSharePreview').hidden=true}
   function downloadPreparedImage(){const link=$('#saveTeamsImage');link.click();$('#generatorMessage').className='form-message success';$('#generatorMessage').textContent='Descarga solicitada. Si no se guarda, tocá «Compartir imagen» o «Abrir imagen».'}
   async function sharePreparedImage(){
@@ -101,7 +135,7 @@
     const button=download?$('#downloadTeamsImage'):$('#previewTeamsImage');button.disabled=true;
     try{
       saveImageDetails();
-      const background=await loadBackground(),canvas=$('#teamsShareCanvas'),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,date=$('#generatorDate').value,number=$('#generatorMatch').value,time=$('#generatorTime').value,venue=$('#generatorVenue').value.trim();
+      const background=await loadBackground(),canvas=$('#teamsShareCanvas');canvas.height=1350+(substitutes.length?90+Math.ceil(substitutes.length/2)*36:0);const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,date=$('#generatorDate').value,number=$('#generatorMatch').value,time=$('#generatorTime').value,venue=$('#generatorVenue').value.trim();
       const panel=(x,y,width,height,r,fill)=>{ctx.beginPath();ctx.roundRect(x,y,width,height,r);ctx.fillStyle=fill;ctx.fill()};
       const text=(value,x,y,size,color,maxWidth,weight=800)=>{ctx.fillStyle=color;ctx.font=`${weight} ${size}px Arial`;while(ctx.measureText(value).width>maxWidth&&size>13){size--;ctx.font=`${weight} ${size}px Arial`}ctx.fillText(value,x,y,maxWidth)};
       ctx.clearRect(0,0,w,h);ctx.fillStyle='#101010';ctx.fillRect(0,0,w,h);
@@ -129,7 +163,11 @@
       const formattedDate=date?new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(new Date(date+'T12:00:00')):'Día a confirmar';
       text(formattedDate.toUpperCase()+(time?` · ${time} HS`:''),w/2,1169,29,'#fff',940);
       text(venue||'Lugar a confirmar',w/2,1212,28,'#c6c6c6',940,500);
-      text('NOS VEMOS EN LA CANCHA',w/2,1290,22,'#e9555e',900);
+      if(substitutes.length){
+        text('SUPLENTES DISPONIBLES',w/2,1270,23,'#e3c17c',940);
+        substitutes.forEach((name,i)=>text(name,i%2?790:290,1310+Math.floor(i/2)*36,25,'#fff',450,700));
+      }
+      text('NOS VEMOS EN LA CANCHA',w/2,h-60,22,'#e9555e',900);
       const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('No se pudo crear el archivo PNG.')),'image/png'));
       const filename=`chiquimafia-fecha-${number||'proxima'}.png`,file=new File([blob],filename,{type:'image/png'}),url=URL.createObjectURL(file),oldUrl=preparedImage?.url;
       preparedImage={file,url,signature:imageSignature()};
@@ -140,8 +178,12 @@
       if(download)downloadPreparedImage();
     }catch(error){message.className='form-message error';message.textContent='No se pudo preparar la imagen. '+error.message}finally{button.disabled=false}
   }
-  function init(){if(!$('#generatorRoster'))return;if(!document.querySelector('#playerOptions option')){setTimeout(init,500);return}profiles=readProfiles();renderRoster();if(currentDuel()?.status==='pending')useCaptains(Number($('#generatorMatch').value)).catch(error=>$('#generatorMessage').textContent=error.message);$('#teamBuildMode').onchange=changeBuildMode;$('#manualTeamFields').addEventListener('input',readManualTeams);$('#addGeneratorGuest').onclick=()=>{const input=$('#generatorGuest'),name=input.value.trim();if(!name)return;if(!guests.some(x=>x.toLowerCase()===name.toLowerCase()))guests.push(name);input.value='';renderRoster();const row=[...document.querySelectorAll('.generator-player')].find(x=>x.dataset.name===name);if(row)row.querySelector('.generator-check').checked=true};$('#balanceTeams').onclick=()=>{const selected=[...document.querySelectorAll('.generator-player')].filter(row=>row.querySelector('.generator-check').checked).map(row=>playerData(row.dataset.name));if(selected.length<2){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí por lo menos dos jugadores.';return}teams=balance(selected);copyToLineup();renderTeams()};$('#generatedTeams').onclick=event=>{const button=event.target.closest('[data-swap]');if(!button)return;const from=button.dataset.swap,to=from==='white'?'black':'white',index=Number(button.dataset.index);teams[to].push(teams[from].splice(index,1)[0]);copyToLineup();renderTeams()};$('#publishGeneratedTeams').onclick=publish;restoreImageDetails();$('#generatorMatch').addEventListener('change',()=>{restoreImageDetails();captainBadges()});window.addEventListener('chiqui:duels-updated',()=>{captainBadges();if(preparedImage&&preparedImage.signature!==imageSignature())hideImageActions()});$('#generatorTime').addEventListener('change',saveImageDetails);$('#generatorVenue').addEventListener('change',saveImageDetails);$('#previewTeamsImage').onclick=()=>shareImage(false);$('#downloadTeamsImage').onclick=()=>{if(preparedImage&&preparedImage.signature===imageSignature())downloadPreparedImage();else shareImage(true)};$('#shareTeamsImage').onclick=sharePreparedImage;['#generatorMatch','#generatorDate','#generatorTime','#generatorVenue'].forEach(selector=>$(selector).addEventListener('input',hideImageActions))}
+  function init(){if(!$('#generatorRoster'))return;if(!document.querySelector('#playerOptions option')){setTimeout(init,500);return}profiles=readProfiles();renderRoster();renderSubstitutes();substitutesMatch=$('#generatorMatch').value;if(currentDuel()?.status==='pending')useCaptains(Number($('#generatorMatch').value)).catch(error=>$('#generatorMessage').textContent=error.message);$('#teamBuildMode').onchange=changeBuildMode;$('#manualTeamFields').addEventListener('input',readManualTeams);$('#addGeneratorGuest').onclick=()=>{const input=$('#generatorGuest'),name=input.value.trim();if(!name)return;if(!guests.some(x=>x.toLowerCase()===name.toLowerCase()))guests.push(name);input.value='';renderRoster();const row=[...document.querySelectorAll('.generator-player')].find(x=>x.dataset.name===name);if(row)row.querySelector('.generator-check').checked=true};$('#balanceTeams').onclick=()=>{const selected=[...document.querySelectorAll('.generator-player')].filter(row=>row.querySelector('.generator-check').checked).map(row=>playerData(row.dataset.name));if(selected.length>16){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí hasta 16 titulares para jugar 8 contra 8. Marcá al resto como suplentes disponibles.';return}if(selected.length<2){$('#generatorMessage').className='form-message error';$('#generatorMessage').textContent='Elegí por lo menos dos jugadores.';return}teams=balance(selected);copyToLineup();renderTeams()};$('#generatedTeams').onclick=event=>{const button=event.target.closest('[data-swap]');if(!button)return;const from=button.dataset.swap,to=from==='white'?'black':'white',index=Number(button.dataset.index);teams[to].push(teams[from].splice(index,1)[0]);copyToLineup();renderTeams()};$('#publishGeneratedTeams').onclick=publish;restoreImageDetails();$('#generatorMatch').addEventListener('change',()=>{restoreImageDetails();captainBadges()});$('#generatorMatch').addEventListener('input',()=>{if(substitutesMatch!==$('#generatorMatch').value){substitutes=[];substitutesMatch=$('#generatorMatch').value;$('#substituteMessage').textContent='';renderSubstitutes()}});
+    $('#substituteRoster').onchange=event=>{const name=event.target.dataset.substitute;if(!name)return;if(event.target.checked)addSubstitute(name);else{substitutes=substitutes.filter(p=>playerKey(p)!==playerKey(name));renderSubstitutes();hideImageActions()}};
+    $('#addSubstitute').onclick=()=>{const input=$('#substituteGuest');addSubstitute(input.value);input.value=''};
+    $('#selectedSubstitutes').onclick=event=>{const replace=event.target.closest('[data-replace-substitute]'),remove=event.target.closest('[data-remove-substitute]');if(replace)replaceWithSubstitute(Number(replace.dataset.replaceSubstitute));if(remove){substitutes.splice(Number(remove.dataset.removeSubstitute),1);renderSubstitutes();hideImageActions()}};
+window.addEventListener('chiqui:duels-updated',()=>{captainBadges();if(preparedImage&&preparedImage.signature!==imageSignature())hideImageActions()});$('#generatorTime').addEventListener('change',saveImageDetails);$('#generatorVenue').addEventListener('change',saveImageDetails);$('#previewTeamsImage').onclick=()=>shareImage(false);$('#downloadTeamsImage').onclick=()=>{if(preparedImage&&preparedImage.signature===imageSignature())downloadPreparedImage();else shareImage(true)};$('#shareTeamsImage').onclick=sharePreparedImage;['#generatorMatch','#generatorDate','#generatorTime','#generatorVenue'].forEach(selector=>$(selector).addEventListener('input',hideImageActions))}
   window.addEventListener('chiqui:load-generator-lineup',event=>loadSavedTeams(event.detail));
-  window.addEventListener('chiqui:players-changed',()=>{renderRoster()});
+  window.addEventListener('chiqui:players-changed',()=>{renderRoster();renderSubstitutes()});
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
 })();

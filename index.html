@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="css/fonts.css?v=2026101422">
   <link rel="stylesheet" href="css/styles.css?v=2026072115">
   <link rel="stylesheet" href="css/enhancements.css?v=2026072115">
-  <link rel="stylesheet" href="css/corrections.css?v=2026101102">
+  <link rel="stylesheet" href="css/corrections.css?v=2026101601">
   <link rel="stylesheet" href="css/home.css?v=2026100915">
   <link rel="stylesheet" href="css/theme.css?v=2026101102">
   <link rel="stylesheet" href="css/hall-of-fame.css?v=2026100957">
@@ -134,6 +134,7 @@
               <div id="balancedTeamFields"><p class="admin-help">Marcá quiénes juegan y elegí su posición y nivel: Malo, Bueno o Excelente. Se recuerda en este dispositivo y no aparece en la imagen.</p><div class="guest-adder"><input id="generatorGuest" maxlength="50" placeholder="Nombre de invitado"><button id="addGeneratorGuest" type="button">Agregar invitado</button></div><div id="generatorRoster" class="generator-roster"></div><button id="balanceTeams" type="button">⚖️ Generar equipos parejos</button></div>
               <div id="manualTeamFields" hidden><p class="admin-help">Elegí jugadores registrados o escribí nombres de invitados. Los invitados aparecen en el partido, pero no suman en la clasificación.</p><div class="lineup-columns"><div><h4>⚪ Equipo Claro</h4><p id="whiteCaptainBadge" class="captain-badge" hidden></p><div id="whiteSelectors"></div></div><div><h4>⚫ Equipo Oscuro</h4><p id="blackCaptainBadge" class="captain-badge" hidden></p><div id="blackSelectors"></div></div></div></div>
               <div id="generatedTeams" class="generated-teams" hidden><div><h4>⚪ Equipo Claro <small id="whiteStrength"></small></h4><div id="generatedWhite"></div></div><div><h4>⚫ Equipo Oscuro <small id="blackStrength"></small></h4><div id="generatedBlack"></div></div></div>
+              <section id="generatorSubstitutes" class="generator-substitutes" aria-labelledby="substitutesTitle"><h4 id="substitutesTitle">Suplentes disponibles <span id="substitutesCount">0</span></h4><p class="admin-help">Marcá solamente a quienes pueden reemplazar a alguien. No forman parte de los equipos ni suman presencia mientras sigan como suplentes.</p><p id="substitutesSetupNotice" class="admin-help" hidden>Para guardar los suplentes entre dispositivos, <a href="actualizar-suplentes.html" target="_blank" rel="noopener">actualizá Apps Script</a>. Después recargá el torneo.</p><div id="substituteRoster" class="substitute-roster"></div><div class="guest-adder"><input id="substituteGuest" maxlength="50" list="playerOptions" placeholder="Nombre de suplente o invitado" aria-label="Nombre de suplente o invitado"><button id="addSubstitute" type="button">Agregar suplente</button></div><div id="selectedSubstitutes" class="selected-substitutes"></div><p id="substituteMessage" class="form-message" role="status"></p></section>
               <div class="generator-actions"><button id="publishGeneratedTeams" type="button">Guardar y publicar equipos</button></div><p id="generatorMessage" class="form-message"></p>
               <details class="image-settings"><summary>Imagen para compartir</summary><div class="compact-fields"><label>Horario<input id="generatorTime" type="time"></label><label>Lugar<input id="generatorVenue" type="text" maxlength="90" placeholder="Cancha o dirección"></label></div><p class="admin-help">El horario y el lugar se recuerdan por fecha en este dispositivo.</p><div class="generator-actions"><button id="previewTeamsImage" class="secondary-admin-button" type="button">Ver imagen</button><button id="downloadTeamsImage" class="secondary-admin-button" type="button">📲 Descargar imagen</button></div><div id="imageExportActions" hidden><div class="generator-actions"><a id="saveTeamsImage" hidden download>Descargar imagen</a><button id="shareTeamsImage" type="button">Compartir imagen</button><a id="openTeamsImage" class="secondary-admin-button" target="_blank" rel="noopener">Abrir imagen</a></div><p class="admin-help">Si el navegador bloquea la descarga, abrí la imagen o mantené presionada la vista previa para guardarla.</p></div><img id="teamsSharePreview" class="teams-share-preview" width="1080" height="1350" alt="Vista previa de los equipos para compartir" hidden><canvas id="teamsShareCanvas" width="1080" height="1350" hidden></canvas></details>
               <details class="match-danger-actions"><summary>Eliminar partido</summary><p class="admin-help">Elimina equipos, goles y MVP del número de fecha elegido arriba.</p><button id="deleteDateButton" class="danger-admin-button" type="button">Eliminar partido completo</button></details>
@@ -178,13 +179,13 @@
   </dialog>
   <dialog id="playerProfileDialog" aria-labelledby="playerProfileTitle"><button class="profile-close" type="button" aria-label="Cerrar ficha">×</button><div id="playerProfileContent"></div><button id="closePlayerProfile" class="profile-back" type="button">Volver al torneo</button></dialog>
   <script src="js/config.js?v=2026072707"></script>
-  <script src="js/sheets.js?v=2026101301"></script>
-  <script src="js/goals.js?v=2026101301"></script>
+  <script src="js/sheets.js?v=2026101601"></script>
+  <script src="js/goals.js?v=2026101601"></script>
   <script src="js/live-score.js?v=2026101302"></script>
   <script src="js/mvp-voting.js?v=2026100936"></script>
   <script src="js/player-experience.js?v=2026101415"></script>
-  <script src="js/app.js?v=2026101422"></script>
-  <script src="js/team-generator.js?v=2026101201"></script>
+  <script src="js/app.js?v=2026101601"></script>
+  <script src="js/team-generator.js?v=2026101601"></script>
 </body>
 </html>
 
