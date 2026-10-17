@@ -10,14 +10,17 @@
  const message=(text,error=false)=>{const node=$('#liveScoreMessage');node.textContent=text;node.classList.toggle('error',error)};
  const event=(team,player='')=>({id:crypto.randomUUID?.()||Date.now()+'-'+Math.random(),team,player,assist:null,assistDecision:'pending',at:new Date().toISOString()});
  function fresh(match){
+  const participantCorrectionId=window.ChiquiGoals?.savedParticipantCorrection?.(match.number)||null;
   const events=[];
-  if(match.played){const ledger=window.ChiquiGoals?.savedGoalEvents?.(match.number);if(ledger){events.push(...ledger);return{version:1,number:match.number,date:match.date,white:[...match.white],black:[...match.black],events,published:true,updatedAt:new Date().toISOString()}}const official=window.ChiquiGoals?.savedScorers?.(match.number);if(official&&['white','black'].every(team=>official.filter(x=>x.team===team).reduce((sum,x)=>sum+Number(x.goals||0),0)===Number(match[team+'Goals']||0))){official.forEach(x=>{for(let i=0;i<x.goals;i++)events.push(event(x.team,x.player))})}else for(const team of ['white','black'])for(let i=0;i<Number(match[team+'Goals']||0);i++)events.push(event(team));}
-  return{version:1,number:match.number,date:match.date,white:[...match.white],black:[...match.black],events,published:Boolean(match.played),updatedAt:new Date().toISOString()};
+  if(match.played){const ledger=window.ChiquiGoals?.savedGoalEvents?.(match.number);if(ledger){events.push(...ledger);return{version:1,participantCorrectionId,number:match.number,date:match.date,white:[...match.white],black:[...match.black],events,published:true,updatedAt:new Date().toISOString()}}const official=window.ChiquiGoals?.savedScorers?.(match.number);if(official&&['white','black'].every(team=>official.filter(x=>x.team===team).reduce((sum,x)=>sum+Number(x.goals||0),0)===Number(match[team+'Goals']||0))){official.forEach(x=>{for(let i=0;i<x.goals;i++)events.push(event(x.team,x.player))})}else for(const team of ['white','black'])for(let i=0;i<Number(match[team+'Goals']||0);i++)events.push(event(team));}
+  return{version:1,participantCorrectionId,number:match.number,date:match.date,white:[...match.white],black:[...match.black],events,published:Boolean(match.played),updatedAt:new Date().toISOString()};
  }
  function read(match){
   const raw=localStorage.getItem(key(match));if(!raw)return null;
   const saved=JSON.parse(raw);
   if(saved.version!==1||Number(saved.number)!==match.number||!Array.isArray(saved.white)||!Array.isArray(saved.black)||!Array.isArray(saved.events)||!saved.white.every(p=>typeof p==='string')||!saved.black.every(p=>typeof p==='string')||!saved.events.every(e=>e&&['white','black'].includes(e.team)&&typeof e.player==='string'))throw new Error('Las anotaciones guardadas no se pudieron leer. Podés reiniciarlas desde “Opciones del partido”.');
+  const correction=window.ChiquiGoals?.savedParticipantCorrection?.(match.number);
+  if(match.played&&saved.published&&correction&&saved.participantCorrectionId!==correction){const official=fresh(match);localStorage.setItem(key(match),JSON.stringify(official));return official}
   return saved;
  }
  function save(next){next.updatedAt=new Date().toISOString();localStorage.setItem(key(current),JSON.stringify(next));draft=next;}

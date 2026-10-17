@@ -31,6 +31,7 @@ function doPost(e) {
     if (body.action === 'deleteMvp') { requirePin_(body.pin); if(findMatchRecord_(body.matchNumber)) throw new Error('Esta fecha usa votación automática.'); deleteMvp_(body.matchNumber); return json_({ ok:true }); }
     if (body.action === 'listLineups') return json_({ ok:true, items:listRows_(LINEUP_SHEET_NAME,['matchNumber','date','white','black','updatedAt']) });
     if (body.action === 'saveLineup') { requirePin_(body.pin); return json_({ok:true,item:saveVotingLineup_(body.item)}); }
+    if (body.action === 'correctMatchParticipant') { requirePin_(body.pin); return json_({ok:true,item:correctMatchParticipant_(body.item)}); }
     if (body.action === 'listResults') return json_({ok:true,items:listResults_()});
     if (body.action === 'listDuels') return json_({ok:true,items:listDuels_()});
     if (body.action === 'saveDuel') { requirePin_(body.pin); return json_({ok:true,item:saveDuel_(body.item)}); }
@@ -79,8 +80,8 @@ function tournamentState_() {
   closeMvpVoting();
   return {
     ok: true,
-    version: '2026-10-17-mvp-19h-v1',
-    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true,substitutesV1:true},
+    version: '2026-10-17-correccion-jugador-v1',
+    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true,substitutesV1:true,participantCorrectionV1:true},
     automationReady: automationReady_(),
     serverNow: new Date().toISOString(),
     matchRecords: listMatchRecords_(),
@@ -586,7 +587,7 @@ function migrateMvpSchedule_() {
   if(properties.getProperty(flag)==='true')return;
   const revised=record=>{
     if(record.closed)return null;
-    let window;try{window=votingWindow_(record.matchDate)}catch{return null}
+    let window;try{window=votingWindow_(record.matchDate)}catch{try{window=votingWindow_(matchLineup_(record.matchNumber).date)}catch{return null}}
     return Date.parse(record.opensAt)===Date.parse(window.opensAt)+3600000&&Date.parse(record.closesAt)===Date.parse(window.closesAt)+3600000?window:null;
   };
   if(!rawMatchRecords_().some(revised)){properties.setProperty(flag,'true');return}
@@ -641,6 +642,63 @@ function saveVotingLineup_(item) {
     }
     const saved=saveLineup_(item);if(aligned)writeDuel_(aligned);return saved;
   });
+}
+
+// Correct a mistaken participant after publication without deleting the game or ballots.
+function correctMatchParticipant_(item) {
+  return locked_(()=>{
+    item=item||{};
+    const number=Number(item.matchNumber),outKey=participantKey_(item.outgoing),inKey=participantKey_(item.incoming);
+    if(!Number.isInteger(number)||number<1||!outKey||!inKey||outKey===inKey)throw new Error('Indicá la fecha, el jugador que no participó y su reemplazo.');
+    const lineup=matchLineup_(number),record=findMatchRecord_(number),result=listResults_().find(row=>Number(row.matchNumber)===number&&String(row.played)!=='false');
+    if(!record||!result)throw new Error('Esta corrección requiere un partido con resultado y goles oficiales.');
+    const iso=lineup.date instanceof Date?Utilities.formatDate(lineup.date,'America/Argentina/Buenos_Aires','yyyy-MM-dd'):String(lineup.date).slice(0,10);
+    if(item.expectedDate&&iso!==item.expectedDate)throw new Error('La fecha del partido no coincide. No se aplicó la corrección.');
+    if(item.expectedScore&&(Number(result.whiteGoals)!==Number(item.expectedScore.white)||Number(result.blackGoals)!==Number(item.expectedScore.black)))throw new Error('El marcador cambió. Revisá el partido antes de corregirlo.');
+    const all=[...lineup.white,...lineup.black],outgoing=all.find(name=>participantKey_(name)===outKey);
+    if(!outgoing){
+      if(all.some(name=>participantKey_(name)===inKey)&&(record.participantCorrections||[]).some(c=>participantKey_(c.outgoing)===outKey&&participantKey_(c.incoming)===inKey&&participantKey_(c.goalRecipient||'')===participantKey_(item.goalRecipient||'')))return{matchNumber:number,alreadyApplied:true};
+      throw new Error('El jugador que querés reemplazar ya no figura en los equipos.');
+    }
+    if(all.some(name=>participantKey_(name)===inKey))throw new Error('El reemplazo ya está en uno de los equipos.');
+    const incoming=listWebPlayers_().find(player=>player.status!=='deleted'&&participantKey_(player.name)===inKey)?.name;
+    if(!incoming)throw new Error('El reemplazo debe ser un jugador activo del torneo.');
+    const duel=rawDuels_().find(row=>Number(row.matchNumber)===number);
+    if(duel&&[duel.whitePlayer,duel.blackPlayer].some(name=>participantKey_(name)===outKey))throw new Error('Ese jugador es capitán de un desafío. Primero hay que resolver el desafío.');
+    const ballots=listMvpVotes_().filter(row=>Number(row.matchNumber)===number);
+    if(ballots.some(v=>participantKey_(v.player)===outKey||participantKey_(v.candidate)===outKey)||(record.mvpAwards||[]).some(a=>participantKey_(a.player)===outKey))throw new Error('El jugador figura en la votación de MVP. Revisá esos votos antes de corregir su participación.');
+    const side=lineup.white.some(name=>participantKey_(name)===outKey)?'white':'black';
+    const parse=value=>Array.isArray(value)?value:JSON.parse(value||'[]');
+    const nextLineup={matchNumber:number,date:lineup.date,white:lineup.white.map(name=>participantKey_(name)===outKey?incoming:name),black:lineup.black.map(name=>participantKey_(name)===outKey?incoming:name),substitutes:parse(lineup.substitutes).filter(name=>participantKey_(name)!==inKey)};
+    const goals=record.scorers.filter(row=>participantKey_(row.player)===outKey).reduce((n,row)=>n+Number(row.goals||0),0);
+    const goalRecipient=nextLineup[side].find(name=>participantKey_(name)===participantKey_(item.goalRecipient));
+    if(goals&&!goalRecipient)throw new Error('Indicá quién hizo los goles atribuidos al jugador ausente, dentro del mismo equipo.');
+    const recipientGoals=record.scorers.filter(row=>participantKey_(row.player)===participantKey_(goalRecipient)).reduce((n,row)=>n+Number(row.goals||0),0);
+    if(item.expectedOutgoingGoals!=null&&goals!==Number(item.expectedOutgoingGoals)||item.expectedRecipientGoals!=null&&recipientGoals!==Number(item.expectedRecipientGoals))throw new Error('Los goleadores cambiaron. Revisá su autoría antes de aplicar la corrección.');
+    if((record.assists||[]).some(row=>participantKey_(row.player)===outKey&&Number(row.assists)>0)||(record.goalEvents||[]).some(e=>participantKey_(e.assist)===outKey))throw new Error('El jugador ausente tiene asistencias anotadas. Corregí su autoría antes de reemplazarlo.');
+    const scorers=record.scorers.filter(row=>participantKey_(row.player)!==outKey).map(row=>({...row}));
+    if(goals){const recipient=scorers.find(row=>participantKey_(row.player)===participantKey_(goalRecipient));if(recipient)recipient.goals+=goals;else scorers.push({player:goalRecipient,team:side,goals})}
+    const validated=validateScorers_(scorers,nextLineup,Number(result.whiteGoals),Number(result.blackGoals));
+    let goalEvents;
+    if(Array.isArray(record.goalEvents)){
+      goalEvents=record.goalEvents.map(e=>participantKey_(e.player)===outKey?{...e,player:goalRecipient}:e);
+      goalEvents=validateGoalEvents_(goalEvents,nextLineup,validated,Number(result.whiteGoals),Number(result.blackGoals));
+    }
+    const revision=Utilities.getUuid(),correction={id:revision,outgoing,incoming,goalRecipient:goals?goalRecipient:'',goals,createdAt:new Date().toISOString()};
+    const nextRecord={...record,scorers:validated,scorerAwards:splitAward_(validated,0.5,row=>row.goals),participantCorrectionId:revision,participantCorrections:[...(record.participantCorrections||[]),correction]};
+    if(goalEvents){const assists=assistTotals_(goalEvents);Object.assign(nextRecord,{goalEvents,assists,assistAwards:splitAward_(assists,0.5,row=>row.assists)})}
+    const snapshots=[[MATCH_RECORDS_SHEET_NAME,number],[LINEUP_SHEET_NAME,number]].map(([name,n])=>{const sheet=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name),values=sheet.getDataRange().getValues(),index=values.findIndex((row,i)=>i>0&&Number(row[0])===n);return{sheet,index,row:values[index]}});
+    try{writeMatchRecord_(nextRecord);saveLineup_(nextLineup);SpreadsheetApp.flush()}catch(error){snapshots.forEach(s=>s.sheet.getRange(s.index+1,1,1,s.row.length).setValues([s.row]));SpreadsheetApp.flush();throw error}
+    return{matchNumber:number,correction,whiteGoals:Number(result.whiteGoals),blackGoals:Number(result.blackGoals)};
+  });
+}
+// One-time repair requested by the organizer. Run in the Apps Script editor.
+// Expected day and score prevent this helper from affecting a later season.
+function corregirFecha3DiegoPorNico() {
+  const result=correctMatchParticipant_({matchNumber:3,outgoing:'DIEGO',incoming:'NICO',goalRecipient:'AUGUSTO',expectedDate:'2026-10-17',expectedScore:{white:7,black:15},expectedOutgoingGoals:1,expectedRecipientGoals:4});
+  migrateMvpSchedule_();
+  console.log(result.alreadyApplied?'La corrección de la fecha 3 ya estaba aplicada.':'Fecha 3 corregida: Nico por Diego; el gol pasa a Augusto; resultado y votos conservados.');
+  return result;
 }
 
 // Duel points are derived from the current official score. Corrections replace the
