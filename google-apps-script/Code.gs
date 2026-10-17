@@ -16,7 +16,7 @@ function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents || '{}');
     if (body.action === 'submit') throw new Error('Los goles los registra el administrador. Usá Votación de MVP.');
-    if (body.action === 'voteMvp') return json_({ok:true,item:voteMvp_(body.item)});
+    if (body.action === 'voteMvp') { migrateMvpSchedule_(); return json_({ok:true,item:voteMvp_(body.item)}); }
     if (body.action === 'listMatchRecords') { closeMvpVoting(); return json_({ok:true,items:listMatchRecords_(),serverNow:new Date().toISOString()}); }
     if (body.action === 'listMvpVotes') { requirePin_(body.pin); closeMvpVoting(); return json_({ok:true,items:listMvpVotes_()}); }
     if (body.action === 'list') return json_({ ok: true, items: list_() });
@@ -35,7 +35,7 @@ function doPost(e) {
     if (body.action === 'listDuels') return json_({ok:true,items:listDuels_()});
     if (body.action === 'saveDuel') { requirePin_(body.pin); return json_({ok:true,item:saveDuel_(body.item)}); }
     if (body.action === 'deleteDuel') { requirePin_(body.pin); locked_(()=>deleteDuel_(body.matchNumber)); return json_({ok:true}); }
-    if (body.action === 'saveResult') { requirePin_(body.pin); return json_({ok:true,item:saveOfficialMatch_(body.item)}); }
+    if (body.action === 'saveResult') { requirePin_(body.pin); migrateMvpSchedule_(); return json_({ok:true,item:saveOfficialMatch_(body.item)}); }
     if (body.action === 'listSanctions') return json_({ok:true,items:listRows_(SANCTION_SHEET_NAME,['id','player','points','reason','createdAt'])});
     if (body.action === 'addSanction') { requirePin_(body.pin); return json_({ok:true,item:addSanction_(body.item)}); }
     if (body.action === 'deleteSanction') { requirePin_(body.pin); deleteRowById_(SANCTION_SHEET_NAME,body.id); return json_({ok:true}); }
@@ -79,7 +79,7 @@ function tournamentState_() {
   closeMvpVoting();
   return {
     ok: true,
-    version: '2026-10-16-suplentes-v1',
+    version: '2026-10-17-mvp-19h-v1',
     capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true,substitutesV1:true},
     automationReady: automationReady_(),
     serverNow: new Date().toISOString(),
@@ -492,7 +492,7 @@ function votingWindow_(value) {
   const day=new Date(iso+'T12:00:00Z');if(!iso||!Number.isFinite(day.getTime())||day.toISOString().slice(0,10)!==iso)throw new Error('Confirmá el día del partido antes de abrir la votación.');
   // Saturday of the match's Monday–Sunday week, in Argentine time (UTC−3).
   const weekday=day.getUTCDay();day.setUTCDate(day.getUTCDate()+(weekday===0?-1:6-weekday));
-  const opensAt=new Date(day.toISOString().slice(0,10)+'T20:00:00-03:00'),closesAt=new Date(opensAt.getTime()+48*60*60*1000);
+  const opensAt=new Date(day.toISOString().slice(0,10)+'T19:00:00-03:00'),closesAt=new Date(opensAt.getTime()+48*60*60*1000);
   return {opensAt:opensAt.toISOString(),closesAt:closesAt.toISOString()};
 }
 function validateScorers_(items,lineup,whiteGoals,blackGoals) {
@@ -567,7 +567,7 @@ function voteMvp_(item) {
     const number=Number(item.matchNumber),record=findMatchRecord_(number),now=Date.now();
     if(!record)throw new Error('Esta fecha todavía no tiene votación de MVP abierta.');
     if(record.closed||now>=Date.parse(record.closesAt))throw new Error('La votación de esta fecha ya terminó.');
-    if(now<Date.parse(record.opensAt))throw new Error('La votación abre el sábado a las 20:00.');
+    if(now<Date.parse(record.opensAt))throw new Error('La votación abre el sábado a las 19:00.');
     if(!listResults_().some(x=>Number(x.matchNumber)===number&&String(x.played)!=='false'))throw new Error('El partido todavía no tiene resultado publicado.');
     const lineup=matchLineup_(number),players=[...lineup.white,...lineup.black];
     const player=players.find(name=>participantKey_(name)===participantKey_(item.player)),candidate=players.find(name=>participantKey_(name)===participantKey_(item.candidate));
@@ -579,7 +579,25 @@ function voteMvp_(item) {
     SpreadsheetApp.flush();return saved;
   });
 }
+// Advance only unresolved windows created under the former 20:00 rule.
+// Ballots, completed MVPs and custom windows are preserved.
+function migrateMvpSchedule_() {
+  const properties=PropertiesService.getScriptProperties(),flag='MVP_WINDOW_19H_MIGRATED';
+  if(properties.getProperty(flag)==='true')return;
+  const revised=record=>{
+    if(record.closed)return null;
+    let window;try{window=votingWindow_(record.matchDate)}catch{return null}
+    return Date.parse(record.opensAt)===Date.parse(window.opensAt)+3600000&&Date.parse(record.closesAt)===Date.parse(window.closesAt)+3600000?window:null;
+  };
+  if(!rawMatchRecords_().some(revised)){properties.setProperty(flag,'true');return}
+  return locked_(()=>{
+    if(properties.getProperty(flag)==='true')return;
+    rawMatchRecords_().forEach(record=>{const window=revised(record);if(!window)return;Object.assign(record,window);writeMatchRecord_(record);if(automationReady_())scheduleVotingClose_(record)});
+    SpreadsheetApp.flush();properties.setProperty(flag,'true');
+  });
+}
 function closeMvpVoting() {
+  migrateMvpSchedule_();
   const due=record=>!record.closed&&Date.now()>=Date.parse(record.closesAt);
   if(!rawMatchRecords_().some(due))return;
   return locked_(()=>{
@@ -609,7 +627,7 @@ function setupTournamentAutomation() {
   const properties=PropertiesService.getScriptProperties(),id=properties.getProperty('MVP_PERIODIC_TRIGGER_ID');
   if(!ScriptApp.getProjectTriggers().some(t=>t.getUniqueId()===id)){const trigger=ScriptApp.newTrigger('closeMvpVoting').timeBased().everyMinutes(5).create();properties.setProperty('MVP_PERIODIC_TRIGGER_ID',trigger.getUniqueId())}
   PropertiesService.getScriptProperties().setProperty('MVP_AUTOMATION_READY','true');
-  rawMatchRecords_().forEach(scheduleVotingClose_);closeMvpVoting();
+  migrateMvpSchedule_();rawMatchRecords_().forEach(scheduleVotingClose_);closeMvpVoting();
 }
 
 function saveVotingLineup_(item) {
