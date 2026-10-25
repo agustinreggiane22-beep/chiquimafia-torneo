@@ -61,3 +61,23 @@ test('schedule change preserves closed historical records and leaves custom wind
 test('19:00 upgrade handles the long Date strings already stored by Apps Script',()=>{
  const b=fixture();publish(b,[]);const record=b.run('rawMatchRecords_')[0];record.matchDate='Sat Oct 03 2026 04:00:00 GMT-0300 (hora estándar de Argentina)';record.opensAt='2026-10-03T23:00:00.000Z';record.closesAt='2026-10-05T23:00:00.000Z';b.run('writeMatchRecord_',record);b.properties.delete('MVP_WINDOW_19H_MIGRATED');const revised=b.state().matchRecords[0];assert.equal(revised.opensAt,'2026-10-03T22:00:00.000Z');assert.equal(revised.closesAt,'2026-10-05T22:00:00.000Z');
 });
+test('published goal corrections compare calendar days across Sheet Dates and localized legacy strings without losing votes',()=>{
+ const b=fixture();assert(publish(b,[{player:'DIEGO',team:'white',goals:1},{player:'LUCAS',team:'black',goals:2}]).ok);assert(vote(b,'LORIA','DIEGO').ok);
+ const old=b.run('rawMatchRecords_')[0];old.matchDate='Sat Oct 03 2026 04:00:00 GMT-0300 (hora estándar de Argentina)';b.run('writeMatchRecord_',old);
+ const lineup=b.sheets.get('Equipos Web');assert(lineup);lineup.rows[1][1]=new b.context.Date('2026-10-03T07:00:00Z');
+ const ballots=b.call('listMvpVotes',{pin:'test-pin'}).items;
+ assert(publish(b,[{player:'DIEGO',team:'white',goals:4},{player:'LUCAS',team:'black',goals:2}]).ok);
+ const corrected=b.state().matchRecords[0];assert.equal(corrected.matchDate,'2026-10-03');assert.equal(corrected.scorers.find(x=>x.player==='DIEGO').goals,4);assert.equal(corrected.opensAt,old.opensAt);assert.equal(corrected.closesAt,old.closesAt);assert.deepEqual(b.call('listMvpVotes',{pin:'test-pin'}).items,ballots);
+ lineup.rows[1][1]=new b.context.Date('2026-10-04T07:00:00Z');const before=b.state();const refused=publish(b,[{player:'DIEGO',team:'white',goals:5},{player:'LUCAS',team:'black',goals:2}]);assert.equal(refused.ok,false);assert(refused.error.includes('cambiar su día'));assert.deepEqual(b.state().results,before.results);assert.deepEqual(b.state().matchRecords,before.matchRecords);
+});
+test('date 4 correction adds three Diego goals, keeps existing events and ballots, and is idempotent',()=>{
+ const b=createBackend({},'2026-10-25T23:30:00Z'),white=['GONZA','AGUSREGGI','MATI BILLO','LIHUEL','KEVIN','LUCAS','VALEN','NAHUEL'],black=['MATU','DIEGO','AUGUSTO','LUCHO','DARIO','PABLO','AXEL','NACHO'];
+ const scorers=[['NAHUEL','white',5],['KEVIN','white',1],['LIHUEL','white',2],['MATI BILLO','white',4],['GONZA','white',2],['MATU','black',1],['DIEGO','black',1],['AUGUSTO','black',5],['LUCHO','black',4],['PABLO','black',2],['AXEL','black',2],['NACHO','black',2]].map(([player,team,goals])=>({player,team,goals}));
+ const record={matchDate:'Sat Oct 24 2026 04:00:00 GMT-0300 (hora estándar de Argentina)',scorers,goalEvents:scorers.flatMap(r=>Array.from({length:r.goals},(_,i)=>({id:r.player+i,team:r.team,player:r.player,assist:null,assistDecision:'none'}))),scorerAwards:[{player:'NAHUEL',points:.25},{player:'AUGUSTO',points:.25}],closesAt:'2026-10-26T22:00:00.000Z'};
+ assert(b.call('saveLineup',{pin:'test-pin',item:{matchNumber:4,date:'2026-10-24',white,black}}).ok);
+ assert(b.call('saveResult',{pin:'test-pin',item:{matchNumber:4,whiteGoals:14,blackGoals:17,scorers:record.scorers,goalEvents:record.goalEvents}}).ok);assert(b.call('voteMvp',{item:{matchNumber:4,player:'MATU',candidate:'LUCHO'}}).ok);
+ const old=b.run('rawMatchRecords_')[0];old.matchDate=record.matchDate;b.run('writeMatchRecord_',old);b.sheets.get('Equipos Web').rows[1][1]=new b.context.Date('2026-10-24T07:00:00Z');
+ const item={matchNumber:4,whiteGoals:14,blackGoals:20,scorers:record.scorers.map(r=>r.player==='DIEGO'?{...r,goals:4}:r),goalEvents:[...record.goalEvents,...Array.from({length:3},(_,i)=>({id:'missing-diego-'+i,team:'black',player:'DIEGO',assist:null,assistDecision:'pending'}))]};
+ assert(b.call('saveResult',{pin:'test-pin',item}).ok);assert(b.call('saveResult',{pin:'test-pin',item}).ok);
+ const after=b.state();assert.equal(after.results.length,1);assert.equal(after.results[0].blackGoals,20);assert.equal(after.matchRecords[0].goalEvents.length,34);assert.deepEqual(after.matchRecords[0].goalEvents.slice(0,31),record.goalEvents);assert.equal(after.matchRecords[0].scorers.find(r=>r.player==='DIEGO').goals,4);assert.deepEqual(after.matchRecords[0].scorerAwards,record.scorerAwards);assert.equal(b.call('listMvpVotes',{pin:'test-pin'}).items.length,1);assert.equal(after.matchRecords[0].closesAt,record.closesAt);
+});

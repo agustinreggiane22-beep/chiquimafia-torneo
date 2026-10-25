@@ -80,7 +80,7 @@ function tournamentState_() {
   closeMvpVoting();
   return {
     ok: true,
-    version: '2026-10-17-correccion-jugador-v1',
+    version: '2026-10-25-correccion-goles-v1',
     capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true,substitutesV1:true,participantCorrectionV1:true},
     automationReady: automationReady_(),
     serverNow: new Date().toISOString(),
@@ -483,14 +483,20 @@ function listMatchRecords_() {
     return {...record,closed:Boolean(record.closed),mvpAwards:record.closed?record.mvpAwards||[]:[],voteCount:record.closed?Number(record.voteCount||0):null,voteProgress};
   });
 }
-function votingWindow_(value) {
+function matchDay_(value) {
   let iso;
   if(value instanceof Date)iso=Utilities.formatDate(value,'America/Argentina/Buenos_Aires','yyyy-MM-dd');
   else {
     const raw=String(value||'').trim(),match=raw.match(/^(\d{4}-\d{2}-\d{2})/),parts=raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
     iso=match?match[1]:parts?parts[3]+'-'+parts[2].padStart(2,'0')+'-'+parts[1].padStart(2,'0'):'';
+    // Existing records contain Date.toString() with a localized timezone suffix.
+    if(!iso&&/^[A-Za-z]{3} [A-Za-z]{3} \d{1,2} \d{4} /.test(raw)){const parsed=new Date(raw.replace(/\s*\([^)]*\)\s*$/,''));if(Number.isFinite(parsed.getTime()))iso=Utilities.formatDate(parsed,'America/Argentina/Buenos_Aires','yyyy-MM-dd')}
   }
   const day=new Date(iso+'T12:00:00Z');if(!iso||!Number.isFinite(day.getTime())||day.toISOString().slice(0,10)!==iso)throw new Error('Confirmá el día del partido antes de abrir la votación.');
+  return iso;
+}
+function votingWindow_(value) {
+  const iso=matchDay_(value),day=new Date(iso+'T12:00:00Z');
   // Saturday of the match's Monday–Sunday week, in Argentine time (UTC−3).
   const weekday=day.getUTCDay();day.setUTCDate(day.getUTCDate()+(weekday===0?-1:6-weekday));
   const opensAt=new Date(day.toISOString().slice(0,10)+'T19:00:00-03:00'),closesAt=new Date(opensAt.getTime()+48*60*60*1000);
@@ -552,10 +558,10 @@ function saveOfficialMatch_(item) {
     else if(Array.isArray(existing?.goalEvents))goalEvents=validateGoalEvents_(existing.goalEvents,lineup,scorers,whiteGoals,blackGoals);
     const assists=assistTotals_(goalEvents);
     const window=votingWindow_(lineup.date),hasVotes=listMvpVotes_().some(v=>Number(v.matchNumber)===number);
-    if(existing&&existing.matchDate!==String(lineup.date)&&hasVotes)throw new Error('Esta fecha ya tiene votos. No se puede cambiar su día al publicar.');
+    if(existing&&matchDay_(existing.matchDate)!==matchDay_(lineup.date)&&hasVotes)throw new Error('Esta fecha ya tiene votos. No se puede cambiar su día al publicar.');
     const legacyAwards=!existing&&oldResult?listLegacyMvp_().filter(a=>Number(a.matchNumber)===number):[];
     const initial=legacyAwards.length?{...window,closed:true,closedAt:legacyAwards[0].confirmedAt,mvpAwards:legacyAwards.map(a=>({player:a.player,points:Number(a.points??1)})),voteCount:0,legacyMvp:true}:{...window,closed:false,mvpAwards:[],voteCount:0};
-    const record={...(existing||{}),matchNumber:number,matchDate:String(lineup.date),scorers,scorerAwards:splitAward_(scorers,0.5,x=>x.goals),...(goalEvents?{goalEvents,assists,assistAwards:splitAward_(assists,0.5,x=>x.assists)}:{}),...(existing?{}:initial)};
+    const record={...(existing||{}),matchNumber:number,matchDate:matchDay_(lineup.date),scorers,scorerAwards:splitAward_(scorers,0.5,x=>x.goals),...(goalEvents?{goalEvents,assists,assistAwards:splitAward_(assists,0.5,x=>x.assists)}:{}),...(existing?{}:initial)};
     const saved=saveResult_(item);writeMatchRecord_(record);if(alignedDuel)writeDuel_(alignedDuel);SpreadsheetApp.flush();
     if(automationReady_())scheduleVotingClose_(record);
     return {...saved,scorers};
