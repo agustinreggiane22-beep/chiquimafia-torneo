@@ -176,3 +176,14 @@ El inicio usa tarjetas claras fijas que enlazan a los rankings y a clasificació
 ### Actualizar estilos
 
 Después de editar un archivo fuente en `css/`, ejecutá `node scripts/build-styles.cjs`. La página carga el archivo generado `css/site.css`, que conserva el orden de los estilos y sus rutas. Al publicarlo, cambiá su versión en `index.html` para renovar la caché.
+
+
+### Anotador compartido y modo horizontal
+
+En celulares de costado, el marcador ocupa toda la pantalla y agranda jugadores y pases de gol. Los estilos fuente siguen compilándose con `node scripts/build-styles.cjs`.
+
+El acceso compartido requiere implementar el código completo de `google-apps-script/Code.gs` (también disponible en `Code-Apps-Script.txt`). `actualizar-anotador-compartido.html` contiene los pasos para el organizador. Desde un partido sin publicar, el administrador crea un enlace que permite anotar solo ese partido, sin revelar el PIN. Los dos dispositivos pueden editar ambos equipos. El registro compartido se guarda separado de los resultados y de los votos, en `Marcador Compartido Web`.
+
+Cada cambio tiene un identificador persistente y se aplica bajo bloqueo; reintentar una petición no vuelve a sumar el gol. Las ediciones de un mismo gol usan revisiones para detectar conflictos. Los pendientes se guardan en cada dispositivo y se combinan con el registro del servidor al reconectar. Antes de publicar, ambos anotadores deben terminar de sincronizar; el administrador revisa y confirma el resultado. Una publicación con anotaciones distintas de las compartidas se rechaza. Publicar cierra el acceso de escritura del enlace.
+
+Pruebas específicas: `node --test tests/shared-score-backend.test.cjs`, `CHIQUI_TEST_URL=http://127.0.0.1:8000/ node tests/live-score-landscape.cjs` y `CHIQUI_TEST_URL=http://127.0.0.1:8000/ node tests/shared-score-flow.cjs`. Las pruebas usan Google simulado y no modifican el torneo real.

@@ -15,6 +15,9 @@ const DUELS_SHEET_NAME = 'Desafios Web';
 function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents || '{}');
+    if(body.action==='createLiveSession'){requirePin_(body.pin);return json_({ok:true,...createLiveSession_(body.item)})}
+    if(body.action==='getLiveSession')return json_({ok:true,session:getLiveSession_(body.token)});
+    if(body.action==='applyLiveOperation')return json_({ok:true,session:applyLiveOperation_(body.token,body.operation)});
     if (body.action === 'submit') throw new Error('Los goles los registra el administrador. Usá Votación de MVP.');
     if (body.action === 'voteMvp') { migrateMvpSchedule_(); return json_({ok:true,item:voteMvp_(body.item)}); }
     if (body.action === 'listMatchRecords') { closeMvpVoting(); return json_({ok:true,items:listMatchRecords_(),serverNow:new Date().toISOString()}); }
@@ -80,8 +83,8 @@ function tournamentState_() {
   closeMvpVoting();
   return {
     ok: true,
-    version: '2026-10-25-correccion-goles-v1',
-    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true,substitutesV1:true,participantCorrectionV1:true},
+    version: '2026-10-25-anotador-compartido-v1',
+    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true,substitutesV1:true,participantCorrectionV1:true,sharedLiveV1:true},
     automationReady: automationReady_(),
     serverNow: new Date().toISOString(),
     matchRecords: listMatchRecords_(),
@@ -366,7 +369,7 @@ function savePlayoff_(item) {
 function resetSeason_(seasonName) {
   const book = SpreadsheetApp.getActiveSpreadsheet(), label = String(seasonName || 'Temporada').trim().slice(0,35);
   saveSeasonHistory_(label);
-  const names = [SHEET_NAME,MVP_SHEET_NAME,LINEUP_SHEET_NAME,SANCTION_SHEET_NAME,RESULTS_SHEET_NAME,PLAYOFF_SHEET_NAME,DELETED_DATES_SHEET_NAME,MATCH_RECORDS_SHEET_NAME,MVP_VOTES_SHEET_NAME,DUELS_SHEET_NAME];
+  const names = [SHEET_NAME,MVP_SHEET_NAME,LINEUP_SHEET_NAME,SANCTION_SHEET_NAME,RESULTS_SHEET_NAME,PLAYOFF_SHEET_NAME,DELETED_DATES_SHEET_NAME,MATCH_RECORDS_SHEET_NAME,MVP_VOTES_SHEET_NAME,DUELS_SHEET_NAME,LIVE_SESSIONS_SHEET_NAME];
   names.forEach(name => {
     const sheet = book.getSheetByName(name);
     if (!sheet) return;
@@ -556,13 +559,15 @@ function saveOfficialMatch_(item) {
     let goalEvents;
     if(Array.isArray(item.goalEvents))goalEvents=validateGoalEvents_(item.goalEvents,lineup,scorers,whiteGoals,blackGoals);
     else if(Array.isArray(existing?.goalEvents))goalEvents=validateGoalEvents_(existing.goalEvents,lineup,scorers,whiteGoals,blackGoals);
+    const shared=rawLiveSessions_().find(s=>s.matchNumber===number&&!s.closed&&s.lineupKey===liveLineupKey_(lineup));
+    if(shared&&JSON.stringify(goalEvents)!==JSON.stringify(shared.events.map(e=>normalizeLiveEvent_(e,lineup))))throw new Error('Hay cambios en el anotador compartido. Abrilo, sincronizá y volvé a revisar el resultado antes de publicarlo.');
     const assists=assistTotals_(goalEvents);
     const window=votingWindow_(lineup.date),hasVotes=listMvpVotes_().some(v=>Number(v.matchNumber)===number);
     if(existing&&matchDay_(existing.matchDate)!==matchDay_(lineup.date)&&hasVotes)throw new Error('Esta fecha ya tiene votos. No se puede cambiar su día al publicar.');
     const legacyAwards=!existing&&oldResult?listLegacyMvp_().filter(a=>Number(a.matchNumber)===number):[];
     const initial=legacyAwards.length?{...window,closed:true,closedAt:legacyAwards[0].confirmedAt,mvpAwards:legacyAwards.map(a=>({player:a.player,points:Number(a.points??1)})),voteCount:0,legacyMvp:true}:{...window,closed:false,mvpAwards:[],voteCount:0};
     const record={...(existing||{}),matchNumber:number,matchDate:matchDay_(lineup.date),scorers,scorerAwards:splitAward_(scorers,0.5,x=>x.goals),...(goalEvents?{goalEvents,assists,assistAwards:splitAward_(assists,0.5,x=>x.assists)}:{}),...(existing?{}:initial)};
-    const saved=saveResult_(item);writeMatchRecord_(record);if(alignedDuel)writeDuel_(alignedDuel);SpreadsheetApp.flush();
+    const saved=saveResult_(item);writeMatchRecord_(record);if(shared){shared.closed=true;writeLiveSession_(shared)}if(alignedDuel)writeDuel_(alignedDuel);SpreadsheetApp.flush();
     if(automationReady_())scheduleVotingClose_(record);
     return {...saved,scorers};
   });
@@ -757,3 +762,66 @@ function writeDuel_(duel){
   const sheet=genericSheet_(DUELS_SHEET_NAME,['matchNumber','whitePlayer','blackPlayer','challengedPlayer','updatedAt']),values=sheet.getDataRange().getValues(),index=values.findIndex((row,i)=>i>0&&Number(row[0])===Number(duel.matchNumber)),row=[Number(duel.matchNumber),duel.whitePlayer,duel.blackPlayer,duel.challengedPlayer,new Date().toISOString()];
   if(index>=0)sheet.getRange(index+1,1,1,row.length).setValues([row]);else sheet.appendRow(row);
 }
+
+// Shared live notes are separate from official results and private MVP ballots.
+const LIVE_SESSIONS_SHEET_NAME='Marcador Compartido Web';
+function rawLiveSessions_(){return listRows_(LIVE_SESSIONS_SHEET_NAME,['id','record','updatedAt']).map(row=>JSON.parse(row.record))}
+function writeLiveSession_(session){
+  session.updatedAt=new Date().toISOString();const serialized=JSON.stringify(session);
+  if(serialized.length>45000)throw new Error('El registro compartido alcanzó su límite. Conservá las anotaciones y revisá el partido con el administrador.');
+  const sheet=genericSheet_(LIVE_SESSIONS_SHEET_NAME,['id','record','updatedAt']),rows=sheet.getDataRange().getValues(),index=rows.findIndex((r,i)=>i>0&&r[0]===session.id),row=[session.id,serialized,session.updatedAt];
+  if(index>=0)sheet.getRange(index+1,1,1,3).setValues([row]);else sheet.appendRow(row);
+}
+function liveLineupKey_(lineup){return JSON.stringify([matchDay_(lineup.date),lineup.white,lineup.black])}
+function liveSessionForToken_(token){
+  if(typeof token!=='string'||token.length>160)throw new Error('El enlace del anotador no es válido.');
+  const session=rawLiveSessions_().find(s=>s.id+'.'+s.secret===token);
+  if(!session)throw new Error('El enlace del anotador no es válido o ya no está disponible.');
+  if(liveLineupKey_(matchLineup_(session.matchNumber))!==session.lineupKey)throw new Error('Los equipos de este partido cambiaron. Pedile al administrador un enlace nuevo.');
+  return session;
+}
+function publicLiveSession_(session){
+  const result=listResults_().find(r=>Number(r.matchNumber)===session.matchNumber&&String(r.played)!=='false');
+  return {id:session.id,matchNumber:session.matchNumber,date:session.date,white:session.white,black:session.black,events:session.events,closed:Boolean(session.closed||result),updatedAt:session.updatedAt};
+}
+function normalizeLiveEvent_(event,lineup){
+  if(!event||typeof event.id!=='string'||!event.id||event.id.length>100||!['white','black'].includes(event.team))throw new Error('La anotación de gol no es válida.');
+  const player=event.player?lineup[event.team].find(p=>participantKey_(p)===participantKey_(event.player)):'';
+  if(event.player&&!player)throw new Error('El goleador no pertenece a ese equipo.');
+  const assist=event.assist?lineup[event.team].find(p=>participantKey_(p)===participantKey_(event.assist)):null;
+  if(event.assist&&(!player||!assist||participantKey_(assist)===participantKey_(player)))throw new Error('La asistencia debe ser de otro jugador del mismo equipo.');
+  return {id:event.id,team:event.team,player,assist:assist||null,assistDecision:assist?'assigned':event.assistDecision==='none'?'none':'pending'};
+}
+function createLiveSession_(item){return locked_(()=>{
+  const number=Number(item&&item.matchNumber),lineup=matchLineup_(number);
+  if(listResults_().some(r=>Number(r.matchNumber)===number&&String(r.played)!=='false'))throw new Error('El partido ya está publicado. El anotador compartido se abre antes de publicar el resultado.');
+  const lineupKey=liveLineupKey_(lineup),sessions=rawLiveSessions_(),existing=sessions.find(s=>s.matchNumber===number&&!s.closed&&s.lineupKey===lineupKey);
+  if(existing)return {token:existing.id+'.'+existing.secret,session:publicLiveSession_(existing)};
+  if(!Array.isArray(item.events))throw new Error('No se pudieron leer las anotaciones del partido.');
+  const seen=new Set(),events=item.events.map(e=>{const clean=normalizeLiveEvent_(e,lineup);if(seen.has(clean.id))throw new Error('Hay un gol repetido.');seen.add(clean.id);return {...clean,revision:0}});
+  const session={id:Utilities.getUuid(),secret:Utilities.getUuid()+Utilities.getUuid(),matchNumber:number,date:matchDay_(lineup.date),lineupKey,white:lineup.white,black:lineup.black,events,applied:[],closed:false};
+  writeLiveSession_(session);return {token:session.id+'.'+session.secret,session:publicLiveSession_(session)};
+})}
+function getLiveSession_(token){return publicLiveSession_(liveSessionForToken_(token))}
+function applyLiveOperation_(token,op){return locked_(()=>{
+  const session=liveSessionForToken_(token),lineup={white:session.white,black:session.black};
+  if(!op||typeof op.id!=='string'||!op.id||op.id.length>100)throw new Error('El cambio del anotador no es válido.');
+  // A timed-out request can be retried, including after the official publication.
+  if(session.applied.includes(op.id))return publicLiveSession_(session);
+  if(publicLiveSession_(session).closed)throw new Error('El resultado ya fue publicado. El administrador debe revisar cualquier anotación pendiente.');
+  if(op.type==='add'){
+    const goal=normalizeLiveEvent_(op.event,lineup);
+    if(session.events.some(e=>e.id===goal.id))throw new Error('Ese gol ya figura en el partido.');
+    session.events.push({...goal,revision:0});
+  }else{
+    const index=session.events.findIndex(e=>e.id===op.eventId),goal=session.events[index];
+    if(!goal)throw new Error('Ese gol ya fue eliminado por la otra persona.');
+    if(Number(op.expectedRevision)!==goal.revision)throw new Error('La otra persona modificó este gol. Revisá la versión compartida antes de cambiarlo.');
+    if(op.type==='remove')session.events.splice(index,1);
+    else if(op.type==='assist')session.events[index]={...normalizeLiveEvent_({...goal,assist:op.player||null,assistDecision:op.player?'assigned':'none'},lineup),revision:goal.revision+1};
+    else if(op.type==='assign')session.events[index]={...normalizeLiveEvent_({...goal,player:op.player,assist:goal.assist===op.player?null:goal.assist,assistDecision:goal.assist===op.player?'pending':goal.assistDecision},lineup),revision:goal.revision+1};
+    else throw new Error('Ese cambio no está permitido en el anotador compartido.');
+  }
+  session.applied.push(op.id); // Retained for the entire match: retries never duplicate a goal.
+  writeLiveSession_(session);return publicLiveSession_(session);
+})}

@@ -8,7 +8,7 @@
   <title>CHIQUIMAFIA TORNEO</title>
   <link rel="preload" href="assets/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/barlow-condensed-900.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/site.css?v=2026101604">
+  <link rel="stylesheet" href="css/site.css?v=2026102502">
 </head>
 <body>
   <div class="page-background" aria-hidden="true"></div>
@@ -153,8 +153,10 @@
     </main>
     <footer><strong>CHIQUIMAFIA TORNEO</strong><span>Datos sincronizados desde Google Sheets</span></footer>
   </div>
+  <aside id="sharedReentry" class="shared-reentry" hidden><span>Anotador compartido</span><button id="reopenSharedScore" type="button">Abrir marcador</button><span id="sharedJoinError" role="status"></span></aside>
   <dialog id="liveScoreDialog" aria-labelledby="liveScoreTitle">
-    <header class="live-score-header"><div><h2 id="liveScoreTitle">Marcador del partido</h2><span id="liveScoreSaveStatus">Guardado en este celular</span></div><button id="closeLiveScore" type="button">Cerrar</button></header>
+    <header class="live-score-header"><div><h2 id="liveScoreTitle">Marcador del partido</h2><span id="liveScoreSaveStatus">Guardado en este celular</span></div><div class="live-score-header-actions"><button id="shareLiveScore" type="button" hidden>Compartir anotador</button><button id="closeLiveScore" type="button">Cerrar</button></div></header>
+    <div id="sharedSessionBar" class="shared-session-bar" hidden><span id="sharedSyncStatus" role="status"></span><input id="sharedLink" readonly aria-label="Enlace del anotador compartido"><button id="sharedCopyLink" type="button">Copiar enlace</button><button id="sharedSync" type="button">Sincronizar</button><button id="sharedResolve" type="button" hidden>Usar versión compartida</button></div>
     <div class="live-score-content"><label class="live-match-label">Partido<select id="liveMatchSelect" aria-label="Partido del marcador en vivo"></select></label>
       <div class="live-scoreboard" aria-live="polite" aria-atomic="true"><div><small>⚪ Claro</small><strong id="liveWhiteScore">0</strong></div><span aria-hidden="true">—</span><div><small>⚫ Oscuro</small><strong id="liveBlackScore">0</strong></div></div>
       <p id="liveLastGoal">Tocá al jugador que hizo el gol.</p>
@@ -167,8 +169,9 @@
   <dialog id="teamPlayerPicker" aria-labelledby="teamPickerTitle"><header class="team-picker-header"><h3 id="teamPickerTitle">Elegir jugador</h3><button id="closeTeamPicker" type="button" aria-label="Cerrar lista de jugadores">×</button></header><p id="teamPickerSide" class="admin-help"></p><input id="teamPickerSearch" type="search" placeholder="Buscar jugador" aria-label="Buscar jugador" autocomplete="off"><div id="teamPickerChoices" class="team-picker-choices"></div><details id="teamPickerGuestDetails"><summary>Agregar un invitado</summary><form id="teamPickerGuestForm"><input id="teamPickerGuest" maxlength="50" placeholder="Nombre del invitado" aria-label="Nombre del invitado" required><button type="submit">Elegir invitado</button></form></details><p id="teamPickerMessage" class="form-message error" role="status"></p><button id="cancelTeamPicker" class="secondary-admin-button" type="button">Cancelar</button></dialog>
   <script src="js/config.js?v=2026072707"></script>
   <script src="js/sheets.js?v=2026101601"></script>
-  <script src="js/goals.js?v=2026101702"></script>
-  <script src="js/live-score.js?v=2026101702"></script>
+  <script src="js/goals.js?v=2026102502"></script>
+  <script src="js/shared-score.js?v=2026102502"></script>
+  <script src="js/live-score.js?v=2026102502"></script>
   <script src="js/mvp-voting.js?v=2026100936"></script>
   <script src="js/player-experience.js?v=2026101415"></script>
   <script src="js/app.js?v=2026101604"></script>
