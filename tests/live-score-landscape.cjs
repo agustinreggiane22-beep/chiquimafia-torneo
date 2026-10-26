@@ -9,6 +9,13 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),{cre
   await page.route('https://script.google.com/**',route=>{const request=route.request();if(request.method()==='GET')return route.fulfill({json:backend.state()});const body=JSON.parse(request.postData());return route.fulfill({json:backend.call(body.action,body)})});
   const load=async()=>{await page.goto(process.env.CHIQUI_TEST_URL||'http://127.0.0.1:8096/');await page.waitForFunction(()=>document.querySelector('#syncStatus').textContent==='En vivo')};
   await load();await page.locator('#adminPin').fill('test-pin');await page.locator('#adminLoginForm button').click();await page.waitForFunction(()=>!document.querySelector('#adminPanel').hidden);await page.locator('#openLiveScore').click();
+  for(const size of [{width:390,height:844},{width:768,height:1024},{width:1440,height:900}]){
+   await page.setViewportSize(size);const box=await page.locator('#liveScoreDialog').boundingBox();assert.equal(Math.round(box.x),0);assert.equal(Math.round(box.y),0);assert.equal(Math.round(box.width),size.width);assert.equal(Math.round(box.height),size.height);
+  }
+  await page.setViewportSize({width:390,height:844});
+  assert(await page.locator('#liveFullscreen').isVisible());await page.locator('#liveFullscreen').click();await page.waitForFunction(()=>document.fullscreenElement===document.documentElement);assert(await page.locator('#liveScoreDialog').isVisible());assert.equal(await page.locator('#liveFullscreen').getAttribute('aria-label'),'Salir de pantalla completa');
+  await page.locator('#closeLiveScore').click();await page.waitForFunction(()=>!document.fullscreenElement);await page.locator('#openLiveScore').click();
+  await page.evaluate(()=>Object.defineProperty(document,'fullscreenEnabled',{configurable:true,value:false}));await page.locator('#closeLiveScore').click();await page.locator('#openLiveScore').click();assert(await page.locator('#liveFullscreen').isHidden());assert(await page.locator('#liveScoreDialog').isVisible());await page.evaluate(()=>delete document.fullscreenEnabled);
   const normalFont=await page.locator('#liveWhitePlayers .live-player span').first().evaluate(e=>parseFloat(getComputedStyle(e).fontSize));
   for(const size of [{width:667,height:375},{width:844,height:390},{width:932,height:430},{width:1024,height:600}]){
    await page.setViewportSize(size);
@@ -24,6 +31,6 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),{cre
   await page.setViewportSize({width:844,height:390});await page.locator('#liveBlackPlayers .live-player').filter({hasText:'KEVIN'}).click();await page.locator('#liveSoloGoal').click();assert.equal(await page.locator('#liveBlackScore').textContent(),'1');
   await page.screenshot({path:'/tmp/chiqui-landscape-score.png'});
   await context.setOffline(false);await page.locator('#closeLiveScore').click();await load();await page.locator('#openLiveScore').click();assert.equal(await page.locator('#liveWhiteScore').textContent(),'1');assert.equal(await page.locator('#liveBlackScore').textContent(),'1');assert.deepEqual(errors,[]);
-  console.log('PASS: four landscape sizes use full screen and larger targets; last player reachable; assist choices enlarged; portrait/landscape rotation and offline entry preserve goals and passes after reload. No real writes.');
+  console.log('PASS: portrait, tablet and desktop fill the viewport; native fullscreen enters/exits and unsupported browsers retain the recorder; four landscape sizes keep larger targets; last player reachable; assist choices enlarged; portrait/landscape rotation and offline entry preserve goals and passes after reload. No real writes.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

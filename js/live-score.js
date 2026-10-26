@@ -3,7 +3,7 @@
  const $=selector=>document.querySelector(selector),dialog=$('#liveScoreDialog');
  if(!dialog)return;
  const PREFIX='chiquimafia_live_score_v1:',esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
- let matches=[],current=null,draft=null,wakeLock=null,assistEvent=null,joining=false;
+ let matches=[],current=null,draft=null,wakeLock=null,assistEvent=null,joining=false,ownsFullscreen=false;
  const shared=window.ChiquiSharedScore;
  const adminAuthorized=()=>!$('#adminPanel').hidden&&Boolean(sessionStorage.getItem('chiqui_admin_pin'));
  const authorized=()=>adminAuthorized()||Boolean(shared?.active());
@@ -77,7 +77,14 @@
   if(!dialog.open||document.visibilityState!=='visible'||!navigator.wakeLock?.request||wakeLock)return;
   try{const lock=await navigator.wakeLock.request('screen');if(!dialog.open){await lock.release();return}wakeLock=lock;lock.addEventListener('release',()=>{if(wakeLock===lock)wakeLock=null})}catch{}
  }
- function open(){if(!authorized()||!matches.length)return;loadSelected();dialog.showModal();document.body.classList.add('live-score-open');keepAwake();}
+ function updateFullscreen(){const button=$('#liveFullscreen');button.hidden=!document.fullscreenEnabled||typeof document.documentElement.requestFullscreen!=='function';const label=document.fullscreenElement?'Salir de pantalla completa':'Usar pantalla completa';button.setAttribute('aria-label',label);button.title=label;if(!document.fullscreenElement)ownsFullscreen=false}
+ async function toggleFullscreen(){
+  try{if(document.fullscreenElement)await document.exitFullscreen();else{await document.documentElement.requestFullscreen();ownsFullscreen=true}}catch{message('El navegador no permite ocultar sus barras. El anotador sigue ocupando todo el espacio disponible.',true)}
+  updateFullscreen();
+ }
+ $('#liveFullscreen').addEventListener('click',toggleFullscreen);
+ document.addEventListener('fullscreenchange',updateFullscreen);
+ function open(){if(!authorized()||!matches.length)return;loadSelected();dialog.showModal();document.body.classList.add('live-score-open');updateFullscreen();keepAwake();}
  function close(){if(dialog.open)dialog.close();}
  function chooseAssist(id){
   if(!authorized()||!draft||draft.published||!ChiquiGoals.supportsAssists())return;
@@ -136,7 +143,7 @@
  $('#openLiveScore').addEventListener('click',open);$('#closeLiveScore').addEventListener('click',close);
  $('#liveMatchSelect').addEventListener('change',loadSelected);$('#liveUndo').addEventListener('click',undo);$('#liveReview').addEventListener('click',review);$('#liveReset').addEventListener('click',restart);$('#liveReopen').addEventListener('click',reopen);
  $('#livePlayers').addEventListener('click',e=>{const button=e.target.closest('button[data-team]');if(!button||button.disabled||!draft)return;const team=button.dataset.team,player=button.dataset.unknown?'':draft[team][Number(button.dataset.index)];if(typeof player==='string')add(team,player)});
- dialog.addEventListener('close',()=>{document.body.classList.remove('live-score-open');const lock=wakeLock;wakeLock=null;lock?.release().catch(()=>{})});
+ dialog.addEventListener('close',()=>{if(ownsFullscreen&&document.fullscreenElement){ownsFullscreen=false;document.exitFullscreen().catch(()=>{})}document.body.classList.remove('live-score-open');const lock=wakeLock;wakeLock=null;lock?.release().catch(()=>{})});
  document.addEventListener('visibilitychange',keepAwake);
  window.addEventListener('storage',e=>{if(dialog.open&&current&&e.key===key(current))loadSelected()});
  new MutationObserver(()=>{if(!authorized())close();else if(dialog.open)render()}).observe($('#adminPanel'),{attributes:true,attributeFilter:['hidden']});
