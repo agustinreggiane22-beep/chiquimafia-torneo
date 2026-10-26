@@ -2,20 +2,22 @@
  'use strict';
  const $=s=>document.querySelector(s),parser=window.ChiquiVoiceParser,KEY='chiquimafia_voice_demo_v1',Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
  let goals=[],candidate=null,recognition=null,timer=null;
+ const displayName=parser.displayName;
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
  const status=(text,error=false)=>{$('#status').textContent=text;$('#status').classList.toggle('error',error)};
  try{const stored=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(stored))goals=stored.filter(g=>g&&parser.teams[g.team]?.includes(g.scorer)&&(!g.assist||parser.teams[g.team].includes(g.assist)&&g.assist!==g.scorer))}catch{$('#notice').textContent='No se pudieron leer las pruebas guardadas. Podés empezar una nueva.'}
  function renderGoals(){
   for(const team of ['white','black'])$('#'+team+'Score').textContent=goals.filter(g=>g.team===team).length;
-  $('#history').innerHTML=goals.length?goals.slice(-6).reverse().map(g=>`<li><b>${esc(g.scorer.toLowerCase())}</b> · ${g.team==='white'?'Claro':'Oscuro'}<small>${g.assist?'Asistencia de '+esc(g.assist.toLowerCase()):g.decision==='none'?'Jugada sin asistencia':'Asistencia pendiente'}</small></li>`).join(''):'<li>Todavía no confirmaste ningún gol.</li>';
+  $('#history').innerHTML=goals.length?goals.slice(-6).reverse().map(g=>`<li><b>${esc(displayName(g.scorer))}</b> · ${g.team==='white'?'Claro':'Oscuro'}<small>${g.assist?'Asistencia de '+esc(displayName(g.assist)):g.decision==='none'?'Jugada sin asistencia':'Asistencia pendiente'}</small></li>`).join(''):'<li>Todavía no confirmaste ningún gol.</li>';
  }
  function renderCandidate(){
   $('#preview').hidden=!candidate;if(!candidate)return;
-  $('#scorerName').textContent=candidate.scorer?.toLowerCase()||'Sin identificar';$('#teamName').textContent=candidate.team?'Equipo '+(candidate.team==='white'?'Claro':'Oscuro'):'';
-  $('#assistName').textContent=candidate.assist?.toLowerCase()||(candidate.decision==='none'?'Sin asistencia':'Sin indicar');$('#assistDetail').textContent=candidate.decision==='pending'?'El pase quedaría pendiente.':'Revisá que el nombre sea correcto.';
+  $('#scorerName').textContent=candidate.scorer?displayName(candidate.scorer):'Sin identificar';$('#teamName').textContent=candidate.team?'Equipo '+(candidate.team==='white'?'Claro':'Oscuro'):'';
+  $('#assistName').textContent=candidate.assist?displayName(candidate.assist):(candidate.decision==='none'?'Sin asistencia':'Sin indicar');$('#assistDetail').textContent=candidate.decision==='pending'?'El pase quedaría pendiente.':'Revisá que el nombre sea correcto.';
+  if(candidate.error)$('#preview .fix').open=true;
   $('#previewError').textContent=candidate.error;$('#confirmGoal').disabled=!candidate.scorer||Boolean(candidate.error);
-  $('#scorerChoices').innerHTML=Object.values(parser.teams).flat().map(name=>`<button type="button" data-scorer="${esc(name)}" aria-pressed="${candidate.scorer===name}">${esc(name.toLowerCase())}</button>`).join('');
-  $('#assistChoices').innerHTML=(candidate.team?parser.teams[candidate.team].filter(name=>name!==candidate.scorer):[]).map(name=>`<button type="button" data-assist="${esc(name)}" aria-pressed="${candidate.assist===name}">${esc(name.toLowerCase())}</button>`).join('');
+  $('#scorerChoices').innerHTML=Object.values(parser.teams).flat().map(name=>`<button type="button" data-scorer="${esc(name)}" aria-pressed="${candidate.scorer===name}">${esc(displayName(name))}</button>`).join('');
+  $('#assistChoices').innerHTML=(candidate.team?parser.teams[candidate.team].filter(name=>name!==candidate.scorer):[]).map(name=>`<button type="button" data-assist="${esc(name)}" aria-pressed="${candidate.assist===name}">${esc(displayName(name))}</button>`).join('');
  }
  function stop(){if(recognition){const current=recognition;recognition=null;current.abort()}clearTimeout(timer);$('#mic').classList.remove('listening');$('#mic').textContent='🎙️ Decir un gol'}
  function interpret(){stop();const text=$('#transcript').value.trim();if(!text){candidate=null;renderCandidate();status('Decí o escribí quién hizo el gol.',true);return}candidate=parser.parse(text);$('#notice').textContent='';renderCandidate();status(candidate.error?'Revisá los nombres antes de confirmar.':'Listo para revisar. Todavía no se sumó ningún gol.',Boolean(candidate.error))}
@@ -36,7 +38,7 @@
  $('#interpret').addEventListener('click',interpret);
  document.querySelectorAll('[data-example]').forEach(button=>button.addEventListener('click',()=>{$('#transcript').value=button.dataset.example;interpret()}));
  $('#transcript').addEventListener('input',()=>{candidate=null;renderCandidate()});
- $('#scorerChoices').addEventListener('click',e=>{const name=e.target.closest('[data-scorer]')?.dataset.scorer;if(!candidate||!name)return;candidate={scorer:name,team:Object.keys(parser.teams).find(team=>parser.teams[team].includes(name)),assist:null,decision:'pending',error:''};renderCandidate()});
+ $('#scorerChoices').addEventListener('click',e=>{const name=e.target.closest('[data-scorer]')?.dataset.scorer;if(!candidate||!name)return;const original=$('#transcript').value,assistPart=original.match(/(?:asistencia(?: de)?|asisti[oó]|pase(?: de)?|asistido por)\s+(.+)$/i);candidate=parser.parse('Gol de '+displayName(name)+(assistPart?', asistencia de '+assistPart[1]:''));renderCandidate()});
  $('#assistChoices').addEventListener('click',e=>{const name=e.target.closest('[data-assist]')?.dataset.assist;if(!candidate||!name)return;Object.assign(candidate,{assist:name,decision:'assigned',error:''});renderCandidate()});
  function noPass(decision){if(!candidate)return;candidate.assist=null;candidate.decision=decision;if(candidate.scorer)candidate.error='';renderCandidate()}
  $('#noAssist').addEventListener('click',()=>noPass('none'));$('#laterAssist').addEventListener('click',()=>noPass('pending'));
@@ -45,7 +47,7 @@
   if(!candidate?.scorer||candidate.error)return;
   const saved={...candidate,id:crypto.randomUUID?.()||String(Date.now()),at:new Date().toISOString()},next=[...goals,saved];
   try{localStorage.setItem(KEY,JSON.stringify(next))}catch{status('No se pudo guardar la prueba en este navegador. El gol no se sumó.',true);return}
-  goals=next;candidate=null;$('#transcript').value='';renderCandidate();renderGoals();$('#notice').textContent='✓ Gol de '+saved.scorer.toLowerCase()+' sumado solo a esta prueba.';status('Podés probar otro gol con el micrófono.');
+  goals=next;candidate=null;$('#transcript').value='';renderCandidate();renderGoals();$('#notice').textContent='✓ Gol de '+displayName(saved.scorer)+' sumado solo a esta prueba.';status('Podés probar otro gol con el micrófono.');
  });
  $('#clearDemo').addEventListener('click',()=>{stop();try{localStorage.removeItem(KEY)}catch{status('No se pudo borrar el guardado de esta prueba.',true);return}goals=[];candidate=null;$('#transcript').value='';renderCandidate();renderGoals();$('#notice').textContent='Prueba borrada. El torneo real no se modificó.'});
  window.addEventListener('pagehide',stop);renderGoals();
