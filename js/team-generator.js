@@ -117,7 +117,7 @@
     try{await ChiquiGoals.saveLineup({matchNumber,date,white:teams.white.map(p=>p.name),black:teams.black.map(p=>p.name),...(ChiquiGoals.supportsSubstitutes()?{substitutes:[]}:{})},pin);copyToLineup();msg.className='form-message success';msg.textContent='✓ Equipos guardados y publicados. Ya podés compartir la imagen.'}catch(error){fail(error.message)}finally{button.disabled=false}
   }
   function imageDetails(){try{return JSON.parse(localStorage.getItem(DETAILS_KEY)||'{}')}catch{return{}}}
-  function restoreImageDetails(){const details=imageDetails()[$('#generatorMatch').value]||{};$('#generatorTime').value=details.time??'18:00';$('#generatorVenue').value=details.venue??'El Más Grande'}
+  function restoreImageDetails(){const details=imageDetails()[$('#generatorMatch').value]||{};$('#generatorTime').value=details.time??'17:00';$('#generatorVenue').value=details.venue??'El Más Grande'}
   function saveImageDetails(){const details=imageDetails();details[$('#generatorMatch').value]={time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()};try{localStorage.setItem(DETAILS_KEY,JSON.stringify(details))}catch{}}
   function loadBackground(){if(!backgroundPromise)backgroundPromise=new Promise(resolve=>{const image=new Image(),timer=setTimeout(()=>resolve(null),12000);image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);resolve(null)};image.src='assets/match-red-background.webp'});return backgroundPromise}
   function imageSignature(){return JSON.stringify({teams,number:$('#generatorMatch').value,duel:currentDuel()?[currentDuel().whitePlayer,currentDuel().blackPlayer]:null,date:$('#generatorDate').value,time:$('#generatorTime').value,venue:$('#generatorVenue').value.trim()})}

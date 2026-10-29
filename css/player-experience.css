@@ -71,3 +71,40 @@
 .stats-loading{grid-column:1/-1;border-radius:18px;background:#f3faff}
 @keyframes loading-shell-flow{0%,100%{background-position:0 0}50%{background-position:100% 0}}
 @media(prefers-reduced-motion:reduce){.loading-line{animation:none}}
+
+/* The same home card previews the saved teams before showing the final result. */
+#inicio .home-upcoming-match .match-top-zone { padding-bottom:16px; }
+#inicio .home-upcoming-match .match-bottom-zone { padding-top:0; }
+#inicio .home-upcoming-details { display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px; color:#214b64; font-size:14px; }
+#inicio .home-upcoming-details>span:first-child { font-weight:800; }
+#inicio .home-upcoming-details strong { padding:6px 10px; border-radius:9px; background:#e0f0df; color:#28573e; font-size:15px; }
+#inicio .home-upcoming-details small { font-size:12px; font-weight:500; }
+#inicio .home-upcoming-teams { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+#inicio .home-upcoming-team { min-width:0; border:1px solid #b9cedc; border-radius:12px; background:#fff; overflow:hidden; }
+#inicio .home-upcoming-team h3 { margin:0; padding:10px 12px; background:#e4f1f9; color:#173e58; font:800 15px/1.25 Inter,sans-serif; }
+#inicio .home-upcoming-team.black h3 { background:#193d55; color:#fff; }
+#inicio .home-upcoming-team ul { list-style:none; margin:0; padding:6px 12px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 12px; }
+#inicio .home-upcoming-team li { padding:7px 0; border-bottom:1px solid #e0ebf2; font:700 13px/1.2 Inter,sans-serif; color:#173e58; overflow-wrap:anywhere; }
+#inicio .home-upcoming-team li:last-child { border-bottom:0; }
+@media(max-width:600px) {
+ #inicio .home-upcoming-details { gap:8px 12px; font-size:12px; }
+ #inicio .home-upcoming-details>span:first-child { flex-basis:100%; }
+ #inicio .home-upcoming-teams { gap:10px; }
+ #inicio .home-upcoming-team h3 { font-size:12px; padding:10px; }
+ #inicio .home-upcoming-team ul { grid-template-columns:minmax(0,1fr); padding:4px 10px; }
+ #inicio .home-upcoming-team li { font-size:12px; padding:7px 0; }
+}
+#inicio #recentResultCard { padding:12px 16px; min-height:126px; }
+#inicio .recent-result-header { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+#inicio .recent-result-header>span { font-size:11px; font-weight:900; letter-spacing:.07em; }
+#inicio .recent-result-controls { display:flex; gap:5px; }
+#inicio .recent-result-controls[hidden] { display:none; }
+#inicio .recent-result-controls button { min-width:36px; min-height:36px; padding:3px 7px; border:1px solid #a8c8da; border-radius:8px; background:#edf6fb; color:#214c68; font-size:20px; cursor:pointer; touch-action:manipulation; }
+#inicio #recentResultPause { font-size:12px; }
+#inicio .recent-result-link { display:grid; gap:3px; text-decoration:none; padding-top:7px; }
+#inicio .recent-result-link small { display:block; font-size:11px; color:#48697f; }
+#inicio #recentResultScore { display:block; font:900 clamp(22px,3vw,30px)/1.15 'Barlow Condensed',sans-serif; color:#123b56; overflow-wrap:anywhere; }
+#inicio #recentResultDate { font-weight:700; }
+#inicio .recent-empty { display:block; font-size:18px; margin:10px 0 4px; }
+#inicio #recentResultCard::after { display:none; }
+#inicio .recent-result-header,#inicio .recent-result-link { position:relative; z-index:1; }
