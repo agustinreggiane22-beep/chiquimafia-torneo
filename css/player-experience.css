@@ -76,7 +76,7 @@
 #inicio #featuredMatch.home-upcoming-match,
 #inicio #featuredMatch.home-final-match,
 #inicio #recentResultCard,
-#inicio .home-info-grid .fund-card{background:#08090b url("../assets/match-poster-background.webp?v=2") center / 100% 100% no-repeat;border:1.5px solid #e71b30;border-radius:22px;color:#fff;box-shadow:none;overflow:hidden}
+#inicio .home-info-grid .fund-card{background:#08090b url("../assets/match-poster-clean.webp") center / 100% 100% no-repeat;border:1.5px solid #e71b30;border-radius:22px;color:#fff;box-shadow:none;overflow:hidden}
 #inicio #featuredMatch.home-upcoming-match::before,#inicio #featuredMatch.home-upcoming-match::after,
 #inicio #featuredMatch.home-final-match::before,#inicio #featuredMatch.home-final-match::after,
 #inicio #recentResultCard::before,#inicio #recentResultCard::after,
