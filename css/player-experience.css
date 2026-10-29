@@ -139,14 +139,17 @@
 #inicio .home-upcoming-team h3{font-weight:800}
 #inicio .home-upcoming-team li{font-weight:800;text-align:center}
 #inicio .upcoming-poster-footer span{opacity:1;text-align:center}
-#inicio #recentResultCard,#inicio .home-info-grid .fund-card{display:grid;grid-template-rows:28px minmax(0,1fr);gap:6px;align-items:start;text-align:center}
-#inicio #recentResultCard>span,#inicio .home-info-grid .fund-card>span{justify-self:center;align-self:start;font-size:17px;line-height:1.1;white-space:nowrap}
-#inicio .recent-result-link,#inicio .fund-card-content{display:grid;align-content:center;align-self:stretch;justify-items:stretch;gap:5px;text-align:center;min-width:0}
-#inicio .recent-result-link{align-content:start}
-#inicio .fund-card-content{padding-top:19px;align-content:start}
-#inicio #recentResultScore,#inicio .home-info-grid .fund-card strong{margin:0;font-size:42px;line-height:1;font-weight:900}
+/* Both cards use the same heading, context, number and detail rows. */
+#inicio #recentResultCard,#inicio .home-info-grid .fund-card{display:grid;grid-template-rows:28px minmax(0,1fr);grid-template-columns:minmax(0,1fr);gap:6px;align-items:start;align-content:start;justify-content:stretch;text-align:center}
+#inicio #recentResultCard>span,#inicio .home-info-grid .fund-card>span{justify-self:center;align-self:start;font-size:17px;line-height:1.1;white-space:nowrap;margin:0}
+#inicio .recent-result-link,#inicio .fund-card-content{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:18px 54px minmax(38px,auto);align-content:start;align-self:stretch;align-items:center;justify-items:stretch;gap:6px;padding:0;text-align:center;min-width:0}
+#inicio .recent-result-link>*,#inicio .home-info-grid .fund-card .fund-card-content>*{margin:0;max-width:none;min-width:0}
+#inicio #recentResultScore,#inicio .home-info-grid .fund-card strong{margin:0;font-size:42px;line-height:1;font-weight:900;align-self:center}
 #inicio #recentResultCard .recent-result-teams{width:100%;justify-content:space-around;margin:0}
-#inicio .home-info-grid .fund-card small{display:block;max-width:180px;margin:5px auto 0;font-size:14px;line-height:1.2}
+#inicio .recent-result-link .summary-detail{display:grid;grid-template-rows:16px minmax(18px,auto);gap:4px;align-self:stretch;align-content:start}
+#inicio #recentResultWinner{margin:0;padding:4px 0 0;border-top:1px solid #ec1e3266;font-size:14px;line-height:1.2}
+#inicio .home-info-grid .fund-card .summary-detail{display:flex;align-items:center;justify-content:center;align-self:stretch;margin:0;font-size:14px;line-height:1.2}
+#inicio .home-info-grid .fund-card .summary-context{font-size:14px;line-height:18px;margin:0;color:#fff}
 #inicio #seasonStatusCard .season-kicker{font-size:18px;font-weight:800}
 #inicio #seasonStatusCard>div:first-child{align-items:center}
 @media(min-width:600px){#inicio #recentResultCard>span,#inicio .home-info-grid .fund-card>span{font-size:22px}#inicio #recentResultScore,#inicio .home-info-grid .fund-card strong{font-size:54px}}
