@@ -1044,3 +1044,25 @@ body { position:relative; isolation:isolate; }
 #inicio .recent-empty{font-size:16px;color:#123b56}
 #inicio #recentResultCard::after,#inicio .home-info-grid .fund-card::after{display:none}
 @media(max-width:400px){#inicio .upcoming-poster{padding:22px 14px 18px}#inicio .home-upcoming-team h3{font-size:11px}#inicio .home-upcoming-teams{gap:28px}#inicio .home-upcoming-team li{font-size:12px}#inicio .upcoming-poster-footer>strong{font-size:12px}#inicio #recentResultCard,#inicio .home-info-grid .fund-card{padding:14px 10px}#inicio #recentResultScore{font-size:25px}}
+
+/* Final results retain the poster's typography and accents, in the winning colors. */
+#inicio #featuredMatch.home-final-match{border-radius:24px;border:1px solid #84bfd2;background:radial-gradient(ellipse at 0 100%,#bceafa,transparent 65%),repeating-linear-gradient(125deg,#183c5205 0 1px,transparent 1px 9px),#f8fcff;color:#11243a}
+#inicio #featuredMatch.home-final-match.winner-black{border-color:#545a64;background:radial-gradient(ellipse at 0 100%,#840e2280,transparent 60%),repeating-linear-gradient(125deg,#ffffff03 0 1px,transparent 1px 9px),#0a0b0e;color:#fff}
+#inicio #featuredMatch.home-final-match.winner-draw{background:linear-gradient(135deg,#f6f7fa,#dce4ec);border-color:#a5afbc}
+#inicio .home-final-match .match-top-zone,#inicio .home-final-match .match-bottom-zone{background:transparent;color:inherit;padding:22px 24px}
+#inicio .home-final-match .match-top-zone{padding-bottom:16px}
+#inicio .home-final-match .match-bottom-zone{padding-top:0}
+#inicio .home-final-match .match-summary-heading{flex-direction:column;justify-content:center;gap:12px;border-bottom:1px solid #94b9cf55;padding-bottom:18px}
+#inicio .home-final-match .match-summary-heading h2{margin:0;background:#c61b31;padding:8px 26px;border-radius:5px;font:800 24px/1.15 Inter,sans-serif;color:#fff;text-transform:uppercase}
+#inicio .home-final-match .featured-kicker{background:transparent;color:inherit;font:700 11px/1.4 Inter,sans-serif;letter-spacing:.12em;padding:0}
+#inicio .home-final-match .compact-result{background:transparent;padding:10px 0}
+#inicio .home-final-match .compact-result>strong{font-family:Inter,sans-serif;font-weight:800;font-size:clamp(42px,7vw,68px)}
+#inicio .home-final-match .summary-team{font:700 clamp(13px,2vw,19px)/1.2 Inter,sans-serif}
+#inicio .home-final-match .featured-button{border:1px solid #c61b31;border-radius:22px;background:#0a0c13;color:#fff}
+#inicio .home-final-match.winner-black .match-award,#inicio .home-final-match.winner-black .match-award small,#inicio .home-final-match.winner-black .match-awards-date{color:#e8eaf0}
+#inicio #recentResultCard.result-white{background:radial-gradient(ellipse at 0 100%,#bceafa,transparent 70%),#f8fcff;border-color:#84bfd2}
+#inicio #recentResultCard.result-black{background:radial-gradient(ellipse at 0 100%,#840e2280,transparent 70%),repeating-linear-gradient(125deg,#ffffff03 0 1px,transparent 1px 9px),#0a0b0e;border-color:#545a64}
+#inicio #recentResultCard.result-black>span,#inicio #recentResultCard.result-black .recent-result-link small,#inicio #recentResultCard.result-black #recentResultScore,#inicio #recentResultCard.result-black #recentResultScore span{color:#f4f5f8}
+#inicio #recentResultCard.result-draw{background:linear-gradient(135deg,#f6f7fa,#dce4ec);border-color:#a5afbc}
+#inicio #recentResultCard::before{background:#c61b31;animation:none}
+@media(max-width:400px){#inicio .home-final-match .match-top-zone{padding:20px 14px 14px}#inicio .home-final-match .match-bottom-zone{padding:0 14px 18px}}
