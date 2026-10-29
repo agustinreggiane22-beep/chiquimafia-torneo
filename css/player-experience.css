@@ -153,3 +153,54 @@
 #inicio #seasonStatusCard .season-kicker{font-size:18px;font-weight:800}
 #inicio #seasonStatusCard>div:first-child{align-items:center}
 @media(min-width:600px){#inicio #recentResultCard>span,#inicio .home-info-grid .fund-card>span{font-size:22px}#inicio #recentResultScore,#inicio .home-info-grid .fund-card strong{font-size:54px}}
+
+/* Shirt-based winner posters. The drawing stays separate from live match data. */
+#inicio #featuredMatch.kit-result-card.winner-white,#inicio #recentResultCard.result-white{--kit-ink:#111;--kit-accent:#e90015;--kit-line:#1113;background:#f8f8f8 url("../assets/kit-winner-white.webp") center / 100% 100% no-repeat;border-color:#e90015;color:var(--kit-ink)}
+#inicio #featuredMatch.kit-result-card.winner-black,#inicio #recentResultCard.result-black{--kit-ink:#fff;--kit-accent:#f6c656;--kit-line:#fff4;background:#08090b url("../assets/kit-winner-black.webp") center / 100% 100% no-repeat;border-color:#f6c656;color:var(--kit-ink)}
+#inicio #featuredMatch.kit-result-card.winner-draw,#inicio #recentResultCard.result-draw{--kit-ink:#fff;--kit-accent:#ed1b30;--kit-line:#fff4}
+#inicio .kit-result-card .match-top-zone{padding:28px 13% 18px;color:var(--kit-ink)}
+#inicio .kit-result-card .match-bottom-zone{padding:0 13% 28px;color:var(--kit-ink)}
+#inicio .kit-result-card .match-summary-heading{border:0;padding:0;gap:8px}
+#inicio .kit-result-card .kit-heading{font:400 clamp(25px,5vw,46px)/1.15 Anton,'Barlow Condensed',sans-serif;letter-spacing:.01em;text-align:center;text-transform:uppercase;color:var(--kit-ink)}
+#inicio .kit-result-card .match-summary-heading h2{display:flex;align-items:center;justify-content:center;gap:12px;padding:0;border:0;border-radius:0;background:transparent;color:var(--kit-ink);font:400 clamp(19px,3vw,27px)/1.2 Anton,'Barlow Condensed',sans-serif}
+#inicio .kit-result-card .match-summary-heading h2::before,#inicio .kit-result-card .match-summary-heading h2::after{content:"";width:30px;height:2px;background:var(--kit-accent);flex-shrink:0}
+#inicio .kit-result-card .compact-result{display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);gap:3px 0;padding:8px 0 2px;text-align:center}
+#inicio .kit-result-card .compact-result>strong{grid-column:1/-1;grid-row:1;display:flex;align-items:center;justify-content:center;gap:10px;font:400 clamp(52px,8vw,84px)/1.15 Anton,'Barlow Condensed',sans-serif;color:var(--kit-ink);white-space:nowrap}
+#inicio .kit-result-card .compact-result>strong em{font-style:normal;font-size:.7em}
+#inicio .kit-result-card .summary-team{grid-row:2;color:var(--kit-ink);font:400 clamp(15px,2.5vw,23px)/1.2 Anton,'Barlow Condensed',sans-serif;text-transform:uppercase}
+#inicio .kit-result-card .summary-team:first-child{grid-column:1}
+#inicio .kit-result-card .summary-team:last-child{grid-column:3}
+#inicio .kit-result-card.winner-white .score-white,#inicio #recentResultCard.result-white .score-white{color:#e90015}
+#inicio .kit-result-card.winner-black .score-black,#inicio #recentResultCard.result-black .score-black{color:#00a9eb}
+#inicio .kit-result-card .match-result-summary>b{font:400 clamp(20px,3vw,32px)/1.2 Anton,'Barlow Condensed',sans-serif;color:var(--kit-accent);text-transform:uppercase}
+#inicio .kit-result-card .match-result-summary .mood-caption{font-family:'Barlow Condensed',sans-serif;color:var(--kit-ink)}
+#inicio .kit-result-card .last-match-awards{border-top:2px solid var(--kit-accent);padding-top:0;gap:0}
+#inicio .kit-result-card .match-award{grid-template-columns:94px minmax(0,1fr);gap:4px 10px;color:var(--kit-ink);padding:9px 0;border-bottom:1px solid var(--kit-line)}
+#inicio .kit-result-card .match-award>span{font:400 14px/1.25 Anton,'Barlow Condensed',sans-serif;text-transform:uppercase}
+#inicio .kit-result-card .match-award>strong{font:700 18px/1.15 'Barlow Condensed',sans-serif;max-height:none;overflow:visible}
+#inicio .kit-result-card .match-award>small,#inicio .kit-result-card .match-awards-date{color:var(--kit-ink)}
+#inicio .kit-result-card .featured-button{justify-self:center;width:auto;min-width:65%;margin-top:2px;border:2px solid var(--kit-accent);border-radius:24px;background:transparent;color:var(--kit-ink);font:400 18px/1.25 Anton,'Barlow Condensed',sans-serif;text-transform:uppercase;padding:10px 20px}
+#inicio .kit-result-card.winner-black .featured-button{box-shadow:0 0 0 2px #00a9eb}
+#inicio #recentResultCard.result-white,#inicio #recentResultCard.result-black{padding-left:12%;padding-right:12%}
+#inicio #recentResultCard.result-white>span,#inicio #recentResultCard.result-black>span{color:var(--kit-ink);border-color:var(--kit-accent);font:400 14px/1.2 Anton,'Barlow Condensed',sans-serif;letter-spacing:0}
+#inicio #recentResultCard.result-white .recent-result-link small,#inicio #recentResultCard.result-black .recent-result-link small,#inicio #recentResultCard.result-white .recent-result-teams>span,#inicio #recentResultCard.result-black .recent-result-teams>span{color:var(--kit-ink)}
+#inicio #recentResultCard.result-white #recentResultScore,#inicio #recentResultCard.result-black #recentResultScore{font-family:Anton,'Barlow Condensed',sans-serif;font-weight:400;font-size:32px;color:var(--kit-ink)}
+#inicio #recentResultCard.result-white #recentResultScore em,#inicio #recentResultCard.result-black #recentResultScore em{color:var(--kit-ink);font-size:.7em}
+#inicio #recentResultCard.result-white #recentResultWinner,#inicio #recentResultCard.result-black #recentResultWinner{color:var(--kit-ink);border-color:var(--kit-line)}
+@media(min-width:600px){#inicio #recentResultCard.result-white>span,#inicio #recentResultCard.result-black>span{font-size:22px}#inicio #recentResultCard.result-white #recentResultScore,#inicio #recentResultCard.result-black #recentResultScore{font-size:48px}}
+@media(max-width:400px){#inicio .kit-result-card .compact-result>strong{gap:7px}#inicio .kit-result-card .match-award{grid-template-columns:82px minmax(0,1fr)}#inicio .kit-result-card .match-award>span{font-size:12px}}
+
+/* Equal typography and baselines for the two compact home cards. */
+#inicio #recentResultCard.result-draw>span,#inicio #recentResultCard.result-white>span,#inicio #recentResultCard.result-black>span,#inicio .home-info-grid .fund-card>span{font:400 14px/1.2 Anton,'Barlow Condensed',sans-serif;letter-spacing:0}
+#inicio .home-info-grid .fund-card strong{font:400 32px/1 Anton,'Barlow Condensed',sans-serif}
+@media(min-width:600px){#inicio #recentResultCard.result-draw>span,#inicio #recentResultCard.result-white>span,#inicio #recentResultCard.result-black>span,#inicio .home-info-grid .fund-card>span{font-size:22px}#inicio .home-info-grid .fund-card strong{font-size:48px}}
+#inicio #recentResultCard #recentResultScore{display:flex;align-items:center;justify-content:center;gap:5px;line-height:1}
+#inicio #recentResultCard #recentResultScore .score-number{display:inline;font:inherit;line-height:1;letter-spacing:0}
+#inicio #recentResultCard #recentResultScore em{line-height:1}
+
+#inicio #recentResultCard.result-draw #recentResultScore{font:400 32px/1 Anton,'Barlow Condensed',sans-serif}
+@media(min-width:600px){#inicio #recentResultCard.result-draw #recentResultScore{font-size:48px}}
+#inicio #recentResultCard.result-white #recentResultScore .score-white{color:#e90015}
+#inicio #recentResultCard.result-white #recentResultScore .score-black{color:#111}
+#inicio #recentResultCard.result-black #recentResultScore .score-white,#inicio #recentResultCard.result-draw #recentResultScore .score-number{color:#fff}
+#inicio #recentResultCard.result-black #recentResultScore .score-black{color:#00a9eb}

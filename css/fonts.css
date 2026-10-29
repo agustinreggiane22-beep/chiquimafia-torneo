@@ -27,3 +27,5 @@
   font-display: swap;
   src: url(../assets/fonts/barlow-condensed-900.woff2) format('woff2');
 }
+
+@font-face{font-family:Anton;font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/anton-latin.woff") format("woff")}
