@@ -125,3 +125,20 @@
 #inicio #recentResultCard.result-draw{background:linear-gradient(135deg,#f6f7fa,#dce4ec);border-color:#a5afbc}
 #inicio #recentResultCard::before{background:#c61b31;animation:none}
 @media(max-width:400px){#inicio .home-final-match .match-top-zone{padding:20px 14px 14px}#inicio .home-final-match .match-bottom-zone{padding:0 14px 18px}}
+
+/* Upcoming and finished matches share the same black and red poster background. */
+#inicio #featuredMatch.home-final-match,
+#inicio #featuredMatch.home-final-match.winner-black,
+#inicio #featuredMatch.home-final-match.winner-white,
+#inicio #featuredMatch.home-final-match.winner-draw,
+#inicio #recentResultCard.result-white,
+#inicio #recentResultCard.result-black,
+#inicio #recentResultCard.result-draw{background:radial-gradient(ellipse at 0 100%,#840e22aa,transparent 42%),repeating-linear-gradient(125deg,#ffffff03 0 1px,transparent 1px 9px),#0a0b0e;border:1px solid #37748c;color:#fff}
+#inicio .home-final-match .compact-result>strong,
+#inicio .home-final-match .match-award,
+#inicio .home-final-match .match-award small,
+#inicio .home-final-match .match-awards-date,
+#inicio #recentResultCard>span,
+#inicio #recentResultCard .recent-result-link small,
+#inicio #recentResultCard #recentResultScore,
+#inicio #recentResultCard #recentResultScore span{color:#f4f5f8}
