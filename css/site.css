@@ -1013,11 +1013,13 @@ body { position:relative; isolation:isolate; }
 @keyframes loading-shell-flow{0%,100%{background-position:0 0}50%{background-position:100% 0}}
 @media(prefers-reduced-motion:reduce){.loading-line{animation:none}}
 
-/* The approved black/red match poster, shared by the three home cards. */
+/* The approved black/red match poster, shared by the home summary cards. */
+#inicio .season-card,
 #inicio #featuredMatch.home-upcoming-match,
 #inicio #featuredMatch.home-final-match,
 #inicio #recentResultCard,
 #inicio .home-info-grid .fund-card{background:#08090b url("../assets/match-poster-clean.webp") center / 100% 100% no-repeat;border:1.5px solid #e71b30;border-radius:22px;color:#fff;box-shadow:none;overflow:hidden}
+#inicio .season-card::before,#inicio .season-card::after,
 #inicio #featuredMatch.home-upcoming-match::before,#inicio #featuredMatch.home-upcoming-match::after,
 #inicio #featuredMatch.home-final-match::before,#inicio #featuredMatch.home-final-match::after,
 #inicio #recentResultCard::before,#inicio #recentResultCard::after,
@@ -1062,3 +1064,12 @@ body { position:relative; isolation:isolate; }
 #inicio .home-final-match .featured-button{border:2px solid #ef1d32;border-radius:10px;background:#08090bd9;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px}
 #inicio .home-final-match .match-award,#inicio .home-final-match .match-award small,#inicio .home-final-match .match-awards-date{color:#f4f5f8}
 @media(max-width:400px){#inicio .upcoming-poster{padding:20px 14px 16px}#inicio .home-upcoming-teams{gap:28px}#inicio .home-upcoming-team h3{font-size:16px}#inicio .home-upcoming-team li{font-size:18px}#inicio .upcoming-poster-footer>strong{font-size:15px}#inicio .upcoming-poster-footer{font-size:15px}#inicio .home-final-match .match-top-zone{padding:20px 14px 14px}#inicio .home-final-match .match-bottom-zone{padding:0 14px 18px}}
+
+/* Keep season progress readable within the same black/red poster. */
+#inicio .season-card .season-kicker{color:#fff;font:800 18px/1.2 'Barlow Condensed',sans-serif;letter-spacing:.03em}
+#inicio .season-card .season-kicker i{background:#ed1b30;box-shadow:0 0 0 4px #ed1b302b}
+#inicio .season-card #phaseLabel{background:#c61b31;color:#fff;border-radius:8px;font:800 18px/1.2 'Barlow Condensed',sans-serif;box-shadow:none}
+#inicio .season-card #roundLabel{color:#fff;font:600 16px/1.2 'Barlow Condensed',sans-serif}
+#inicio .season-card #progressLabel{background:#c61b312b;color:#fff;border:1px solid #e71b3070;font:700 15px/1.2 'Barlow Condensed',sans-serif}
+#inicio .season-card .progress-track{background:#ffffff25;box-shadow:none}
+#inicio .season-card #progressBar{background:linear-gradient(90deg,#ab0e20,#f7263d)}
