@@ -175,7 +175,7 @@ El inicio usa tarjetas claras fijas que enlazan a los rankings y a clasificació
 
 ### Actualizar estilos
 
-Después de editar un archivo fuente en `css/`, ejecutá `node scripts/build-styles.cjs`. La página carga el archivo generado `css/site.css`, que conserva el orden de los estilos y sus rutas. Al publicarlo, cambiá su versión en `index.html` para renovar la caché.
+Después de editar un archivo fuente en `css/`, ejecutá `node scripts/build-styles.cjs`. El script genera `css/site.css` y una copia `css/site-<hash>.css`, y actualiza automáticamente el enlace de `index.html`. El nombre cambia con el contenido para evitar reutilizar estilos anteriores. Se conserva el orden de los estilos y sus rutas; las páginas secundarias pueden seguir usando `css/site.css`.
 
 
 ### Anotador compartido y modo horizontal
