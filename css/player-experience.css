@@ -72,12 +72,12 @@
 @keyframes loading-shell-flow{0%,100%{background-position:0 0}50%{background-position:100% 0}}
 @media(prefers-reduced-motion:reduce){.loading-line{animation:none}}
 
-/* The approved black/red match poster, shared by the home summary cards. */
+/* The approved gold-accented match poster, shared by the home summary cards. */
 #inicio #seasonStatusCard,
 #inicio #featuredMatch.home-upcoming-match,
 #inicio #featuredMatch.home-final-match,
 #inicio #recentResultCard,
-#inicio .home-info-grid .fund-card{background:#fafafa url("../assets/match-poster-light.webp") center / 100% 100% no-repeat;border:1.5px solid #e71b30;border-radius:22px;color:#111;box-shadow:none;overflow:hidden}
+#inicio .home-info-grid .fund-card{background:#fafafa url("../assets/match-poster-gold-light.webp") center / 100% 100% no-repeat;border:1.5px solid #b3841c;border-radius:22px;color:#111;box-shadow:none;overflow:hidden}
 #inicio #seasonStatusCard::before,#inicio #seasonStatusCard::after,
 #inicio #featuredMatch.home-upcoming-match::before,#inicio #featuredMatch.home-upcoming-match::after,
 #inicio #featuredMatch.home-final-match::before,#inicio #featuredMatch.home-final-match::after,
@@ -87,51 +87,51 @@
 #inicio .upcoming-poster-heading{display:grid;justify-items:center;gap:9px;padding-bottom:18px}
 #inicio .upcoming-poster-heading>span{font:700 14px/1.3 'Barlow Condensed',sans-serif;letter-spacing:.18em;color:#fff}
 #inicio .upcoming-poster-heading>strong{font:900 clamp(46px,8vw,78px)/1 'Barlow Condensed',sans-serif;color:#fff;letter-spacing:-.02em}
-#inicio .upcoming-poster-heading h2{margin:0;background:linear-gradient(#f00014,#bd0015);border:1px solid #ff2334;border-radius:20px;padding:4px 28px;color:#fff;font:800 23px/1.1 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em}
+#inicio .upcoming-poster-heading h2{margin:0;background:linear-gradient(#a77b21,#80570b);border:1px solid #bb9139;border-radius:20px;padding:4px 28px;color:#fff;font:800 23px/1.1 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em}
 #inicio .home-upcoming-teams{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:36px;padding:0 0 18px}
-#inicio .home-upcoming-teams::after{content:"";position:absolute;top:0;bottom:18px;left:50%;width:1px;background:#b51929}
-#inicio .upcoming-versus{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;background:#090909;padding:4px 5px;font:900 27px/1.1 'Barlow Condensed',sans-serif;color:#ff1e30}
+#inicio .home-upcoming-teams::after{content:"";position:absolute;top:0;bottom:18px;left:50%;width:1px;background:#ad812b}
+#inicio .upcoming-versus{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;background:#090909;padding:4px 5px;font:900 27px/1.1 'Barlow Condensed',sans-serif;color:#91650b}
 #inicio .home-upcoming-team{min-width:0}
-#inicio .home-upcoming-team h3{margin:0 0 10px;padding-bottom:5px;border-bottom:2px solid #f01c30;color:#fff;font:800 18px/1.2 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.06em}
+#inicio .home-upcoming-team h3{margin:0 0 10px;padding-bottom:5px;border-bottom:2px solid #b3841c;color:#fff;font:800 18px/1.2 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.06em}
 #inicio .home-upcoming-team ul{list-style:none;display:grid;gap:7px;margin:0;padding:0}
 #inicio .home-upcoming-team li{min-width:0;color:#fff;font:700 20px/1.1 'Barlow Condensed',sans-serif;overflow-wrap:anywhere}
 #inicio .upcoming-poster-footer{background:transparent;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;text-align:center;color:#fff;font:600 16px/1.4 'Barlow Condensed',sans-serif}
 #inicio .upcoming-poster-footer>strong{font:800 18px/1.2 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase;letter-spacing:.04em}
-#inicio .upcoming-poster-footer .featured-button{justify-self:center;width:65%;max-width:300px;box-sizing:border-box;border:2px solid #ef1d32;border-radius:10px;background:#08090be6;color:#fff;padding:8px 12px;margin-top:6px;font:700 18px/1.1 'Barlow Condensed',sans-serif;text-decoration:none}
-#inicio .upcoming-poster-footer .featured-button:hover{background:#34101b}
+#inicio .upcoming-poster-footer .featured-button{justify-self:center;width:65%;max-width:300px;box-sizing:border-box;border:2px solid #ad812b;border-radius:10px;background:#08090be6;color:#fff;padding:8px 12px;margin-top:6px;font:700 18px/1.1 'Barlow Condensed',sans-serif;text-decoration:none}
+#inicio .upcoming-poster-footer .featured-button:hover{background:#f4e7c7}
 #inicio .home-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
 #inicio #recentResultCard,#inicio .home-info-grid .fund-card{box-sizing:border-box;min-width:0;min-height:170px;padding:14px 10px;text-align:center;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:7px}
-#inicio #recentResultCard>span,#inicio .home-info-grid .fund-card>span{align-self:center;padding-bottom:6px;border-bottom:2px solid #ed1b2f;font:800 clamp(14px,2.6vw,22px)/1.1 'Barlow Condensed',sans-serif;letter-spacing:.06em;color:#fff}
+#inicio #recentResultCard>span,#inicio .home-info-grid .fund-card>span{align-self:center;padding-bottom:6px;border-bottom:2px solid #b3841c;font:800 clamp(14px,2.6vw,22px)/1.1 'Barlow Condensed',sans-serif;letter-spacing:.06em;color:#fff}
 #inicio .recent-result-link{position:relative;z-index:1;display:grid;gap:4px;text-decoration:none;color:#fff}
 #inicio .recent-result-link small,#inicio .home-info-grid .fund-card small{font:600 14px/1.2 'Barlow Condensed',sans-serif;color:#fff}
 #inicio #recentResultScore{display:block;font:900 clamp(36px,6vw,56px)/1 'Barlow Condensed',sans-serif;color:#fff;white-space:nowrap}
-#inicio #recentResultScore em{font-style:normal;color:#f51c30}
+#inicio #recentResultScore em{font-style:normal;color:#91650b}
 #inicio #recentResultCard .recent-result-teams>span{color:#fff;font:600 13px/1.1 'Barlow Condensed',sans-serif;letter-spacing:0}
 #inicio .recent-result-teams{display:flex;justify-content:space-around;font:600 13px/1.1 'Barlow Condensed',sans-serif;color:#fff}
-#inicio #recentResultWinner{margin-top:3px;padding-top:6px;border-top:1px solid #ec1e3266}
+#inicio #recentResultWinner{margin-top:3px;padding-top:6px;border-top:1px solid #b3841c66}
 #inicio .home-info-grid .fund-card strong{margin:9px 0 3px;font:900 clamp(36px,6vw,56px)/1 'Barlow Condensed',sans-serif;color:#fff;white-space:nowrap}
 #inicio .recent-empty{font:700 20px/1.1 'Barlow Condensed',sans-serif;color:#fff}
 #inicio .home-final-match .match-top-zone,#inicio .home-final-match .match-bottom-zone{background:transparent;color:#fff;padding:22px}
 #inicio .home-final-match .match-top-zone{padding-bottom:16px}
 #inicio .home-final-match .match-bottom-zone{padding-top:0}
-#inicio .home-final-match .match-summary-heading{flex-direction:column;justify-content:center;gap:12px;border-bottom:1px solid #ed1b2f66;padding-bottom:18px}
-#inicio .home-final-match .match-summary-heading h2{margin:0;background:#c61b31;padding:6px 26px;border-radius:20px;font:800 28px/1.15 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase}
+#inicio .home-final-match .match-summary-heading{flex-direction:column;justify-content:center;gap:12px;border-bottom:1px solid #b3841c66;padding-bottom:18px}
+#inicio .home-final-match .match-summary-heading h2{margin:0;background:#91650b;padding:6px 26px;border-radius:20px;font:800 28px/1.15 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase}
 #inicio .home-final-match .featured-kicker{background:transparent;color:#fff;font:700 14px/1.4 'Barlow Condensed',sans-serif;letter-spacing:.12em;padding:0}
 #inicio .home-final-match .compact-result{background:transparent;padding:10px 0}
 #inicio .home-final-match .compact-result>strong{font:900 clamp(48px,7vw,72px)/1 'Barlow Condensed',sans-serif;color:#f4f5f8}
 #inicio .home-final-match .summary-team{font:700 clamp(16px,2vw,22px)/1.2 'Barlow Condensed',sans-serif}
-#inicio .home-final-match .featured-button{border:2px solid #ef1d32;border-radius:10px;background:#08090bd9;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px}
+#inicio .home-final-match .featured-button{border:2px solid #ad812b;border-radius:10px;background:#08090bd9;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px}
 #inicio .home-final-match .match-award,#inicio .home-final-match .match-award small,#inicio .home-final-match .match-awards-date{color:#f4f5f8}
 @media(max-width:400px){#inicio .upcoming-poster{padding:20px 14px 16px}#inicio .home-upcoming-teams{gap:28px}#inicio .home-upcoming-team h3{font-size:16px}#inicio .home-upcoming-team li{font-size:18px}#inicio .upcoming-poster-footer>strong{font-size:15px}#inicio .upcoming-poster-footer{font-size:15px}#inicio .home-final-match .match-top-zone{padding:20px 14px 14px}#inicio .home-final-match .match-bottom-zone{padding:0 14px 18px}}
 
-/* Keep season progress readable within the same black/red poster. */
+/* Keep season progress readable within the same gold-accented poster. */
 #inicio #seasonStatusCard .season-kicker{color:#fff;font:800 18px/1.2 'Barlow Condensed',sans-serif;letter-spacing:.03em}
-#inicio #seasonStatusCard .season-kicker i{background:#ed1b30;box-shadow:0 0 0 4px #ed1b302b}
-#inicio #seasonStatusCard #phaseLabel{background:#c61b31;color:#fff;border-radius:8px;font:800 18px/1.2 'Barlow Condensed',sans-serif;box-shadow:none}
+#inicio #seasonStatusCard .season-kicker i{background:#b3841c;box-shadow:0 0 0 4px #b3841c2b}
+#inicio #seasonStatusCard #phaseLabel{background:#91650b;color:#fff;border-radius:8px;font:800 18px/1.2 'Barlow Condensed',sans-serif;box-shadow:none}
 #inicio #seasonStatusCard #roundLabel{color:#fff;font:600 16px/1.2 'Barlow Condensed',sans-serif}
-#inicio #seasonStatusCard #progressLabel{background:#c61b312b;color:#fff;border:1px solid #e71b3070;font:700 15px/1.2 'Barlow Condensed',sans-serif}
+#inicio #seasonStatusCard #progressLabel{background:#91650b2b;color:#fff;border:1px solid #b3841c70;font:700 15px/1.2 'Barlow Condensed',sans-serif}
 #inicio #seasonStatusCard .progress-track{background:#ffffff25;box-shadow:none}
-#inicio #seasonStatusCard #progressBar{background:linear-gradient(90deg,#ab0e20,#f7263d)}
+#inicio #seasonStatusCard #progressBar{background:linear-gradient(90deg,#80570b,#d5ae50)}
 
 /* Poster typography: consistent levels, aligned headings and centered card content. */
 #inicio .upcoming-poster *,#inicio .home-info-grid *,#inicio #seasonStatusCard *{font-family:'Barlow Condensed',sans-serif}
@@ -147,17 +147,17 @@
 #inicio #recentResultScore,#inicio .home-info-grid .fund-card strong{margin:0;font-size:42px;line-height:1;font-weight:900;align-self:center}
 #inicio #recentResultCard .recent-result-teams{width:100%;justify-content:space-around;margin:0}
 #inicio .recent-result-link .summary-detail{display:grid;grid-template-rows:16px minmax(18px,auto);gap:4px;align-self:stretch;align-content:start}
-#inicio #recentResultWinner{margin:0;padding:4px 0 0;border-top:1px solid #ec1e3266;font-size:14px;line-height:1.2}
+#inicio #recentResultWinner{margin:0;padding:4px 0 0;border-top:1px solid #b3841c66;font-size:14px;line-height:1.2}
 #inicio .home-info-grid .fund-card .summary-detail{display:flex;align-items:center;justify-content:center;align-self:stretch;margin:0;font-size:14px;line-height:1.2}
 #inicio .home-info-grid .fund-card .summary-context{font-size:14px;line-height:18px;margin:0;color:#fff}
 #inicio #seasonStatusCard .season-kicker{font-size:18px;font-weight:800}
 #inicio #seasonStatusCard>div:first-child{align-items:center}
 @media(min-width:600px){#inicio #recentResultCard>span,#inicio .home-info-grid .fund-card>span{font-size:22px}#inicio #recentResultScore,#inicio .home-info-grid .fund-card strong{font-size:54px}}
 
-/* Light or dark textured poster according to the winning team. */
-#inicio #featuredMatch.kit-result-card.winner-white,#inicio #recentResultCard.result-white{--kit-ink:#111;--kit-accent:#e90015;--kit-line:#1113;background:#f8f8f8 url("../assets/match-poster-light.webp") center / 100% 100% no-repeat;border-color:#e90015;color:var(--kit-ink)}
-#inicio #featuredMatch.kit-result-card.winner-black,#inicio #recentResultCard.result-black{--kit-ink:#fff;--kit-accent:#e90015;--kit-line:#fff4;background:#08090b url("../assets/match-poster-clean.webp") center / 100% 100% no-repeat;border-color:#e90015;color:var(--kit-ink)}
-#inicio #featuredMatch.kit-result-card.winner-draw,#inicio #recentResultCard.result-draw{--kit-ink:#111;--kit-accent:#ed1b30;--kit-line:#fff4}
+/* Light or dark textugold poster according to the winning team. */
+#inicio #featuredMatch.kit-result-card.winner-white,#inicio #recentResultCard.result-white{--kit-ink:#111;--kit-accent:#91650b;--kit-line:#1113;background:#f8f8f8 url("../assets/match-poster-gold-light.webp") center / 100% 100% no-repeat;border-color:#91650b;color:var(--kit-ink)}
+#inicio #featuredMatch.kit-result-card.winner-black,#inicio #recentResultCard.result-black{--kit-ink:#fff;--kit-accent:#e9bf57;--kit-line:#fff4;background:#08090b url("../assets/match-poster-gold-dark.webp") center / 100% 100% no-repeat;border-color:#e9bf57;color:var(--kit-ink)}
+#inicio #featuredMatch.kit-result-card.winner-draw,#inicio #recentResultCard.result-draw{--kit-ink:#111;--kit-accent:#b3841c;--kit-line:#fff4}
 #inicio .kit-result-card .match-top-zone{padding:28px 13% 18px;color:var(--kit-ink)}
 #inicio .kit-result-card .match-bottom-zone{padding:0 13% 28px;color:var(--kit-ink)}
 #inicio .kit-result-card .match-summary-heading{border:0;padding:0;gap:8px}
@@ -170,8 +170,8 @@
 #inicio .kit-result-card .summary-team{grid-row:2;color:var(--kit-ink);font:400 clamp(15px,2.5vw,23px)/1.2 Anton,'Barlow Condensed',sans-serif;text-transform:uppercase}
 #inicio .kit-result-card .summary-team:first-child{grid-column:1}
 #inicio .kit-result-card .summary-team:last-child{grid-column:3}
-#inicio .kit-result-card.winner-white .score-white,#inicio #recentResultCard.result-white .score-white{color:#e90015}
-#inicio .kit-result-card.winner-black .score-black,#inicio #recentResultCard.result-black .score-black{color:#e90015}
+#inicio .kit-result-card.winner-white .score-white,#inicio #recentResultCard.result-white .score-white{color:#91650b}
+#inicio .kit-result-card.winner-black .score-black,#inicio #recentResultCard.result-black .score-black{color:#e9bf57}
 #inicio .kit-result-card .match-result-summary>b{font:400 clamp(20px,3vw,32px)/1.2 Anton,'Barlow Condensed',sans-serif;color:var(--kit-accent);text-transform:uppercase}
 #inicio .kit-result-card .match-result-summary .mood-caption{font-family:'Barlow Condensed',sans-serif;color:var(--kit-ink)}
 #inicio .kit-result-card .last-match-awards{border-top:2px solid var(--kit-accent);padding-top:0;gap:0}
@@ -200,14 +200,14 @@
 
 #inicio #recentResultCard.result-draw #recentResultScore{font:400 32px/1 Anton,'Barlow Condensed',sans-serif}
 @media(min-width:600px){#inicio #recentResultCard.result-draw #recentResultScore{font-size:48px}}
-#inicio #recentResultCard.result-white #recentResultScore .score-white{color:#e90015}
+#inicio #recentResultCard.result-white #recentResultScore .score-white{color:#91650b}
 #inicio #recentResultCard.result-white #recentResultScore .score-black{color:#111}
 #inicio #recentResultCard.result-black #recentResultScore .score-white,#inicio #recentResultCard.result-draw #recentResultScore .score-number{color:#fff}
-#inicio #recentResultCard.result-black #recentResultScore .score-black{color:#e90015}
+#inicio #recentResultCard.result-black #recentResultScore .score-black{color:#e9bf57}
 
-/* Light home panels retain the same texture and red accents. */
+/* Light home panels retain the same texture and gold accents. */
 #inicio .upcoming-poster-heading>span,#inicio .upcoming-poster-heading>strong,#inicio .home-upcoming-team h3,#inicio .home-upcoming-team li,#inicio .upcoming-poster-footer,#inicio .upcoming-poster-footer>strong{color:#111}
-#inicio .upcoming-versus{background:#fafafa;color:#e90015}
+#inicio .upcoming-versus{background:#fafafa;color:#91650b}
 #inicio .upcoming-poster-footer .featured-button{background:#ffffffb3;color:#111}
 #inicio #seasonStatusCard .season-kicker,#inicio #seasonStatusCard #roundLabel,#inicio #seasonStatusCard #progressLabel{color:#111}
 #inicio #seasonStatusCard .progress-track{background:#1112}
@@ -216,9 +216,9 @@
 #inicio #recentResultCard .recent-empty{color:#111}
 
 /* Saved dates use the same light or dark winner texture. */
-#fechas .match-card{--date-ink:#111;--date-accent:#d6162d;--date-line:#1113;background:#fafafa url("../assets/match-poster-light.webp") center / 100% 100% no-repeat;border:1px solid var(--date-accent);padding:24px 12%;color:var(--date-ink);overflow:hidden}
-#fechas .match-card.kit-match-white{background-image:url("../assets/match-poster-light.webp");--date-accent:#e90015}
-#fechas .match-card.kit-match-black{background-color:#08090b;background-image:url("../assets/match-poster-clean.webp");--date-ink:#fff;--date-accent:#e90015;--date-line:#fff4}
+#fechas .match-card{--date-ink:#111;--date-accent:#91650b;--date-line:#1113;background:#fafafa url("../assets/match-poster-gold-light.webp") center / 100% 100% no-repeat;border:1px solid var(--date-accent);padding:24px 12%;color:var(--date-ink);overflow:hidden}
+#fechas .match-card.kit-match-white{background-image:url("../assets/match-poster-gold-light.webp");--date-accent:#91650b}
+#fechas .match-card.kit-match-black{background-color:#08090b;background-image:url("../assets/match-poster-gold-dark.webp");--date-ink:#fff;--date-accent:#e9bf57;--date-line:#fff4}
 #fechas .match-card .match-top{gap:12px;border-color:var(--date-line)}
 #fechas .match-card .match-top strong{font:400 23px/1.2 Anton,'Barlow Condensed',sans-serif;color:var(--date-ink)}
 #fechas .match-card .match-top span{color:var(--date-ink);font:600 14px/1.2 'Barlow Condensed',sans-serif;text-align:right}
