@@ -1,7 +1,7 @@
 (function(){
  'use strict';
  const root=document.querySelector('#recoveryDrafts'),status=document.querySelector('#recoveryStatus');
- const prefixes=['chiquimafia_live_score_v1:','chiquimafia_shared_score_v1:copia-local:'];
+ const prefixes=['chiquimafia_live_score_v1:','chiquimafia_shared_score_v1:copia-local:','chiquimafia_recovery_backup_v1:'];
  let urls=[];
  const node=(tag,text,className)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(className)e.className=className;return e};
  const filename=(number,extension)=>'chiquimafia-fecha-'+String(number||'sin-identificar').replace(/[^\w-]/g,'')+'-anotaciones.'+extension;
