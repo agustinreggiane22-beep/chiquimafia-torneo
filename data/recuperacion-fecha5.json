@@ -1,0 +1,318 @@
+{
+  "source": "38 numbered goal records in user screenshots",
+  "matchNumber": 5,
+  "whiteGoals": 21,
+  "blackGoals": 17,
+  "goalEvents": [
+    {
+      "id": "recovered-screenshot-1",
+      "team": "black",
+      "player": "PABLO",
+      "assist": "MATI BILLO",
+      "assistDecision": "assigned",
+      "sourceOrder": 1
+    },
+    {
+      "id": "recovered-screenshot-2",
+      "team": "white",
+      "player": "FRANCO",
+      "assist": "GONZA",
+      "assistDecision": "assigned",
+      "sourceOrder": 2
+    },
+    {
+      "id": "recovered-screenshot-3",
+      "team": "white",
+      "player": "DIEGO",
+      "assist": "JOACOREGGI",
+      "assistDecision": "assigned",
+      "sourceOrder": 3
+    },
+    {
+      "id": "recovered-screenshot-4",
+      "team": "black",
+      "player": "LUCHO",
+      "assist": "LORIA",
+      "assistDecision": "assigned",
+      "sourceOrder": 4
+    },
+    {
+      "id": "recovered-screenshot-5",
+      "team": "black",
+      "player": "LUCHO",
+      "assist": null,
+      "assistDecision": "pending",
+      "sourceOrder": 5
+    },
+    {
+      "id": "recovered-screenshot-6",
+      "team": "white",
+      "player": "VALEN",
+      "assist": null,
+      "assistDecision": "pending",
+      "sourceOrder": 6
+    },
+    {
+      "id": "recovered-screenshot-7",
+      "team": "white",
+      "player": "FRANCO",
+      "assist": null,
+      "assistDecision": "pending",
+      "sourceOrder": 7
+    },
+    {
+      "id": "recovered-screenshot-8",
+      "team": "black",
+      "player": "PABLO",
+      "assist": "LORIA",
+      "assistDecision": "assigned",
+      "sourceOrder": 8
+    },
+    {
+      "id": "recovered-screenshot-9",
+      "team": "black",
+      "player": "LUCHO",
+      "assist": null,
+      "assistDecision": "none",
+      "sourceOrder": 9
+    },
+    {
+      "id": "recovered-screenshot-10",
+      "team": "white",
+      "player": "FRANCO",
+      "assist": "JOACOREGGI",
+      "assistDecision": "assigned",
+      "sourceOrder": 10
+    },
+    {
+      "id": "recovered-screenshot-11",
+      "team": "black",
+      "player": "MATI BILLO",
+      "assist": "LUCHO",
+      "assistDecision": "assigned",
+      "sourceOrder": 11
+    },
+    {
+      "id": "recovered-screenshot-12",
+      "team": "white",
+      "player": "JOACOREGGI",
+      "assist": "GONZA",
+      "assistDecision": "assigned",
+      "sourceOrder": 12
+    },
+    {
+      "id": "recovered-screenshot-13",
+      "team": "white",
+      "player": "AGUSTIN K",
+      "assist": "DIEGO",
+      "assistDecision": "assigned",
+      "sourceOrder": 13
+    },
+    {
+      "id": "recovered-screenshot-14",
+      "team": "black",
+      "player": "AUGUSTO",
+      "assist": "LUCAS",
+      "assistDecision": "assigned",
+      "sourceOrder": 14
+    },
+    {
+      "id": "recovered-screenshot-15",
+      "team": "white",
+      "player": "GONZA",
+      "assist": null,
+      "assistDecision": "none",
+      "sourceOrder": 15
+    },
+    {
+      "id": "recovered-screenshot-16",
+      "team": "white",
+      "player": "MAIK",
+      "assist": null,
+      "assistDecision": "pending",
+      "sourceOrder": 16
+    },
+    {
+      "id": "recovered-screenshot-17",
+      "team": "white",
+      "player": "FRANCO",
+      "assist": "MAIK",
+      "assistDecision": "assigned",
+      "sourceOrder": 17
+    },
+    {
+      "id": "recovered-screenshot-18",
+      "team": "black",
+      "player": "LUCHO",
+      "assist": null,
+      "assistDecision": "none",
+      "sourceOrder": 18
+    },
+    {
+      "id": "recovered-screenshot-19",
+      "team": "black",
+      "player": "LUCHO",
+      "assist": null,
+      "assistDecision": "none",
+      "sourceOrder": 19
+    },
+    {
+      "id": "recovered-screenshot-20",
+      "team": "white",
+      "player": "JOACOREGGI",
+      "assist": "DIEGO",
+      "assistDecision": "assigned",
+      "sourceOrder": 20
+    },
+    {
+      "id": "recovered-screenshot-21",
+      "team": "black",
+      "player": "PABLO",
+      "assist": "MATI BILLO",
+      "assistDecision": "assigned",
+      "sourceOrder": 21
+    },
+    {
+      "id": "recovered-screenshot-22",
+      "team": "white",
+      "player": "DIEGO",
+      "assist": "AGUSTIN K",
+      "assistDecision": "assigned",
+      "sourceOrder": 22
+    },
+    {
+      "id": "recovered-screenshot-23",
+      "team": "black",
+      "player": "AUGUSTO",
+      "assist": "LUCHO",
+      "assistDecision": "assigned",
+      "sourceOrder": 23
+    },
+    {
+      "id": "recovered-screenshot-24",
+      "team": "white",
+      "player": "JOACOREGGI",
+      "assist": "MATU",
+      "assistDecision": "assigned",
+      "sourceOrder": 24
+    },
+    {
+      "id": "recovered-screenshot-25",
+      "team": "white",
+      "player": "FRANCO",
+      "assist": null,
+      "assistDecision": "none",
+      "sourceOrder": 25
+    },
+    {
+      "id": "recovered-screenshot-26",
+      "team": "white",
+      "player": "MAIK",
+      "assist": "FRANCO",
+      "assistDecision": "assigned",
+      "sourceOrder": 26
+    },
+    {
+      "id": "recovered-screenshot-27",
+      "team": "white",
+      "player": "MAIK",
+      "assist": "AGUSTIN K",
+      "assistDecision": "assigned",
+      "sourceOrder": 27
+    },
+    {
+      "id": "recovered-screenshot-28",
+      "team": "black",
+      "player": "LUCHO",
+      "assist": null,
+      "assistDecision": "none",
+      "sourceOrder": 28
+    },
+    {
+      "id": "recovered-screenshot-29",
+      "team": "white",
+      "player": "JOACOREGGI",
+      "assist": "DIEGO",
+      "assistDecision": "assigned",
+      "sourceOrder": 29
+    },
+    {
+      "id": "recovered-screenshot-30",
+      "team": "black",
+      "player": "LORIA",
+      "assist": "AUGUSTO",
+      "assistDecision": "assigned",
+      "sourceOrder": 30
+    },
+    {
+      "id": "recovered-screenshot-31",
+      "team": "white",
+      "player": "FRANCO",
+      "assist": "GONZA",
+      "assistDecision": "assigned",
+      "sourceOrder": 31
+    },
+    {
+      "id": "recovered-screenshot-32",
+      "team": "white",
+      "player": "FRANCO",
+      "assist": "MAIK",
+      "assistDecision": "assigned",
+      "sourceOrder": 32
+    },
+    {
+      "id": "recovered-screenshot-33",
+      "team": "black",
+      "player": "AUGUSTO",
+      "assist": null,
+      "assistDecision": "none",
+      "sourceOrder": 33
+    },
+    {
+      "id": "recovered-screenshot-34",
+      "team": "black",
+      "player": "LUCHO",
+      "assist": "PABLO",
+      "assistDecision": "assigned",
+      "sourceOrder": 34
+    },
+    {
+      "id": "recovered-screenshot-35",
+      "team": "black",
+      "player": "MATI BILLO",
+      "assist": "LORIA",
+      "assistDecision": "assigned",
+      "sourceOrder": 35
+    },
+    {
+      "id": "recovered-screenshot-36",
+      "team": "white",
+      "player": "FRANCO",
+      "assist": null,
+      "assistDecision": "none",
+      "sourceOrder": 36
+    },
+    {
+      "id": "recovered-screenshot-37",
+      "team": "white",
+      "player": "MATU",
+      "assist": "MAIK",
+      "assistDecision": "assigned",
+      "sourceOrder": 37
+    },
+    {
+      "id": "recovered-screenshot-38",
+      "team": "black",
+      "player": "MATI BILLO",
+      "assist": null,
+      "assistDecision": "none",
+      "sourceOrder": 38
+    }
+  ],
+  "unresolvedAssistEvents": [
+    5,
+    6,
+    7,
+    16
+  ]
+}

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+ <title>Recuperar fecha 5 · Chiquimafia</title>
+ <style>
+ *{box-sizing:border-box}body{margin:0;background:#eff2f6;color:#15293b;font:16px/1.5 system-ui,sans-serif}main{max-width:740px;margin:auto;padding:24px 16px}h1{font-size:27px;line-height:1.2}h2{font-size:20px}section{padding:18px;background:#fff;border:1px solid #d4dce4;border-radius:16px;margin:18px 0}a{color:#174d75}.score{font-weight:900;font-size:32px;text-align:center}.muted{font-size:14px;color:#526578}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:8px 4px;text-align:right;border-bottom:1px solid #e1e7ed}td:first-child,th:first-child{text-align:left}.teams{display:grid;grid-template-columns:1fr 1fr;gap:14px}.teams p{overflow-wrap:anywhere;white-space:pre-line}button{min-height:46px;border:1px solid #99711b;border-radius:10px;padding:12px 16px;background:#172e43;color:white;font:700 15px system-ui,sans-serif;cursor:pointer}button:disabled{opacity:.5;cursor:default}label{display:block;font-weight:700}input{display:block;width:100%;max-width:360px;padding:12px;margin:8px 0 14px;border-radius:8px;border:1px solid #a6b6c4;font:16px system-ui,sans-serif}#f5Status{white-space:pre-wrap;padding:14px;border-radius:10px;background:#fff4d8}.error{color:#932b2b}.success{color:#1b603c}ol{padding-left:22px}li{margin:8px 0;font-size:14px}#f5Done{font-weight:800}button.secondary{background:#fff;color:#172e43}
+ </style>
+</head>
+<body><main>
+ <a href="./">← Volver al torneo</a><h1>Recuperar el partido de la fecha 5</h1>
+ <p>Reconstruido de las capturas: <strong>38 goles, Claro 21–17 Oscuro</strong>. No necesitás el celular de tu amigo para usar esta copia.</p>
+ <section><h2>Anotaciones recuperadas</h2><p class="score">Claro 21 — 17 Oscuro</p><div id="f5Recovered">Cargando la copia…</div><p class="muted">Los pases de los goles 5, 6, 7 y 16 siguen pendientes. No se inventó ninguna asistencia.</p><a href="data/recuperacion-fecha5.json" download>Guardar copia de los 38 goles</a><details><summary>Ver todos los goles y pases</summary><ol id="f5Events"></ol></details></section>
+ <section><h2>Equipos guardados en el torneo</h2><p class="muted">Comprobamos que cada goleador y cada pase pertenezcan a su equipo antes de publicar.</p><div id="f5Teams" class="teams"></div><p id="f5Status" role="status">Conectando con el torneo…</p><button id="f5Reload" class="secondary" type="button">Volver a comprobar</button></section>
+ <section><h2>Publicar el resultado recuperado</h2><p>Revisá la copia y los equipos. Esto publica la fecha 5 con sus goles y asistencias y actualiza los puntos correspondientes.</p><form id="f5Form"><label>Contraseña del administrador<input id="f5Pin" type="password" inputmode="text" autocomplete="current-password" required></label><button id="f5Publish" type="submit" disabled>Publicar fecha 5: 21–17</button></form><p id="f5Done" role="status"></p></section>
+ <script src="js/config.js"></script><script src="js/sheets.js"></script><script src="js/goals.js?v=2026102502"></script><script src="js/recover-match5.js?v=1"></script>
+</main></body></html>

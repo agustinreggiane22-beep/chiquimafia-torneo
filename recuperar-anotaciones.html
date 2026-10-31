@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Recuperar anotaciones · Chiquimafia</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#eef2f6;color:#15293b;font:16px/1.5 system-ui,sans-serif}main{max-width:720px;margin:auto;padding:24px 16px}h1{font-size:28px;line-height:1.15}h2{margin:0;font-size:21px}p{margin:12px 0}.notice,article{background:#fff;border:1px solid #d3dce5;border-radius:16px;padding:18px;margin:16px 0}.notice{border-left:4px solid #b3841c}.muted{color:#526578;font-size:14px}.score{display:block;font-size:30px;font-weight:800;margin:12px 0}.actions{display:flex;flex-wrap:wrap;gap:8px}button,a.download{font:700 15px/1.3 system-ui,sans-serif;border:1px solid #b3841c;border-radius:10px;padding:12px 14px;min-height:46px;background:#172e43;color:#fff;cursor:pointer;text-decoration:none;display:inline-block}button.secondary,a.download{background:#fff;color:#172e43}textarea{display:block;width:100%;min-height:230px;padding:12px;font:14px/1.5 system-ui,sans-serif;border:1px solid #c2cfdb;border-radius:8px;margin-top:10px}summary{cursor:pointer;font-weight:700;margin-top:14px}.message{white-space:pre-wrap;color:#205c3c}a{color:#154b72}.error{color:#8d3030}
+  </style>
+</head>
+<body>
+  <main>
+    <a href="./">← Volver al torneo</a>
+    <h1>Recuperar anotaciones</h1>
+    <div class="notice"><strong>Abrí este enlace en el celular y navegador donde anotaste.</strong><p>Si anotaste en Chrome, abrilo en Chrome; si fue en Safari, en Safari. Al abrirlo desde WhatsApp o desde otro navegador podrían no aparecer.</p><p class="muted">Esta página solo lee las anotaciones de este navegador. No borra, cambia ni publica resultados. No necesitás entrar como administrador.</p></div>
+    <p id="recoveryStatus" role="status">Buscando anotaciones guardadas…</p>
+    <button id="recoveryRefresh" class="secondary" type="button">Volver a buscar</button>
+    <div id="recoveryDrafts"></div>
+    <p class="muted">Mandale al administrador la copia o el texto. Después podrá revisar los goles y asistencias y resolver el error de publicación.</p>
+  </main>
+  <script src="js/recover-score.js?v=1"></script>
+</body>
+</html>
