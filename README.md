@@ -187,3 +187,13 @@ El acceso compartido requiere implementar el código completo de `google-apps-sc
 Cada cambio tiene un identificador persistente y se aplica bajo bloqueo; reintentar una petición no vuelve a sumar el gol. Las ediciones de un mismo gol usan revisiones para detectar conflictos. Los pendientes se guardan en cada dispositivo y se combinan con el registro del servidor al reconectar. Antes de publicar, ambos anotadores deben terminar de sincronizar; el administrador revisa y confirma el resultado. Una publicación con anotaciones distintas de las compartidas se rechaza. Publicar cierra el acceso de escritura del enlace.
 
 Pruebas específicas: `node --test tests/shared-score-backend.test.cjs`, `CHIQUI_TEST_URL=http://127.0.0.1:8000/ node tests/live-score-landscape.cjs` y `CHIQUI_TEST_URL=http://127.0.0.1:8000/ node tests/shared-score-flow.cjs`. Las pruebas usan Google simulado y no modifican el torneo real.
+
+### Excepción de MVP y presencia: noviembre de 2026
+
+`reabrir-votacion-mvp.html` explica cómo copiar `Reabrir-MVP-Viernes.txt` a un archivo nuevo del proyecto de Apps Script y ejecutar `aplicarCambiosMvpYPresencia`. Guardar y ejecutar la función en el proyecto existente alcanza para actualizar los registros; la página comprueba el resultado real por separado. La web no ejecuta estos cambios al abrir el enlace.
+
+La reapertura conserva votos, registra la ventana anterior, retira temporalmente el premio cerrado y programa un temporizador para el viernes 20/11/2026 a las 19:00 de Argentina. Después de ese plazo no puede volver a abrirse con esta función. El objetivo queda fijado a la última fecha publicada de la primera ejecución, sin tocar partidos pendientes ni fechas futuras.
+
+La presencia de Mati Billo corresponde solo a la fecha 7: se comprueba el jugador activo y el resultado publicado; si ya integra los equipos, su +1 ya está incluido. En otro caso se registra un único ajuste positivo de +1, con identificador estable y motivo de presencia. Se reutiliza el registro de ajustes compatible con la implementación existente; los valores positivos no se muestran como sanciones en la tabla. No se agregan goles, asistencias, votos, victorias ni otros premios.
+
+Pruebas: `node --test tests/mvp-reopen.test.cjs tests/mvp-backend.test.cjs` y `CHIQUI_TEST_URL=http://127.0.0.1:8000/ node tests/mvp-reopen.cjs`. Los datos de prueba son simulados.

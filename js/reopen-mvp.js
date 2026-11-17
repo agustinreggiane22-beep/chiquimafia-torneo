@@ -1,0 +1,21 @@
+(function(){
+ 'use strict';const $=s=>document.querySelector(s),deadline=Date.parse('2026-11-20T19:00:00-03:00');let checking=false;
+ function select(){const box=$('#reopenCode');box.focus();box.select();box.setSelectionRange(0,box.value.length)}
+ $('#reopenSelect').onclick=()=>{select();$('#reopenCopyStatus').textContent='Código seleccionado. Copialo al archivo ReabrirMVP de Apps Script.'};
+ $('#reopenCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('#reopenCode').value);$('#reopenCopyStatus').textContent='Código copiado. Pegalo en ReabrirMVP, guardá y ejecutá aplicarCambiosMvpYPresencia.'}catch{select();$('#reopenCopyStatus').textContent='Seleccioná Copiar y pegá el código en ReabrirMVP de Apps Script.'}};
+ async function check(){if(checking)return;checking=true;$('#reopenCheck').disabled=true;const status=$('#reopenStatus');status.className='';status.textContent='Consultando la última fecha publicada…';try{
+  const data=await ChiquiSheets.loadAll(),[records,players,adjustments]=await Promise.all([ChiquiGoals.matchRecords(),ChiquiGoals.webPlayers(),ChiquiGoals.sanctions()]),latest=data.matches.filter(m=>m.played).sort((a,b)=>Number(b.number)-Number(a.number))[0],now=ChiquiGoals.serverTime();
+  const aliases=new Set(['matibillo','billo']),candidates=players.filter(p=>p.status!=='deleted'&&aliases.has(ChiquiSheets.key(p.name))),ids=new Set(candidates.map(p=>ChiquiSheets.key(p.name))),presence=$('#presenceStatus'),match7=data.matches.find(m=>Number(m.number)===7);
+  presence.className='';
+  if(ids.size!==1){presence.className='error';presence.textContent=ids.size?'Mati Billo: hay dos registros con ese apodo; falta revisar cuál corresponde.':'Mati Billo: no figura activo en el plantel; falta revisar su registro.'}
+  else{const player=candidates[0].name,key=ChiquiSheets.key(player),automatic=Boolean(match7?.played&&[...match7.white,...match7.black].some(name=>ChiquiSheets.key(name)===key)),extra=adjustments.find(a=>String(a.id)==='presence-7-'+key.toUpperCase()&&Number(a.points)===1&&ChiquiSheets.key(a.player)===key);presence.className=automatic||extra?'success':'error';presence.textContent=automatic?'Mati Billo: el punto de presencia de la fecha 7 ya está incluido en el partido publicado.':extra?'Mati Billo: confirmado el ajuste de +1 de presencia por la fecha 7.':'Mati Billo: el punto de presencia de la fecha 7 todavía no está confirmado. Ejecutá los cambios y volvé a comprobar.'}
+  if(now>=deadline){status.textContent='El plazo del viernes 20/11 a las 19:00 de Argentina ya terminó. La función no abrirá otra votación.';status.className='error';return}
+  if(!latest){status.textContent='Todavía no hay una fecha con resultado publicado.';return}
+  const record=records.find(r=>Number(r.matchNumber)===Number(latest.number));
+  if(record&&!record.closed&&Date.parse(record.closesAt)===deadline&&Date.parse(record.opensAt)<=now){status.className='success';status.textContent='Confirmado: la votación de MVP de la fecha '+latest.number+' está abierta ahora y cierra el viernes 20/11/2026 a las 19:00 de Argentina. Ya pueden votar en la página.'}
+  else{status.textContent='Último partido publicado: fecha '+latest.number+'. '+(!record?'Todavía no tiene una votación registrada.':record.closed?'Su votación está cerrada.':'Tiene otro horario de votación.')+'\nLa reapertura hasta el viernes todavía no está confirmada. Ejecutá la función de abajo en Apps Script y volvé a comprobar.'}
+ }catch(error){status.className='error';$('#presenceStatus').textContent='Falta comprobar la presencia de Mati Billo.';status.textContent='No se pudo comprobar la reapertura. '+(error.message||'Revisá la conexión con Google.')}finally{checking=false;$('#reopenCheck').disabled=false}}
+ $('#reopenCheck').onclick=check;
+ fetch('Reabrir-MVP-Viernes.txt?v=2026111701',{cache:'no-store'}).then(response=>{if(!response.ok)throw Error('No se pudo cargar la función. Recargá la página.');return response.text()}).then(code=>{$('#reopenCode').value=code;$('#reopenCopy').disabled=false;$('#reopenSelect').disabled=false;$('#reopenCopyStatus').textContent='Función lista para copiar.'}).catch(error=>$('#reopenCopyStatus').textContent=error.message);
+ check();
+})();

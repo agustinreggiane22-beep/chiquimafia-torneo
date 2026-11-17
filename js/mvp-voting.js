@@ -5,7 +5,7 @@
  const key=name=>ChiquiSheets.key(name),localKey=()=>`${ChiquiGoals.isPreview?.()?'chiquimafia_mvp_preview:':'chiquimafia_mvp_identity:'}${current?.number}:${String(current?.date).slice(0,10)}`;
  const record=()=>records.find(r=>Number(r.matchNumber)===current?.number),now=()=>ChiquiGoals.serverTime();
  const phase=()=>{const r=record();return !r?'unavailable':r.closed||now()>=Date.parse(r.closesAt)?'closed':now()<Date.parse(r.opensAt)?'scheduled':'open'};
- const date=value=>new Date(value).toLocaleString('es-AR',{timeZone:'America/Argentina/Buenos_Aires',weekday:'long',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});
+ const date=value=>new Date(value).toLocaleString('es-AR',{timeZone:'America/Argentina/Buenos_Aires',weekday:'long',hour:'2-digit',minute:'2-digit',hourCycle:'h23',day:'numeric',month:'short'});
  function message(text,error=false){$('#mvpVoteMessage').textContent=text;$('#mvpVoteMessage').className='form-message'+(error?' error':' success')}
  function remember(){try{localStorage.setItem(localKey(),JSON.stringify({voter,submitted,candidate:submitted?candidate:''}))}catch{}}
  function restore(){voter='';candidate='';submitted=false;try{const saved=JSON.parse(localStorage.getItem(localKey())||'null');if(saved&&[...current.white,...current.black].some(p=>key(p)===key(saved.voter))){voter=saved.voter;submitted=Boolean(saved.submitted);candidate=submitted?saved.candidate:''}}catch{}}

@@ -825,3 +825,62 @@ function applyLiveOperation_(token,op){return locked_(()=>{
   session.applied.push(op.id); // Retained for the entire match: retries never duplicate a goal.
   writeLiveSession_(session);return publicLiveSession_(session);
 })}
+
+// Exceptional MVP reopening. Run the public helper in the tournament's Apps Script editor.
+function ensureReopenedMvpTimer_(record) {
+  const properties=PropertiesService.getScriptProperties(),property='MVP_TRIGGER_'+record.matchNumber+'_'+record.closesAt,id=properties.getProperty(property);
+  if(id&&ScriptApp.getProjectTriggers().some(trigger=>trigger.getUniqueId()===id))return;
+  const trigger=ScriptApp.newTrigger('closeMvpVoting').timeBased().at(new Date(record.closesAt)).create();
+  properties.setProperty(property,trigger.getUniqueId());
+}
+function reopenMvpVoting_(item) {
+  return locked_(()=>{
+    const number=Number(item&&item.matchNumber),end=Date.parse(item&&item.closesAt),now=Date.now(),requestId=String(item&&item.requestId||'').trim();
+    if(!Number.isInteger(number)||number<1||!Number.isFinite(end)||end<=now||!requestId)throw new Error('Indicá una fecha publicada y un cierre futuro para la reapertura.');
+    const record=findMatchRecord_(number),published=listResults_().some(result=>Number(result.matchNumber)===number&&String(result.played)!=='false'),deleted=listRows_(DELETED_DATES_SHEET_NAME,['matchNumber','deletedAt']).some(row=>Number(row.matchNumber)===number);
+    if(!record||!published||deleted)throw new Error('Esta fecha no tiene un resultado y una votación vigentes. No se modificó ningún partido.');
+    matchLineup_(number);
+    const closesAt=new Date(end).toISOString(),history=Array.isArray(record.mvpReopenHistory)?record.mvpReopenHistory:[],prior=history.find(entry=>entry.requestId===requestId);
+    if(prior){
+      if(Date.parse(record.closesAt)!==end||record.closed)throw new Error('Esta reapertura ya se aplicó y luego cambió la votación. Revisá la fecha antes de volver a modificarla.');
+      ensureReopenedMvpTimer_(record);
+      return {matchNumber:number,opensAt:record.opensAt,closesAt:record.closesAt,alreadyApplied:true};
+    }
+    const stamp=new Date(now).toISOString(),next={...record,opensAt:stamp,closesAt,closed:false,closedAt:null,mvpAwards:[],voteCount:0,mvpReopenHistory:[...history,{requestId,reopenedAt:stamp,reason:String(item.reason||'Publicación tardía del resultado'),previous:{opensAt:record.opensAt,closesAt:record.closesAt,closed:Boolean(record.closed),closedAt:record.closedAt||null,mvpAwards:record.mvpAwards||[],voteCount:record.voteCount??null}}]};
+    // Install the future timer first: a permission failure must not leave voting reopened without automatic closure.
+    ensureReopenedMvpTimer_(next);
+    writeMatchRecord_(next);SpreadsheetApp.flush();
+    return {matchNumber:number,opensAt:next.opensAt,closesAt:next.closesAt,alreadyApplied:false};
+  });
+}
+function reabrirUltimoMvpHastaViernes() {
+  const closesAt='2026-11-20T19:00:00-03:00',requestId='publicacion-tardia-viernes-2026-11-20';
+  if(Date.now()>=Date.parse(closesAt))throw new Error('El viernes 20 de noviembre de 2026 a las 19:00 de Argentina ya pasó. No se abrió otra votación.');
+  const properties=PropertiesService.getScriptProperties(),targetProperty='MVP_REOPEN_TARGET_20261120',saved=Number(properties.getProperty(targetProperty)||0),deleted=new Set(listRows_(DELETED_DATES_SHEET_NAME,['matchNumber','deletedAt']).map(row=>Number(row.matchNumber))),latest=listResults_().filter(result=>String(result.played)!=='false'&&!deleted.has(Number(result.matchNumber))).sort((a,b)=>Number(b.matchNumber)-Number(a.matchNumber))[0];
+  if(!latest)throw new Error('Todavía no hay un resultado publicado para reabrir su votación.');
+  if(saved&&saved!==Number(latest.matchNumber))throw new Error('Ya se aplicó esta reapertura a la fecha '+saved+' y se publicó otro partido después. No se modificó la nueva fecha.');
+  const result=reopenMvpVoting_({matchNumber:saved||Number(latest.matchNumber),closesAt,requestId,reason:'Se amplía hasta el viernes porque el resultado se publicó tarde.'});
+  properties.setProperty(targetProperty,String(result.matchNumber));
+  console.log('MVP de la fecha '+result.matchNumber+' abierto. Cierra el viernes 20/11/2026 a las 19:00 de Argentina. Se conservan los votos existentes.');
+  return result;
+}
+function sumarPresenciaMatiBilloFecha7() {
+  return locked_(()=>{
+    const number=7,aliases=new Set(['MATIBILLO','BILLO']),players=listWebPlayers_().filter(player=>player.status!=='deleted'&&aliases.has(participantKey_(player.name))),ids=new Set(players.map(player=>participantKey_(player.name)));
+    if(ids.size!==1)throw new Error(ids.size?'Hay dos registros distintos para Mati Billo. Revisá el nombre antes de ajustar sus puntos.':'Mati Billo no figura activo en el plantel. Revisá su registro antes de ajustar los puntos.');
+    const player=players[0].name,id=participantKey_(player),published=listResults_().some(result=>Number(result.matchNumber)===number&&String(result.played)!=='false'),deleted=listRows_(DELETED_DATES_SHEET_NAME,['matchNumber','deletedAt']).some(row=>Number(row.matchNumber)===number);
+    if(!published||deleted)throw new Error('La fecha 7 todavía no tiene un resultado publicado vigente. El punto se aplica después de publicarla.');
+    const lineup=matchLineup_(number),automatic=[...lineup.white,...lineup.black].some(name=>participantKey_(name)===id),adjustmentId='presence-7-'+id,adjustments=listRows_(SANCTION_SHEET_NAME,['id','player','points','reason','createdAt']),existing=adjustments.find(row=>row.id===adjustmentId);
+    if(existing){if(Number(existing.points)!==1||participantKey_(existing.player)!==id)throw new Error('El ajuste de presencia existente tiene otro valor. Revisalo antes de modificarlo.');console.log('El punto adicional de presencia de '+player+' en la fecha 7 ya estaba registrado.');return {matchNumber:number,player,added:false,points:1,source:'adjustment'}}
+    if(automatic){console.log(player+' ya suma el punto de presencia por estar en los equipos de la fecha 7 publicada.');return {matchNumber:number,player,added:false,points:1,source:'match'}}
+    genericSheet_(SANCTION_SHEET_NAME,['id','player','points','reason','createdAt']).appendRow([adjustmentId,player,1,'Presencia adicional · Fecha 7 (solo +1 punto)',new Date().toISOString()]);SpreadsheetApp.flush();
+    console.log('Se sumó +1 de presencia a '+player+' por la fecha 7.');return {matchNumber:number,player,added:true,points:1,source:'adjustment'};
+  });
+}
+function aplicarCambiosMvpYPresencia() {
+  const result={};
+  try{result.mvp=reabrirUltimoMvpHastaViernes()}catch(error){result.mvpError=error.message;console.log('MVP: '+error.message)}
+  try{result.presence=sumarPresenciaMatiBilloFecha7()}catch(error){result.presenceError=error.message;console.log('Presencia de Mati Billo: '+error.message)}
+  console.log('Terminó la comprobación de ambos cambios. Volvé a la página de instrucciones y tocá Comprobar cambios.');
+  return result;
+}

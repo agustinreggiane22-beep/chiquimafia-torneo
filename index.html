@@ -129,7 +129,7 @@
 <form id="resultForm"><label>Fecha N.º<input id="resultMatch" type="number" min="1" required></label><div class="compact-fields"><label>Goles Equipo Claro<input id="resultWhite" type="number" min="0" required></label><label>Goles Equipo Oscuro<input id="resultBlack" type="number" min="0" required></label></div><button type="submit">Publicar resultado</button><p class="admin-help">Las fechas 1 a 18 actualizan la clasificación. Desde la fecha 19, los equipos y resultados se guardan como playoffs sin sumar puntos, PJ, victorias, empates ni derrotas.</p><p id="resultMessage" class="form-message"></p></form>
 <div id="liveScoreReview" class="live-score-review" hidden><h4 id="liveScoreReviewTitle"></h4><ul id="liveScoreReviewPlayers"></ul><p>Estas anotaciones se guardan en este celular. Los goles de las estadísticas y los votos MVP se revisan en las declaraciones del partido.</p></div>
 
-<details id="disciplineTools" class="admin-subtool"><summary>Disciplina</summary><div class="admin-subtool-content"><h4>Cargar sanción</h4><form id="sanctionForm"><label>Jugador<select id="sanctionPlayer" required></select></label><label>Puntos a descontar<input id="sanctionPoints" type="number" min="0.5" step="0.5" value="1" required></label><label>Motivo<input id="sanctionReason" maxlength="100" required placeholder="Ej.: llegada tarde"></label><button type="submit">Aplicar sanción</button><p id="sanctionMessage" class="form-message"></p></form><div id="sanctionsList"></div></div></details>
+<details id="disciplineTools" class="admin-subtool"><summary>Disciplina y ajustes</summary><div class="admin-subtool-content"><h4>Cargar sanción</h4><form id="sanctionForm"><label>Jugador<select id="sanctionPlayer" required></select></label><label>Puntos a descontar<input id="sanctionPoints" type="number" min="0.5" step="0.5" value="1" required></label><label>Motivo<input id="sanctionReason" maxlength="100" required placeholder="Ej.: llegada tarde"></label><button type="submit">Aplicar sanción</button><p id="sanctionMessage" class="form-message"></p></form><div id="sanctionsList"></div></div></details>
 <details id="fundTools" class="admin-subtool"><summary>Caja del torneo</summary><div class="admin-subtool-content"><h4>Actualizar dinero disponible</h4><form id="fundForm"><label>Saldo actual<input id="fundInput" type="number" min="0" step="100" required></label><button type="submit">Guardar saldo</button><p id="fundMessage" class="form-message"></p></form></div></details>
 <details id="playoffTools" class="admin-subtool"><summary>Cruces de fase final</summary><div class="admin-subtool-content"><h4>Cruces del cuadro de playoffs</h4><p class="admin-help">Elegí el cruce entre jugadores y quién avanza de ronda. El marcador de equipos se carga en “Marcador del partido”.</p><form id="playoffForm"><label>Ronda<select id="playoffRound"><option value="quarter">Cuartos de final</option><option value="semi">Semifinal</option><option value="third">Tercer puesto</option><option value="final">Final</option></select></label><label>Cruce<select id="playoffSlot"></select></label><div class="compact-fields"><label>Jugador 1<select id="playoffPlayer1"></select></label><label>Jugador 2<select id="playoffPlayer2"></select></label><label>Goles 1<input id="playoffScore1" type="number" min="0" required></label><label>Goles 2<input id="playoffScore2" type="number" min="0" required></label></div><label>Quién pasó de ronda<select id="playoffWinner" required></select></label><button type="submit">Guardar resultado</button><p id="playoffMessage" class="form-message"></p></form></div></details>
             </section>
@@ -172,9 +172,9 @@
   <script src="js/goals.js?v=2026102502"></script>
   <script src="js/shared-score.js?v=2026102502"></script>
   <script src="js/live-score.js?v=2026102601"></script>
-  <script src="js/mvp-voting.js?v=2026100936"></script>
-  <script src="js/player-experience.js?v=2026101415"></script>
-  <script src="js/app.js?v=2026102912"></script>
+  <script src="js/mvp-voting.js?v=2026111701"></script>
+  <script src="js/player-experience.js?v=2026111701"></script>
+  <script src="js/app.js?v=2026111701"></script>
   <script src="js/team-generator.js?v=2026102901"></script>
 </body>
 </html>
