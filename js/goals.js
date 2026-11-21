@@ -20,12 +20,33 @@
     Object.entries(READ_FIELDS).forEach(([action,field])=>{
       if(Array.isArray(state[field]))readCache.set(action,{value:{ok:true,items:copy(state[field])},at:now});
     });
-    window.dispatchEvent(new Event('chiqui:state'));
+    window.dispatchEvent?.(new Event('chiqui:state'));
   }
   async function sendRequest(action,payload){
-    const response=await fetch(API(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
-    if(!response.ok)throw new Error('No se pudo conectar con el registro de goles');
-    const result=await response.json();if(result.ok===false)throw new Error(result.error||'Operación rechazada');return result;
+    let result;
+    try{
+      const response=await fetch(API(),{method:'POST',credentials:'omit',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      result=await response.json();
+    }catch{
+      const error=new Error('No se pudo confirmar la conexión con Google. Probá otra red; si acabás de actualizar Apps Script, revisá que la implementación web permita acceso a Cualquier usuario.');
+      error.transportFailure=true;throw error;
+    }
+    if(!result||typeof result!=='object'){
+      const error=new Error('Google respondió sin los datos esperados. Revisá la implementación web de Apps Script y su acceso a Cualquier usuario.');error.transportFailure=true;throw error;
+    }
+    if(result.ok===false)throw new Error(result.error||'Operación rechazada');return result;
+  }
+  function resultMatchesRequest(state,item){
+    const result=(state.results||[]).find(r=>Number(r.matchNumber)===Number(item.matchNumber)&&String(r.played)!=='false');
+    if(!result||Number(result.whiteGoals)!==Number(item.whiteGoals)||Number(result.blackGoals)!==Number(item.blackGoals))return null;
+    const record=(state.matchRecords||[]).find(r=>Number(r.matchNumber)===Number(item.matchNumber));
+    const playerKey=name=>window.ChiquiSheets?.key?window.ChiquiSheets.key(name):String(name||'').trim().toLowerCase();
+    const scorers=rows=>JSON.stringify((rows||[]).map(r=>[r.team,playerKey(r.player),Number(r.goals)]).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
+    const events=rows=>JSON.stringify((rows||[]).map(e=>[String(e.id||''),e.team,playerKey(e.player),playerKey(e.assist),e.assistDecision||'pending']));
+    if(Array.isArray(item.scorers)&&(!record||scorers(record.scorers)!==scorers(item.scorers)))return null;
+    if(Array.isArray(item.goalEvents)&&(!Array.isArray(record?.goalEvents)||events(record.goalEvents)!==events(item.goalEvents)))return null;
+    return {...result,...(record?{scorers:record.scorers}:{})};
   }
   async function request(action,payload={}){
     if(!API())return null;
@@ -88,7 +109,11 @@
   async function saveLineup(item,pin){const remote=await request('saveLineup',{item,pin}),saved={...(remote?.item||item),updatedAt:remote?.item?.updatedAt||new Date().toISOString()},items=localList(LINEUP_KEY),index=items.findIndex(x=>String(x.matchNumber)===String(saved.matchNumber));index>=0?items[index]=saved:items.push(saved);localStorage.setItem(LINEUP_KEY,JSON.stringify(items));localStorage.setItem(DELETED_DATES_KEY,JSON.stringify(localList(DELETED_DATES_KEY).filter(x=>String(x.matchNumber)!==String(saved.matchNumber))));window.dispatchEvent(new CustomEvent('chiqui:lineup-saved',{detail:saved}));return saved}
   function jsonpResults(){return new Promise((resolve,reject)=>{if(!API()){resolve(null);return}const name='__chiquiResults'+Date.now()+Math.random().toString(36).slice(2),script=document.createElement('script'),finish=value=>{clearTimeout(timer);delete window[name];script.remove();resolve(value)};window[name]=payload=>finish(payload);script.src=API()+'?callback='+encodeURIComponent(name)+'&t='+Date.now();script.onerror=()=>{clearTimeout(timer);delete window[name];script.remove();reject(new Error('No se pudieron leer los resultados'))};const timer=setTimeout(()=>{delete window[name];script.remove();reject(new Error('Tiempo agotado'))},12000);document.head.appendChild(script)})}
   async function results(){const remote=await request('listResults').catch(()=>null);if(Array.isArray(remote?.items))return remote.items;const jsonp=await jsonpResults().catch(()=>null);if(Array.isArray(jsonp?.results))return jsonp.results;return localList(RESULTS_KEY)}
-  async function saveResult(item,pin){const remote=await request('saveResult',{item,pin});if(remote)return remote.item;const items=localList(RESULTS_KEY),index=items.findIndex(x=>String(x.matchNumber)===String(item.matchNumber)),whiteGoals=Number(item.whiteGoals),blackGoals=Number(item.blackGoals),saved={...item,whiteGoals,blackGoals,winner:whiteGoals===blackGoals?'draw':whiteGoals>blackGoals?'white':'black',played:true};index>=0?items[index]=saved:items.push(saved);localStorage.setItem(RESULTS_KEY,JSON.stringify(items));return saved}
+  async function saveResult(item,pin){let remote;try{remote=await request('saveResult',{item,pin})}catch(error){
+    if(!error.transportFailure||!window.ChiquiSheets?.readState)throw error;
+    try{const state=await window.ChiquiSheets.readState();if(state?.ok!==false){const confirmed=resultMatchesRequest(state,item);if(confirmed){seedState(state);return confirmed}}}catch{}
+    throw new Error('No pudimos confirmar que el resultado se haya publicado. Tus anotaciones siguen guardadas. Probá otra red y volvé a revisar el resultado. Si actualizaste Apps Script, revisá Implementar → Administrar implementaciones: ejecutar como vos y acceso Cualquier usuario.');
+  }if(remote)return remote.item;const items=localList(RESULTS_KEY),index=items.findIndex(x=>String(x.matchNumber)===String(item.matchNumber)),whiteGoals=Number(item.whiteGoals),blackGoals=Number(item.blackGoals),saved={...item,whiteGoals,blackGoals,winner:whiteGoals===blackGoals?'draw':whiteGoals>blackGoals?'white':'black',played:true};index>=0?items[index]=saved:items.push(saved);localStorage.setItem(RESULTS_KEY,JSON.stringify(items));return saved}
   async function sanctions(){const remote=await request('listSanctions').catch(()=>null);return remote?.items||localList(SANCTION_KEY)}
   async function addSanction(item,pin){const remote=await request('addSanction',{item,pin});if(remote)return remote.item;const saved={id:crypto.randomUUID?.()||String(Date.now()),...item,points:-Math.abs(Number(item.points)),createdAt:new Date().toISOString()},items=localList(SANCTION_KEY);items.push(saved);localStorage.setItem(SANCTION_KEY,JSON.stringify(items));return saved}
   async function deleteSanction(id,pin){const remote=await request('deleteSanction',{id,pin});if(remote)return;localStorage.setItem(SANCTION_KEY,JSON.stringify(localList(SANCTION_KEY).filter(x=>x.id!==id)))}

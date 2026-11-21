@@ -205,3 +205,9 @@ El único registro público es «Registrar mi cumpleaños», junto a la clasific
 Actualizar la implementación web existente con `Code-Apps-Script.txt` y ejecutar `aplicarCumpleanosMvpYPresencia`, según `actualizar-cumpleanos.html`. La función activa la pestaña `Cumpleanos Web`, confirma a Lauti con exactamente +1 MVP del partido anterior al 21/11/2026 manteniendo el cierre, y comprueba el +1 de presencia de Mati Billo en fecha 7 sin duplicarlo. No reabre la votación. La página verifica los datos reales por separado; publicar el sitio no ejecuta estos cambios en Google.
 
 Cuando todos los jugadores activos completaron su fecha, el botón desaparece; vuelve a mostrarse si se agrega un jugador sin cumpleaños. La pestaña de cumpleaños persiste al reiniciar temporadas. Una fecha registrada no se sobrescribe desde el formulario público; el organizador puede corregir día o mes directamente en esa fila de Google Sheets. Pruebas de backend: `node --test tests/birthdays.test.cjs`. Prueba de interfaz: `CHIQUI_TEST_URL=http://127.0.0.1:8105/ node tests/birthdays.cjs`.
+
+### Publicación con fallos de conexión
+
+Si se pierde la respuesta al POST del resultado, la web consulta el estado público actualizado (JSON directo con respaldo JSONP) y confirma únicamente un marcador y un registro de goleadores/pases que coincidan con lo solicitado. No reenvía la escritura automáticamente. Si no puede comprobarlo, conserva las anotaciones y muestra una indicación de conexión/implementación. Un resultado confirmado se distingue de un fallo posterior al refrescar estadísticas: en ese caso el mensaje dice que está publicado y pide recargar la vista.
+
+Prueba con fallos de transporte simulados, sin escribir en Google: `CHIQUI_TEST_URL=http://127.0.0.1:8106/ node tests/result-network.cjs`.
