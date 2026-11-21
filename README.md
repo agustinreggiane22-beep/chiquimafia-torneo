@@ -197,3 +197,11 @@ La reapertura conserva votos, registra la ventana anterior, retira temporalmente
 La presencia de Mati Billo corresponde solo a la fecha 7: se comprueba el jugador activo y el resultado publicado; si ya integra los equipos, su +1 ya está incluido. En otro caso se registra un único ajuste positivo de +1, con identificador estable y motivo de presencia. Se reutiliza el registro de ajustes compatible con la implementación existente; los valores positivos no se muestran como sanciones en la tabla. No se agregan goles, asistencias, votos, victorias ni otros premios.
 
 Pruebas: `node --test tests/mvp-reopen.test.cjs tests/mvp-backend.test.cjs` y `CHIQUI_TEST_URL=http://127.0.0.1:8000/ node tests/mvp-reopen.cjs`. Los datos de prueba son simulados.
+
+### Cumpleaños y ajustes confirmados
+
+El único registro público es «Registrar mi cumpleaños», junto a la clasificación: cualquier jugador activo del plantel elige su nombre y guarda día y mes una vez, sin año. No exige haber jugado ni votar. El registro no habilita votos ni suma puntos, y el MVP no exige cumpleaños. La portada muestra un saludo durante el día correspondiente en Argentina; no publica las fechas individuales.
+
+Actualizar la implementación web existente con `Code-Apps-Script.txt` y ejecutar `aplicarCumpleanosMvpYPresencia`, según `actualizar-cumpleanos.html`. La función activa la pestaña `Cumpleanos Web`, confirma a Lauti con exactamente +1 MVP del partido anterior al 21/11/2026 manteniendo el cierre, y comprueba el +1 de presencia de Mati Billo en fecha 7 sin duplicarlo. No reabre la votación. La página verifica los datos reales por separado; publicar el sitio no ejecuta estos cambios en Google.
+
+Cuando todos los jugadores activos completaron su fecha, el botón desaparece; vuelve a mostrarse si se agrega un jugador sin cumpleaños. La pestaña de cumpleaños persiste al reiniciar temporadas. Una fecha registrada no se sobrescribe desde el formulario público; el organizador puede corregir día o mes directamente en esa fila de Google Sheets. Pruebas de backend: `node --test tests/birthdays.test.cjs`. Prueba de interfaz: `CHIQUI_TEST_URL=http://127.0.0.1:8105/ node tests/birthdays.cjs`.

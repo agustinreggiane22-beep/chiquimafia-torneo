@@ -11,6 +11,7 @@ const FUND_SHEET_NAME = 'Caja Web';
 const MATCH_RECORDS_SHEET_NAME = 'Registro Partido Web';
 const MVP_VOTES_SHEET_NAME = 'Votos MVP Web';
 const DUELS_SHEET_NAME = 'Desafios Web';
+const BIRTHDAYS_SHEET_NAME = 'Cumpleanos Web';
 
 function doPost(e) {
   try {
@@ -18,6 +19,8 @@ function doPost(e) {
     if(body.action==='createLiveSession'){requirePin_(body.pin);return json_({ok:true,...createLiveSession_(body.item)})}
     if(body.action==='getLiveSession')return json_({ok:true,session:getLiveSession_(body.token)});
     if(body.action==='applyLiveOperation')return json_({ok:true,session:applyLiveOperation_(body.token,body.operation)});
+    if(body.action==='getBirthdays')return json_({ok:true,birthdays:publicBirthdays_()});
+    if(body.action==='saveBirthday')return json_({ok:true,...saveBirthday_(body.item)});
     if (body.action === 'submit') throw new Error('Los goles los registra el administrador. Usá Votación de MVP.');
     if (body.action === 'voteMvp') { migrateMvpSchedule_(); return json_({ok:true,item:voteMvp_(body.item)}); }
     if (body.action === 'listMatchRecords') { closeMvpVoting(); return json_({ok:true,items:listMatchRecords_(),serverNow:new Date().toISOString()}); }
@@ -83,8 +86,9 @@ function tournamentState_() {
   closeMvpVoting();
   return {
     ok: true,
-    version: '2026-10-25-anotador-compartido-v1',
-    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true,substitutesV1:true,participantCorrectionV1:true,sharedLiveV1:true},
+    version: '2026-11-21-cumpleanos-v1',
+    capabilities: {matchVotingV2:true,voteProgress:true,duelsV1:true,assistsV1:true,substitutesV1:true,participantCorrectionV1:true,sharedLiveV1:true,birthdaysV1:birthdaysReady_()},
+    birthdays: publicBirthdays_(),
     automationReady: automationReady_(),
     serverNow: new Date().toISOString(),
     matchRecords: listMatchRecords_(),
@@ -883,4 +887,42 @@ function aplicarCambiosMvpYPresencia() {
   try{result.presence=sumarPresenciaMatiBilloFecha7()}catch(error){result.presenceError=error.message;console.log('Presencia de Mati Billo: '+error.message)}
   console.log('Terminó la comprobación de ambos cambios. Volvé a la página de instrucciones y tocá Comprobar cambios.');
   return result;
+}
+
+function birthdaysReady_(){return PropertiesService.getScriptProperties().getProperty('BIRTHDAYS_ENABLED')==='true'}
+function rawBirthdays_(){return listRows_(BIRTHDAYS_SHEET_NAME,['player','day','month','createdAt'])}
+function validBirthday_(day,month){
+  day=Number(day);month=Number(month);const date=new Date(Date.UTC(2000,month-1,day));
+  if(!Number.isInteger(day)||!Number.isInteger(month)||month<1||month>12||day<1||day>31||date.getUTCMonth()!==month-1||date.getUTCDate()!==day)throw new Error('Revisá el día y mes de tu cumpleaños.');
+  return {day,month};
+}
+function publicBirthdays_(){
+  const serverDate=matchDay_(new Date()),month=Number(serverDate.slice(5,7)),day=Number(serverDate.slice(8,10)),hidden=new Set(listWebPlayers_().filter(p=>p.status==='deleted').map(p=>participantKey_(p.name))),profiles=rawBirthdays_();
+  return {serverDate,registeredPlayers:[...new Set(profiles.map(p=>p.player))],today:birthdaysReady_()?profiles.filter(p=>Number(p.day)===day&&Number(p.month)===month&&!hidden.has(participantKey_(p.player))).map(p=>p.player):[]};
+}
+function saveBirthday_(item){return locked_(()=>{
+  if(!birthdaysReady_())throw new Error('El registro de cumpleaños todavía no está activado.');
+  const birthday=validBirthday_(item&&item.day,item&&item.month),player=listWebPlayers_().find(p=>p.status!=='deleted'&&participantKey_(p.name)===participantKey_(item&&item.player))?.name;
+  if(!player)throw new Error('Elegí tu nombre entre los jugadores del plantel.');
+  if(!rawBirthdays_().some(p=>participantKey_(p.player)===participantKey_(player))){genericSheet_(BIRTHDAYS_SHEET_NAME,['player','day','month','createdAt']).appendRow([player,birthday.day,birthday.month,new Date().toISOString()]);SpreadsheetApp.flush()}
+  return {registered:true,birthdays:publicBirthdays_()};
+})}
+function activarCumpleanos(){genericSheet_(BIRTHDAYS_SHEET_NAME,['player','day','month','createdAt']);PropertiesService.getScriptProperties().setProperty('BIRTHDAYS_ENABLED','true');return {enabled:true}}
+function asignarMvpDelPlazoAnteriorALauti(){return locked_(()=>{
+  const props=PropertiesService.getScriptProperties(),saved=Number(props.getProperty('MVP_LAUTI_TARGET_20261120')||props.getProperty('MVP_REOPEN_TARGET_20261120')||0),deleted=new Set(listRows_(DELETED_DATES_SHEET_NAME,['matchNumber','deletedAt']).map(r=>Number(r.matchNumber))),published=listResults_().filter(r=>String(r.played)!=='false'&&!deleted.has(Number(r.matchNumber))).sort((a,b)=>Number(b.matchNumber)-Number(a.matchNumber));
+  const target=saved||Number(published.find(r=>{try{return matchDay_(matchLineup_(r.matchNumber).date)<='2026-11-20'}catch{return false}})?.matchNumber||0);
+  if(!target||!published.some(r=>Number(r.matchNumber)===target))throw new Error('No se encontró el partido del plazo anterior. Revisá la fecha antes de asignar el MVP.');
+  const record=findMatchRecord_(target),lineup=matchLineup_(target),names=[...lineup.white,...lineup.black].filter(name=>['LAUTI','LAUTY','LAUTARO'].includes(participantKey_(name)));
+  if(!record||new Set(names.map(participantKey_)).size!==1)throw new Error('No se pudo identificar a un único Lauti entre los jugadores de ese partido.');
+  const player=names[0],awards=record.mvpAwards||[];
+  if(!(record.closed&&awards.length===1&&participantKey_(awards[0].player)===participantKey_(player)&&Number(awards[0].points)===1)){
+    record.mvpAdminDecision={player,decidedAt:new Date().toISOString(),reason:'Ganador confirmado por el administrador tras la publicación tardía.',previousAwards:awards};record.mvpAwards=[{player,points:1}];record.closed=true;record.closedAt=record.closedAt||new Date().toISOString();record.voteCount=listMvpVotes_().filter(v=>Number(v.matchNumber)===target).length;writeMatchRecord_(record);SpreadsheetApp.flush();
+  }
+  props.setProperty('MVP_LAUTI_TARGET_20261120',String(target));console.log('MVP de la fecha '+target+': '+player+' (+1). Votación cerrada.');return {matchNumber:target,player,points:1};
+})}
+function aplicarCumpleanosMvpYPresencia(){
+  const result={birthdays:activarCumpleanos()};
+  try{result.mvp=asignarMvpDelPlazoAnteriorALauti()}catch(error){result.mvpError=error.message;console.log('MVP de Lauti: '+error.message)}
+  try{result.presence=sumarPresenciaMatiBilloFecha7()}catch(error){result.presenceError=error.message;console.log('Presencia: '+error.message)}
+  console.log('Cumpleaños activados. Volvé a comprobar los cambios desde la página.');return result;
 }

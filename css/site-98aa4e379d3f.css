@@ -786,6 +786,23 @@ footer { background:#0b1118; border-top:1px solid #304253; }
 @media(max-width:600px) { #mvpVotingDialog { border-radius:28px; padding:9px 9px 26px; } #mvpVotingDialog .mvp-dialog-header { padding:13px 5px 18px; min-height:89px; } #mvpVotingDialog .mvp-dialog-header h2 { font-size:clamp(32px,9.8vw,38px); } #mvpVotingDialog .mvp-dialog-header span { font-size:11px; } #mvpVotingDialog .mvp-player { min-height:51px; } }
 @media(prefers-reduced-motion:reduce) { #mvpVotingDialog::before,.mvp-frame-glints i { animation:none!important; } .mvp-frame-glints i { opacity:.65; } }
 
+/* One-time day/month collection stays inside the compact voting card. */
+.birthday-fields{display:grid;grid-template-columns:minmax(65px,.7fr) minmax(0,1.3fr);gap:10px;margin-bottom:10px}
+.birthday-fields label{display:grid;gap:4px;font:700 12px Inter,sans-serif}
+.birthday-fields input,.birthday-fields select{width:100%;min-width:0;min-height:42px;border:1px solid #b6cbd7;border-radius:8px;padding:8px;background:white;color:#173e58;font:600 16px Inter,sans-serif}
+#inicio .birthday-banner{grid-column:1/-1!important;padding:13px 16px;border:1px solid #b78a2c;border-radius:14px;background:#fff8e5;color:#60460e;font:700 15px/1.4 Inter,sans-serif;text-align:center;overflow-wrap:anywhere}
+.birthday-registration{margin:0 0 16px;padding:12px 14px;border:1px solid #b78a2c;border-radius:12px;background:#fff9e9;color:#173e58}
+.birthday-registration[hidden]{display:none}
+.birthday-registration summary{cursor:pointer;font:700 14px/1.4 Inter,sans-serif}
+.birthday-registration p{font:500 12px/1.4 Inter,sans-serif}
+#birthdayRosterForm{display:grid;gap:10px;max-width:430px;margin-top:12px}
+#birthdayRosterForm>label{display:grid;gap:4px;font:700 12px Inter,sans-serif}
+#birthdayRosterPlayer{min-width:0;width:100%;min-height:42px;padding:8px;border:1px solid #b6cbd7;border-radius:8px;background:#fff;color:#173e58;font:600 16px Inter,sans-serif}
+#birthdayRosterSave{min-height:44px;padding:10px;border:0;border-radius:9px;background:#153b55;color:#fff;font:700 13px Inter,sans-serif;cursor:pointer}
+#birthdayRosterSave:disabled{opacity:.6;cursor:default}
+
+.birthday-banner[hidden]{display:none}
+
 /* sports-panels.css */
 /* Section titles sit directly over the continuous page background. */
 .section-header.sports-heading { display:grid; grid-template-columns:minmax(0,1fr); justify-content:stretch; justify-items:center; gap:10px; margin:0 0 20px; padding:0; text-align:center; }

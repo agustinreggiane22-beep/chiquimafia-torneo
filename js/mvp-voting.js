@@ -42,10 +42,11 @@
   $('#mvpChooseVoter').textContent=voter?'Cambiar nombre':'Soy…';$('#mvpChooseVoter').disabled=!current||phase()!=='open'||sending;
   
   const showConfirm=Boolean(candidate&&!submitted&&phase()==='open');$('#mvpConfirmation').hidden=!showConfirm;$('#mvpTapHint').hidden=showConfirm||submitted||phase()==='closed';
+  $('#mvpTapHint').textContent='Tocá el + del jugador que elegís.';
   $('#mvpConfirmTitle').textContent=`¿Confirmás tu voto por ${candidate}?`;
   $('#mvpMatchSelect').disabled=sending;$('#mvpConfirmVote').disabled=!voter||sending;$('#mvpChangeChoice').disabled=sending;
   const r=record(),closed=phase()==='closed'&&r?.closed;$('#mvpClosedResult').hidden=!closed;
-  if(closed){const awards=r.mvpAwards||[];$('#mvpClosedResult').innerHTML='<h4>MVP del partido</h4>'+(awards.length?awards.map(a=>`<div><strong>${esc(a.player)}</strong><b>+${Number(a.points).toLocaleString('es-AR',{maximumFractionDigits:3})} ${a.points===1?'punto':'puntos'}</b></div>`).join(''):'<p>No hubo votos dentro del plazo. Esta fecha queda sin premio de MVP.</p>')+`<p>${Number(r.voteCount||0)} votos recibidos · Resultado publicado</p>`}
+  if(closed){const awards=r.mvpAwards||[];$('#mvpClosedResult').innerHTML='<h4>MVP del partido</h4>'+(awards.length?awards.map(a=>`<div><strong>${esc(a.player)}</strong><b>+${Number(a.points).toLocaleString('es-AR',{maximumFractionDigits:3})} ${a.points===1?'punto':'puntos'}</b></div>`).join(''):'<p>No hubo votos dentro del plazo. Esta fecha queda sin premio de MVP.</p>')+(r.mvpAdminDecision?'<p>MVP confirmado por el administrador · Resultado publicado</p>':`<p>${Number(r.voteCount||0)} votos recibidos · Resultado publicado</p>`)}
   if(submitted)message(`✓ Tu voto por ${candidate} ya está registrado. No necesita aprobación.`);
  }
  async function loadSelected(){

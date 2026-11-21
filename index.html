@@ -8,7 +8,7 @@
   <title>CHIQUIMAFIA TORNEO</title>
   <link rel="preload" href="assets/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/barlow-condensed-900.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/site-252a65c2fc16.css">
+  <link rel="stylesheet" href="css/site-98aa4e379d3f.css">
 </head>
 <body>
   <div class="page-background" aria-hidden="true"></div>
@@ -40,6 +40,7 @@
           <div class="season-progress-meta"><span id="roundLabel">Actualizando…</span><span id="progressLabel">0%</span></div>
           <div class="progress-track"><span id="progressBar"></span></div>
         </article>
+        <aside id="birthdayBanner" class="birthday-banner" aria-live="polite" hidden></aside>
         <article id="featuredMatch" class="featured-match" aria-live="polite"><div class="loading-shell" role="status"><span class="loading-line short"></span><span class="loading-line score"></span><span class="loading-line"></span><small>Cargando el partido…</small></div></article>
         <div class="home-info-grid"><article class="next-match-card" id="recentResultCard" aria-label="Último partido"><span>ÚLTIMO PARTIDO</span><strong>Actualizando…</strong></article><article class="fund-card"><span>CAJA DEL TORNEO</span><div class="fund-card-content"><small class="summary-context">Saldo actual</small><strong id="fundAmount">$0</strong><small class="summary-detail">Disponible para los próximos partidos</small></div></article></div>
         <div id="homeAdminQuick" hidden><span><b>⚽ Tu marcador</b><small id="quickMatchLabel"></small></span><button id="quickOpenLiveScore" type="button" disabled>Anotar partido</button></div>
@@ -54,6 +55,7 @@
       <section id="clasificacion" class="page-section content-section">
         <header class="section-header sports-heading"><div><span class="eyebrow">TEMPORADA ACTUAL</span><h2>Clasificación</h2></div><span class="live-badge" id="syncStatus">Conectando</span></header>
         <p class="player-profile-hint">Tocá un nombre para ver su ficha y sus últimos partidos.</p>
+        <details id="birthdayRegistration" class="birthday-registration" hidden><summary>🎂 Registrar mi cumpleaños</summary><p>Elegí tu nombre y guardá el día y mes una sola vez. No necesitás haber jugado ni votar.</p><form id="birthdayRosterForm"><label>Tu nombre<select id="birthdayRosterPlayer" required><option value="">Elegí tu nombre del plantel</option></select></label><div class="birthday-fields"><label>Día<input id="birthdayRosterDay" type="number" inputmode="numeric" min="1" max="31" step="1" required></label><label>Mes<select id="birthdayRosterMonth" required><option value="">Mes</option><option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option><option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option><option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option><option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option></select></label></div><button id="birthdayRosterSave" type="submit">Guardar mi cumpleaños</button><p id="birthdayRosterMessage" role="status"></p></form></details>
         <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>POS</th><th>JUGADOR</th><th>PTS</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GOLES</th><th>MVP</th><th>SAN</th></tr></thead><tbody id="standingsBody"><tr><td colspan="10"><div class="loading-shell" role="status"><span class="loading-line"></span><span class="loading-line"></span><span class="loading-line"></span><small>Cargando clasificación…</small></div></td></tr></tbody></table></div></div>
       </section>
 
@@ -108,7 +110,7 @@
       <section id="administracion" class="page-section content-section">
         <header class="section-header"><div><span class="eyebrow">ACCESO PROTEGIDO</span><h2>Administración</h2></div></header>
         <article id="adminLogin" class="card admin-login"><h3>Ingresar como administrador</h3><p>Usá el PIN para revisar las declaraciones de goles.</p><form id="adminLoginForm"><input id="adminPin" type="password" inputmode="text" autocapitalize="none" spellcheck="false" autocomplete="current-password" placeholder="PIN" required><button type="submit">Ingresar</button></form><p id="adminLoginMessage" class="form-message"></p></article>
-        <div id="adminPanel" hidden><datalist id="playerOptions"></datalist><div class="admin-toolbar"><div><strong>Panel del torneo</strong><span id="pendingCount">0 solicitudes</span></div><div class="admin-toolbar-actions"><button id="openLiveScore" type="button" disabled>⚽ Marcador en vivo</button><button id="adminLogout">Cerrar sesión</button></div></div><p id="votingSetupNotice" class="admin-help" hidden>La nueva votación de MVP y los goles oficiales están preparados. Falta actualizar Apps Script. <a href="actualizar-votacion.html" target="_blank" rel="noopener">Abrir código completo e instrucciones</a></p><p id="assistsSetupNotice" class="admin-help" hidden>Para publicar las asistencias y sumar su premio, <a href="actualizar-asistencias.html" target="_blank" rel="noopener">actualizá Apps Script</a>.</p><p id="liveScoreAvailability" class="admin-help">Primero guardá los equipos de un partido para usar el marcador.</p>
+        <div id="adminPanel" hidden><p id="birthdaySetupNotice" class="admin-help" hidden>Para activar los cumpleaños, <a href="actualizar-cumpleanos.html">actualizá Apps Script y comprobá los cambios</a>.</p><datalist id="playerOptions"></datalist><div class="admin-toolbar"><div><strong>Panel del torneo</strong><span id="pendingCount">0 solicitudes</span></div><div class="admin-toolbar-actions"><button id="openLiveScore" type="button" disabled>⚽ Marcador en vivo</button><button id="adminLogout">Cerrar sesión</button></div></div><p id="votingSetupNotice" class="admin-help" hidden>La nueva votación de MVP y los goles oficiales están preparados. Falta actualizar Apps Script. <a href="actualizar-votacion.html" target="_blank" rel="noopener">Abrir código completo e instrucciones</a></p><p id="assistsSetupNotice" class="admin-help" hidden>Para publicar las asistencias y sumar su premio, <a href="actualizar-asistencias.html" target="_blank" rel="noopener">actualizá Apps Script</a>.</p><p id="liveScoreAvailability" class="admin-help">Primero guardá los equipos de un partido para usar el marcador.</p>
           <div class="admin-grid">
             <article class="card admin-tool team-generator-card">
               <span class="eyebrow">EQUIPOS DEL PARTIDO</span><h3>Armar y editar equipos</h3>
@@ -169,10 +171,11 @@
   <dialog id="teamPlayerPicker" aria-labelledby="teamPickerTitle"><header class="team-picker-header"><h3 id="teamPickerTitle">Elegir jugador</h3><button id="closeTeamPicker" type="button" aria-label="Cerrar lista de jugadores">×</button></header><p id="teamPickerSide" class="admin-help"></p><input id="teamPickerSearch" type="search" placeholder="Buscar jugador" aria-label="Buscar jugador" autocomplete="off"><div id="teamPickerChoices" class="team-picker-choices"></div><details id="teamPickerGuestDetails"><summary>Agregar un invitado</summary><form id="teamPickerGuestForm"><input id="teamPickerGuest" maxlength="50" placeholder="Nombre del invitado" aria-label="Nombre del invitado" required><button type="submit">Elegir invitado</button></form></details><p id="teamPickerMessage" class="form-message error" role="status"></p><button id="cancelTeamPicker" class="secondary-admin-button" type="button">Cancelar</button></dialog>
   <script src="js/config.js?v=2026072707"></script>
   <script src="js/sheets.js?v=2026101601"></script>
-  <script src="js/goals.js?v=2026102502"></script>
+  <script src="js/goals.js?v=2026112102"></script>
   <script src="js/shared-score.js?v=2026102502"></script>
   <script src="js/live-score.js?v=2026102601"></script>
-  <script src="js/mvp-voting.js?v=2026111701"></script>
+  <script src="js/birthdays.js?v=2026112102"></script>
+  <script src="js/mvp-voting.js?v=2026112102"></script>
   <script src="js/player-experience.js?v=2026111701"></script>
   <script src="js/app.js?v=2026111701"></script>
   <script src="js/team-generator.js?v=2026102901"></script>

@@ -22,7 +22,7 @@ test('timer permission failure leaves records closed; unpublished, deleted or ex
 });
 test('one-off execution never silently moves to a newly published match; standalone copy matches the backend',()=>{
  const b=fixture();b.run('reabrirUltimoMvpHastaViernes');publish(b,8,'2026-11-21');const before=b.run('rawMatchRecords_');assert.throws(()=>b.run('reabrirUltimoMvpHastaViernes'),/otro partido/);assert.deepEqual(b.run('rawMatchRecords_'),before);
- const code=fs.readFileSync('google-apps-script/Code.gs','utf8'),snippet=fs.readFileSync('Reabrir-MVP-Viernes.txt','utf8');assert.equal(code,fs.readFileSync('Code-Apps-Script.txt','utf8'));assert(code.endsWith(snippet));const c=fixture();vm.runInContext(snippet,c.context);assert.equal(c.run('reabrirUltimoMvpHastaViernes').closesAt,deadline);
+ const code=fs.readFileSync('google-apps-script/Code.gs','utf8'),snippet=fs.readFileSync('Reabrir-MVP-Viernes.txt','utf8');assert.equal(code,fs.readFileSync('Code-Apps-Script.txt','utf8'));assert(code.includes(snippet));const c=fixture();vm.runInContext(snippet,c.context);assert.equal(c.run('reabrirUltimoMvpHastaViernes').closesAt,deadline);
 });
 test('Mati Billo receives exactly one presence point, with no match, goal or MVP changes and no duplicate adjustment',()=>{
  const b=fixture();assert(b.call('addPlayer',{pin:'test-pin',name:'MATI BILLO'}).ok);

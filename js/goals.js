@@ -9,17 +9,18 @@
   // Reuse one snapshot during rendering; fetch fresh data after any successful write.
   const READ_FIELDS={listWebPlayers:'players',listLineups:'lineups',listResults:'results',listMvp:'mvps',listSanctions:'sanctions',listDeletedDates:'deletedDates',listPlayoffs:'playoffs',list:'submissions',listMatchRecords:'matchRecords',listDuels:'duels'};
   const READ_TTL=30000,readCache=new Map(),pendingReads=new Map();
-  let readGeneration=0,capabilities={},serverOffset=0,latestMatchRecords=[],latestDuels=[],automationReady=false;
+  let readGeneration=0,capabilities={},serverOffset=0,latestMatchRecords=[],latestDuels=[],latestBirthdays=null,automationReady=false;
   const copy=value=>JSON.parse(JSON.stringify(value));
   function clearReadCache(){readGeneration+=1;readCache.clear();pendingReads.clear()}
   function seedState(state){
     clearReadCache();
     capabilities=state.capabilities||{};automationReady=Boolean(state.automationReady);serverOffset=Date.parse(state.serverNow||'')-Date.now()||0;latestMatchRecords=copy(state.matchRecords||[]);
-    latestDuels=copy(state.duels||[]);
+    latestDuels=copy(state.duels||[]);latestBirthdays=copy(state.birthdays||null);
     const now=Date.now();
     Object.entries(READ_FIELDS).forEach(([action,field])=>{
       if(Array.isArray(state[field]))readCache.set(action,{value:{ok:true,items:copy(state[field])},at:now});
     });
+    window.dispatchEvent(new Event('chiqui:state'));
   }
   async function sendRequest(action,payload){
     const response=await fetch(API(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...payload})});
@@ -30,7 +31,7 @@
     if(!API())return null;
     if(!Object.prototype.hasOwnProperty.call(READ_FIELDS,action)){
       const result=await sendRequest(action,payload);
-      if(action!=='auth'&&action!=='listMvpVotes')clearReadCache();
+      if(action!=='auth'&&action!=='listMvpVotes'&&action!=='getBirthdays')clearReadCache();
       return result;
     }
     const cached=readCache.get(action);
@@ -67,6 +68,9 @@
   const supportsAssists=()=>Boolean(capabilities.assistsV1);
   async function voteMvp(item){if(!capabilities.matchVotingV2)throw new Error('La nueva votación necesita actualizar Apps Script.');return (await request('voteMvp',{item})).item}
   async function mvpVotes(pin){if(!capabilities.matchVotingV2)return [];return (await request('listMvpVotes',{pin})).items||[]}
+  function birthdayState(){return copy(latestBirthdays||{registeredPlayers:[],today:[],serverDate:''})}
+  async function refreshBirthdayState(){const result=await request('getBirthdays');if(result?.birthdays)latestBirthdays=copy(result.birthdays);return birthdayState()}
+  async function saveBirthday(item){const result=await request('saveBirthday',{item});if(!result?.registered)throw new Error('No se pudo guardar el cumpleaños.');latestBirthdays=copy(result.birthdays);return birthdayState()}
   function supportsVoting(){return Boolean(capabilities.matchVotingV2)}
   function supportsDuels(){return Boolean(capabilities.duelsV1)}
   function supportsSubstitutes(){return !API()||Boolean(capabilities.substitutesV1)}
@@ -100,5 +104,5 @@
   async function addHistoricalChampion(item,pin){const remote=await request('addHistoricalChampion',{item,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.');return remote.item}
   async function deleteHistoricalChampion(season,player,pin){const remote=await request('deleteHistoricalChampion',{season,player,pin});if(!remote)throw new Error('Esta función necesita Google Apps Script.')}
   async function saveFund(amount,pin){const remote=await request('saveFund',{amount,pin});if(!remote)throw new Error('No se pudo guardar la caja.');return remote.item}
-  window.ChiquiGoals={supportsSharedLive:()=>Boolean(capabilities.sharedLiveV1),savedParticipantCorrection:number=>latestMatchRecords.find(row=>Number(row.matchNumber)===Number(number))?.participantCorrectionId||null,supportsSubstitutes,supportsAssists,assistPoints,assistTotals,savedGoalEvents:matchNumber=>copy(latestMatchRecords.find(r=>Number(r.matchNumber)===Number(matchNumber))?.goalEvents||null),savedScorers:matchNumber=>copy(latestMatchRecords.find(r=>Number(r.matchNumber)===Number(matchNumber))?.scorers||null),automationReady:()=>automationReady,supportsDuels,duels,duelForMatch:number=>copy(latestDuels.find(duel=>Number(duel.matchNumber)===Number(number))||null),duelPoints,saveDuel,deleteDuel,supportsVoting,matchRecords,scorerPoints,voteMvp,mvpVotes,serverTime,seedState,list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,results,saveResult,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,addHistoricalChampion,deleteHistoricalChampion,saveFund,isShared:()=>Boolean(API())};
+  window.ChiquiGoals={supportsBirthdays:()=>Boolean(capabilities.birthdaysV1),birthdayState,refreshBirthdayState,saveBirthday,supportsSharedLive:()=>Boolean(capabilities.sharedLiveV1),savedParticipantCorrection:number=>latestMatchRecords.find(row=>Number(row.matchNumber)===Number(number))?.participantCorrectionId||null,supportsSubstitutes,supportsAssists,assistPoints,assistTotals,savedGoalEvents:matchNumber=>copy(latestMatchRecords.find(r=>Number(r.matchNumber)===Number(matchNumber))?.goalEvents||null),savedScorers:matchNumber=>copy(latestMatchRecords.find(r=>Number(r.matchNumber)===Number(matchNumber))?.scorers||null),automationReady:()=>automationReady,supportsDuels,duels,duelForMatch:number=>copy(latestDuels.find(duel=>Number(duel.matchNumber)===Number(number))||null),duelPoints,saveDuel,deleteDuel,supportsVoting,matchRecords,scorerPoints,voteMvp,mvpVotes,serverTime,seedState,list,submit,decide,authenticate,approvedTotals,mvpAwards,confirmMvp,mvpTotals,deleteMvp,lineups,saveLineup,results,saveResult,sanctions,addSanction,deleteSanction,deleteSubmission,clearGoals,deletedDates,deleteDate,webPlayers,setWebPlayer,playoffResults,savePlayoff,resetSeason,addHistoricalChampion,deleteHistoricalChampion,saveFund,isShared:()=>Boolean(API())};
 })();
